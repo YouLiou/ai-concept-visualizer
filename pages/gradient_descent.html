@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>梯度下降實驗室</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* ============ 設計 tokens：淺色為預設，深色覆寫同一組 ============ */
+:root{
+  --bg:#F5F7F4;            /* 紙感淺灰綠 */
+  --surface:#FFFFFF;
+  --ink:#1C2723;
+  --muted:#5C6D64;
+  --line:#DCE4DE;
+  --accent:#22685A;        /* 墨綠：曲線與主按鈕 */
+  --accent-soft:#E3EFEA;
+  --on-accent:#FFFFFF;
+  --ball:#E07B2E;          /* 暖橘：球與足跡 */
+  --danger:#B3423A;
+  --warn:#8A5E10;
+  --grid:#E8EDE8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101714; --surface:#182220; --ink:#E6EEE9; --muted:#9AABA1;
+    --line:#2C3A34; --accent:#57B99F; --accent-soft:#1E332C; --on-accent:#0E1512;
+    --ball:#F09A4E; --danger:#E07A70; --warn:#D9A741; --grid:#22302A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101714; --surface:#182220; --ink:#E6EEE9; --muted:#9AABA1;
+  --line:#2C3A34; --accent:#57B99F; --accent-soft:#1E332C; --on-accent:#0E1512;
+  --ball:#F09A4E; --danger:#E07A70; --warn:#D9A741; --grid:#22302A;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;
+  font-size:16px; line-height:1.75;
+  padding:0 clamp(16px,4vw,32px); padding-block:0 48px;
+}
+.wrap{max-width:900px; margin:0 auto}
+
+/* ============ 頁首 ============ */
+header.site{display:flex; justify-content:space-between; align-items:baseline;
+  padding-block:20px 0; gap:12px; flex-wrap:wrap}
+.brand{font-size:.8rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:700}
+.level{font-size:.75rem; color:var(--accent); border:1px solid var(--accent);
+  border-radius:999px; padding:1px 10px; white-space:nowrap}
+h1{font-family:"Noto Serif TC","Songti TC",serif; font-weight:900;
+  font-size:clamp(1.9rem,5vw,2.7rem); line-height:1.25; margin:18px 0 4px; text-wrap:balance}
+.subtitle{color:var(--muted); margin:0 0 8px; font-size:1.02rem}
+.intro{max-width:42em; margin-block:14px 6px}
+.intro b{color:var(--accent)}
+.hint{color:var(--muted); font-size:.9rem; margin-block:2px 18px}
+
+/* ============ 實驗區 ============ */
+.lab{background:var(--surface); border:1px solid var(--line); border-radius:14px;
+  padding:clamp(12px,2.5vw,22px); margin-block:8px 30px}
+.controls{display:flex; flex-wrap:wrap; gap:14px 22px; align-items:center; margin-bottom:10px}
+.ctrl-label{font-size:.78rem; letter-spacing:.08em; color:var(--muted); display:block; margin-bottom:4px}
+.seg{display:inline-flex; border:1px solid var(--line); border-radius:9px; overflow:hidden}
+.seg button{border:0; background:transparent; color:var(--muted); padding:6px 14px;
+  font:inherit; font-size:.92rem; cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent-soft); color:var(--accent); font-weight:700}
+.lr-box{min-width:210px; flex:1; max-width:300px}
+.lr-row{display:flex; align-items:center; gap:10px}
+input[type=range]{flex:1; accent-color:var(--accent); min-width:120px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace; font-variant-numeric:tabular-nums}
+#lrVal{font-size:.95rem; min-width:3.4em; text-align:right}
+.btns{display:flex; gap:8px; flex-wrap:wrap}
+.btn{font:inherit; font-size:.95rem; border-radius:9px; padding:7px 16px; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--ink)}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent); font-weight:700}
+.btn:focus-visible,.seg button:focus-visible,input[type=range]:focus-visible{
+  outline:2px solid var(--ball); outline-offset:2px}
+
+.plot-wrap{border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--surface)}
+svg{display:block; width:100%; height:auto; touch-action:manipulation}
+.click-hint{font-size:.85rem; color:var(--muted); margin:8px 2px 0}
+
+/* 狀態列 */
+.status{margin-top:12px; min-height:2.2em; font-size:.98rem}
+.status .pill{display:inline-block; border-radius:8px; padding:4px 12px; background:var(--accent-soft)}
+.status.warn .pill{background:transparent; border:1.5px solid var(--warn); color:var(--warn)}
+.status.bad .pill{background:transparent; border:1.5px solid var(--danger); color:var(--danger)}
+.status.good .pill{border:1.5px solid var(--accent); background:var(--accent-soft); color:var(--accent); font-weight:700}
+
+/* 讀數 */
+.readouts{display:flex; gap:10px 26px; flex-wrap:wrap; margin-top:12px;
+  padding-top:12px; border-top:1px dashed var(--line)}
+.readouts div{font-size:.85rem; color:var(--muted)}
+.readouts .v{display:block; font-size:1.15rem; color:var(--ink)}
+
+/* 誤差記錄 */
+.spark{margin-top:16px}
+.spark h3{font-size:.85rem; letter-spacing:.08em; color:var(--muted); margin:0 0 6px; font-weight:500}
+.spark-empty{color:var(--muted); font-size:.85rem; padding:10px 0}
+
+/* ============ 挑戰卡 ============ */
+h2{font-family:"Noto Serif TC","Songti TC",serif; font-weight:700; font-size:1.45rem; margin:34px 0 12px}
+.cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px 18px}
+.card .tag{font-size:.75rem; letter-spacing:.1em; color:var(--accent); font-weight:700}
+.card h3{margin:6px 0 6px; font-size:1.05rem}
+.card p{margin:0; font-size:.92rem; color:var(--muted)}
+.card .mono{color:var(--ink)}
+
+/* ============ 收尾與頁尾 ============ */
+.outro{max-width:42em}
+.outro p{margin-block:10px}
+footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
+  display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  color:var(--muted); font-size:.85rem}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="site">
+  <span class="brand">AI Concept Visualizer</span>
+  <span class="level">中級・機器是怎麼「學」的 2/3</span>
+</header>
+
+<h1>梯度下降實驗室</h1>
+<p class="subtitle">Gradient Descent — 機器修正錯誤的方法，其實是一顆球在找谷底。</p>
+
+<p class="intro">曲線代表<b>誤差</b>（術語叫損失函數 loss function）：橫軸是模型的某個參數，縱軸是「用這個參數值會錯得多嚴重」。球是模型現在的位置。機器學習的核心動作只有一件事：<b>往誤差變小的方向，跳一步</b>。每一步跳多遠，由你手上的 learning rate（學習率）決定。</p>
+<p class="hint">注意：球不是「滾」下去的 — 它是一步一步<b>跳</b>的。每按一下「走一步」，它就依照當下的坡度跳一次。</p>
+
+<section class="lab" aria-label="梯度下降互動實驗">
+  <div class="controls">
+    <div>
+      <span class="ctrl-label">地形</span>
+      <div class="seg" role="group" aria-label="選擇曲線">
+        <button id="terrainSingle" aria-pressed="true">單谷</button>
+        <button id="terrainDouble" aria-pressed="false">雙谷</button>
+      </div>
+    </div>
+    <div class="lr-box">
+      <label class="ctrl-label" for="lr">Learning rate 學習率</label>
+      <div class="lr-row">
+        <input type="range" id="lr" min="0.05" max="2.5" step="0.05" value="0.3">
+        <span id="lrVal" class="mono">0.30</span>
+      </div>
+    </div>
+    <div>
+      <span class="ctrl-label">操作</span>
+      <div class="btns">
+        <button class="btn primary" id="stepBtn">走一步</button>
+        <button class="btn" id="playBtn">自動</button>
+        <button class="btn" id="resetBtn">重來</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="plot-wrap">
+    <svg id="plot" viewBox="0 0 820 430" role="img" aria-label="誤差曲線與球的位置">
+      <!-- 底格與座標軸 -->
+      <g id="gridLayer"></g>
+      <!-- 誤差曲線 -->
+      <path id="curvePath" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <!-- 足跡與跳躍軌跡 -->
+      <g id="trailLayer"></g>
+      <path id="hopPath" fill="none" stroke="var(--ball)" stroke-width="1.5" stroke-dasharray="4 5" opacity="0"/>
+      <!-- 坡度箭頭 -->
+      <g id="arrowLayer"></g>
+      <!-- 球 -->
+      <circle id="ball" r="9" fill="var(--ball)" stroke="var(--surface)" stroke-width="2"/>
+      <!-- 座標軸文字 -->
+      <text id="xAxisLabel" x="790" y="420" text-anchor="end" font-size="13" fill="var(--muted)">參數值 w →</text>
+      <text x="14" y="26" font-size="13" fill="var(--muted)">誤差 ↑</text>
+    </svg>
+  </div>
+  <p class="click-hint">👉 點曲線上任何位置，把球放到那裡當起點。</p>
+
+  <div class="status" id="statusBox"><span class="pill" id="statusText">先猜：球會往哪邊跳、跳多遠？然後按「走一步」驗證你的直覺。</span></div>
+
+  <div class="readouts">
+    <div>步數<span class="v mono" id="roSteps">0</span></div>
+    <div>目前位置 w<span class="v mono" id="roX">—</span></div>
+    <div>目前誤差<span class="v mono" id="roLoss">—</span></div>
+    <div>這一步的坡度<span class="v mono" id="roGrad">—</span></div>
+  </div>
+
+  <div class="spark">
+    <h3>誤差記錄（每走一步記一點 — 工程師天天盯著的就是這種圖）</h3>
+    <div id="sparkEmpty" class="spark-empty">還沒有紀錄 — 走幾步就會開始畫。</div>
+    <svg id="spark" viewBox="0 0 820 110" hidden aria-label="誤差隨步數變化">
+      <path id="sparkPath" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <circle id="sparkDot" r="4" fill="var(--accent)"/>
+      <text id="sparkLabel" font-size="12" fill="var(--muted)" text-anchor="end"></text>
+    </svg>
+  </div>
+</section>
+
+<h2>三個實驗，三個發現</h2>
+<div class="cards">
+  <div class="card">
+    <span class="tag">實驗 1・龜速</span>
+    <h3>把學習率調到 <span class="mono">0.10</span> 以下</h3>
+    <p>從最右邊出發，按「自動」。數數看要多少步才到谷底 — 太小的 learning rate 不會錯，只是<b>慢到讓人想哭</b>。</p>
+  </div>
+  <div class="card">
+    <span class="tag">實驗 2・暴衝</span>
+    <h3>把學習率調到 <span class="mono">2.00</span> 以上</h3>
+    <p>先猜球會怎樣，再按「走一步」。每一步都跳過頭，誤差反而越來越大 — 這叫<b>發散 (divergence)</b>。</p>
+  </div>
+  <div class="card">
+    <span class="tag">實驗 3・命運（雙谷）</span>
+    <h3>切到雙谷，從最左和最右各出發一次</h3>
+    <p>球停的谷底一樣嗎？右邊那個谷不是最低的 — 停在那裡叫<b>局部最小值 (local minimum)</b>。起點，決定命運。</p>
+  </div>
+</div>
+
+<h2>這跟 AI 有什麼關係？</h2>
+<div class="outro">
+  <p>你剛剛調整的只有<b>一個</b>參數。真實的 AI 模型有幾百萬到上兆個參數 — 但每一個參數，都在做你剛剛看到的同一件事：看坡度、跳一步。訓練一個模型，就是幾兆顆球同時往各自的谷底跳。</p>
+  <p>而 learning rate 沒有公式能算出「正確答案」,它是工程師要憑經驗調的<b>超參數 (hyperparameter)</b> — 你剛剛在龜速和暴衝之間找平衡的那個手感，就是 AI 工程師的日常。</p>
+  <p>下一個問題：曲線上的「坡度」,機器是怎麼算出來的？這就是下一頁<b>反向傳播 (backpropagation)</b> 的主題。</p>
+</div>
+
+<footer class="site">
+  <span>AI Concept Visualizer</span>
+  <span>上一頁：神經網路（規劃中）・下一頁：反向傳播（規劃中）</span>
+</footer>
+
+</div>
+
+<script>
+"use strict";
+/* ============ 兩種地形：函數與導數 ============ */
+const TERRAIN = {
+  single: {
+    f:  x => x*x/2,
+    df: x => x,
+    xmin:-3, xmax:3, defaultStart:2.7,
+    minima:[{x:0, global:true}]
+  },
+  double: {
+    f:  x => 0.05*x**4 - 0.4*x*x + 0.06*x + 1,
+    df: x => 0.2*x**3 - 0.8*x + 0.06,
+    xmin:-3.4, xmax:3.4, defaultStart:3.1,
+    minima:[{x:-2.036, global:true},{x:1.962, global:false}]
+  }
+};
+const YMAX = 5.2;                       // 兩種地形共用同一個縱軸，切換時畫面不跳動
+const PLOT = {w:820, h:430, padL:50, padR:18, padT:16, padB:38};
+
+/* ============ 狀態 ============ */
+let terrain = TERRAIN.single;
+let x = terrain.defaultStart;           // 球的位置(參數值)
+let steps = 0;
+let losses = [];                        // 誤差記錄
+let running = false;                    // 自動播放中？
+let finished = false;                   // 收斂或發散後鎖住
+let timer = null;
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ============ 座標轉換 ============ */
+const px = v => PLOT.padL + (v - terrain.xmin)/(terrain.xmax - terrain.xmin) * (PLOT.w - PLOT.padL - PLOT.padR);
+const py = v => PLOT.h - PLOT.padB - Math.min(v, YMAX)/YMAX * (PLOT.h - PLOT.padT - PLOT.padB);
+
+const $ = id => document.getElementById(id);
+const fmt = (v,d=2) => (Math.abs(v)<1e-4?0:v).toFixed(d);
+
+/* ============ 畫曲線與底格 ============ */
+function drawScene(){
+  let d = "";
+  for(let i=0; i<=240; i++){
+    const xv = terrain.xmin + (terrain.xmax-terrain.xmin)*i/240;
+    d += (i?"L":"M") + px(xv).toFixed(1) + " " + py(terrain.f(xv)).toFixed(1) + " ";
+  }
+  $("curvePath").setAttribute("d", d);
+
+  const g = $("gridLayer");
+  g.innerHTML = "";
+  for(let v=1; v<=5; v++){                         // 水平淡格線 + 刻度數值
+    g.insertAdjacentHTML("beforeend",
+      `<line x1="${PLOT.padL}" y1="${py(v)}" x2="${PLOT.w-PLOT.padR}" y2="${py(v)}" stroke="var(--grid)" stroke-width="1"/>` +
+      `<text x="${PLOT.padL-8}" y="${py(v)+4}" text-anchor="end" font-size="12" fill="var(--muted)" style="font-variant-numeric:tabular-nums">${v}</text>`);
+  }
+  g.insertAdjacentHTML("beforeend",
+    `<text x="${PLOT.padL-8}" y="${py(0)+4}" text-anchor="end" font-size="12" fill="var(--muted)">0</text>`);
+  g.insertAdjacentHTML("beforeend",                // 底線
+    `<line x1="${PLOT.padL}" y1="${py(0)}" x2="${PLOT.w-PLOT.padR}" y2="${py(0)}" stroke="var(--line)" stroke-width="1.5"/>`);
+}
+
+/* ============ 球、足跡、箭頭 ============ */
+function placeBall(xv){
+  $("ball").setAttribute("cx", px(xv));
+  $("ball").setAttribute("cy", py(terrain.f(xv)) - 6);   // 球心略高於曲線，像放在上面
+}
+function addFootprint(xv){
+  $("trailLayer").insertAdjacentHTML("beforeend",
+    `<circle cx="${px(xv)}" cy="${py(terrain.f(xv))}" r="3.5" fill="var(--ball)" opacity="0.45"/>`);
+}
+function drawArrow(){
+  const layer = $("arrowLayer");
+  layer.innerHTML = "";
+  if(finished) return;
+  const g = terrain.df(x);
+  if(Math.abs(g) < 0.01) return;
+  const dir = g > 0 ? -1 : 1;                       // 下坡方向
+  const len = Math.min(14 + Math.abs(g)*26, 90);    // 坡越陡，箭頭越長
+  const x1 = px(x), y1 = py(terrain.f(x)) - 22;
+  const x2 = x1 + dir*len;
+  layer.innerHTML =
+    `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y1}" stroke="var(--muted)" stroke-width="2"/>` +
+    `<path d="M ${x2} ${y1} l ${-dir*7} -4 l 0 8 Z" fill="var(--muted)"/>`;
+}
+
+/* ============ 誤差記錄 sparkline ============ */
+function drawSpark(){
+  if(losses.length < 2){ return; }
+  $("sparkEmpty").hidden = true;
+  $("spark").hidden = false;
+  const W=820, H=110, pl=8, pr=64, pt=10, pb=10;
+  const maxL = Math.min(Math.max(...losses, 0.001), 12);   // 發散時封頂，不讓圖爆掉
+  const sx = i => pl + i/(Math.max(losses.length-1,1))*(W-pl-pr);
+  const sy = v => H - pb - Math.min(v,maxL)/maxL*(H-pt-pb);
+  let d = "";
+  losses.forEach((v,i)=>{ d += (i?"L":"M")+sx(i).toFixed(1)+" "+sy(v).toFixed(1)+" "; });
+  $("sparkPath").setAttribute("d", d);
+  const last = losses[losses.length-1];
+  $("sparkDot").setAttribute("cx", sx(losses.length-1));
+  $("sparkDot").setAttribute("cy", sy(last));
+  const lbl = $("sparkLabel");
+  lbl.setAttribute("x", W-6);
+  lbl.setAttribute("y", Math.max(sy(last)+4, 14));
+  lbl.textContent = fmt(last);
+}
+
+/* ============ 讀數與狀態 ============ */
+function setStatus(cls, html){
+  $("statusBox").className = "status " + cls;
+  $("statusText").innerHTML = html;
+}
+function updateReadouts(){
+  $("roSteps").textContent = steps;
+  $("roX").textContent = finished==="diverged" ? "飛出去了" : fmt(x);
+  $("roLoss").textContent = finished==="diverged" ? "→ ∞" : fmt(terrain.f(x));
+  $("roGrad").textContent = finished ? "—" : fmt(terrain.df(x));
+}
+
+/* ============ 收斂/發散判定 ============ */
+function checkEnd(){
+  if(Math.abs(x) > (Math.abs(terrain.xmax)+0.6)){
+    finished = "diverged"; stopAuto();
+    setStatus("bad", `💥 球飛出去了！learning rate 太大，每一步都跳過頭 — 這就是<b>發散</b>。調小一點再「重來」。`);
+    return;
+  }
+  if(Math.abs(terrain.df(x)) < 0.02 && steps > 0){
+    finished = "converged"; stopAuto();
+    if(terrain === TERRAIN.double && x > 0.075){
+      setStatus("warn", `🕳️ 停下來了 — 但你停在<b>比較高的那個谷</b>(局部最小值 local minimum)。左邊還有更低的谷，換個起點試試？`);
+    }else{
+      setStatus("good", `🎯 到達谷底！共 <b class="mono">${steps}</b> 步。試試改變 learning rate,能更快嗎？`);
+    }
+  }
+}
+
+/* ============ 走一步 ============ */
+function step(){
+  if(finished) return;
+  const g = terrain.df(x);
+  const lr = parseFloat($("lr").value);
+  const x0 = x;
+  x = x - lr * g;                                   // ★ 梯度下降唯一的一行數學
+  steps++;
+  losses.push(Math.min(terrain.f(Math.abs(x)>50?50:x), 1e6));
+  addFootprint(x0);
+  animateHop(x0, x);
+  updateReadouts(); drawSpark(); checkEnd();
+  if(!finished && steps === 1) setStatus("", `跟你猜的一樣嗎？坡度 <span class="mono">${fmt(g)}</span> × 學習率 <span class="mono">${fmt(parseFloat($("lr").value))}</span> = 這一步跳的距離。`);
+  if(!finished && steps > 1) setStatus("", `第 <span class="mono">${steps}</span> 步 — 注意：坡度越平，同樣的學習率跳得越近。`);
+  if(!finished && steps >= 300){ finished="tired"; stopAuto(); setStatus("warn","走了 300 步還沒到 — 這速度在真實訓練裡等於燒錢。調大一點 learning rate 吧。"); }
+}
+
+/* 跳躍動畫：虛線弧 + 球移動 */
+function animateHop(x0, x1){
+  // 球飛出畫面時，軌跡只畫到邊緣，避免座標爆掉
+  const edge = v => Math.max(terrain.xmin-0.5, Math.min(terrain.xmax+0.5, v));
+  const yAt  = v => py(terrain.f(Math.max(terrain.xmin, Math.min(terrain.xmax, v)))) - 6;
+  const xc = edge(x1);
+  const cx0=px(x0), cy0=yAt(x0), cx1=px(xc), cy1=yAt(xc);
+  const midY = Math.min(cy0, cy1) - 26;
+  $("hopPath").setAttribute("d", `M ${cx0} ${cy0} Q ${(cx0+cx1)/2} ${midY} ${cx1} ${cy1}`);
+  $("hopPath").setAttribute("opacity", "0.8");
+  if(reduceMotion){ placeBall(xc); drawArrow(); fadeHop(); return; }
+  const t0 = performance.now(), D = 240;
+  (function anim(t){
+    const p = Math.min((t-t0)/D, 1), e = 1-(1-p)*(1-p);
+    const bx = cx0+(cx1-cx0)*e;
+    const by = (1-e)*(1-e)*cy0 + 2*(1-e)*e*midY + e*e*cy1;
+    $("ball").setAttribute("cx",bx); $("ball").setAttribute("cy",by);
+    if(p<1) requestAnimationFrame(anim); else { drawArrow(); fadeHop(); }
+  })(t0);
+}
+let hopTimer=null;
+function fadeHop(){ clearTimeout(hopTimer); hopTimer=setTimeout(()=>$("hopPath").setAttribute("opacity","0"), 450); }
+
+/* ============ 自動播放 ============ */
+function startAuto(){
+  if(finished) return;
+  running = true; $("playBtn").textContent = "暫停";
+  timer = setInterval(()=>{ if(finished){stopAuto();} else step(); }, 520);
+}
+function stopAuto(){
+  running = false; $("playBtn").textContent = "自動";
+  clearInterval(timer);
+}
+
+/* ============ 重設 ============ */
+function reset(startX){
+  stopAuto();
+  finished = false; steps = 0; losses = [];
+  x = (startX !== undefined) ? startX : terrain.defaultStart;
+  $("trailLayer").innerHTML = ""; $("arrowLayer").innerHTML = "";
+  $("hopPath").setAttribute("opacity","0");
+  $("spark").hidden = true; $("sparkEmpty").hidden = false;
+  drawScene(); placeBall(x); drawArrow(); updateReadouts();
+  setStatus("", "先猜：球會往哪邊跳、跳多遠？然後按「走一步」驗證你的直覺。");
+}
+
+/* ============ 事件 ============ */
+$("stepBtn").addEventListener("click", ()=>{ stopAuto(); step(); });
+$("playBtn").addEventListener("click", ()=>{ running ? stopAuto() : startAuto(); });
+$("resetBtn").addEventListener("click", ()=>reset());
+$("lr").addEventListener("input", ()=>{ $("lrVal").textContent = fmt(parseFloat($("lr").value)); });
+$("terrainSingle").addEventListener("click", ()=>switchTerrain("single"));
+$("terrainDouble").addEventListener("click", ()=>switchTerrain("double"));
+function switchTerrain(name){
+  terrain = TERRAIN[name];
+  $("terrainSingle").setAttribute("aria-pressed", name==="single");
+  $("terrainDouble").setAttribute("aria-pressed", name==="double");
+  reset();
+}
+/* 點曲線放球 */
+$("plot").addEventListener("click", ev=>{
+  const r = $("plot").getBoundingClientRect();
+  const vx = (ev.clientX - r.left)/r.width * PLOT.w;
+  const xv = terrain.xmin + (vx - PLOT.padL)/(PLOT.w-PLOT.padL-PLOT.padR)*(terrain.xmax-terrain.xmin);
+  if(xv < terrain.xmin || xv > terrain.xmax) return;
+  reset(xv);
+  setStatus("", `起點放在 <span class="mono">w = ${fmt(xv)}</span> — 先猜這裡的坡度會讓球往哪跳？`);
+});
+
+/* ============ 啟動 ============ */
+reset();
+</script>
+</body>
+</html>
