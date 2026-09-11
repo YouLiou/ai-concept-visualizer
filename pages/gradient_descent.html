@@ -82,7 +82,7 @@ svg{display:block; width:100%; height:auto; touch-action:manipulation}
 .click-hint{font-size:.85rem; color:var(--muted); margin:8px 2px 0}
 
 /* 狀態列 */
-.status{margin-top:12px; min-height:2.2em; font-size:.98rem}
+.status{margin-top:12px; min-height:3.5em; font-size:.98rem}
 .status .pill{display:inline-block; border-radius:8px; padding:4px 12px; background:var(--accent-soft)}
 .status.warn .pill{background:transparent; border:1.5px solid var(--warn); color:var(--warn)}
 .status.bad .pill{background:transparent; border:1.5px solid var(--danger); color:var(--danger)}
@@ -91,13 +91,50 @@ svg{display:block; width:100%; height:auto; touch-action:manipulation}
 /* 讀數 */
 .readouts{display:flex; gap:10px 26px; flex-wrap:wrap; margin-top:12px;
   padding-top:12px; border-top:1px dashed var(--line)}
-.readouts div{font-size:.85rem; color:var(--muted)}
+.readouts div{font-size:.85rem; color:var(--muted); min-width:5.5em}
 .readouts .v{display:block; font-size:1.15rem; color:var(--ink)}
 
 /* 誤差記錄 */
 .spark{margin-top:16px}
 .spark h3{font-size:.85rem; letter-spacing:.08em; color:var(--muted); margin:0 0 6px; font-weight:500}
-.spark-empty{color:var(--muted); font-size:.85rem; padding:10px 0}
+.spark svg{height:auto}
+
+
+/* ============ 術語彈出視窗 ============ */
+.term{font:inherit; color:var(--accent); background:transparent; border:0; padding:0 2px;
+  cursor:pointer; font-weight:700; border-bottom:1.5px dotted var(--accent); border-radius:3px}
+.term::after{content:"›"; font-size:.8em; opacity:.55; margin-left:3px; vertical-align:.08em}
+.term:hover,.term[aria-expanded="true"]{background:var(--accent-soft)}
+.term:focus-visible{outline:2px solid var(--ball); outline-offset:2px}
+.pop{position:absolute; z-index:40; width:min(340px,calc(100vw - 40px));
+  background:var(--surface); border:1px solid var(--accent); border-radius:12px;
+  padding:15px 17px 16px; box-shadow:0 12px 34px -10px rgba(0,0,0,.3);
+  opacity:0; transform:translateY(-5px) scale(.985); pointer-events:none;
+  transition:opacity .12s ease, transform .12s ease}
+.pop[data-open="true"]{opacity:1; transform:none; pointer-events:auto}
+.pop .en{font-family:"IBM Plex Mono",monospace; font-size:.7rem; letter-spacing:.1em;
+  color:var(--accent); text-transform:uppercase}
+.pop h4{margin:3px 0 7px; font-size:1.06rem}
+.pop p{margin:0; font-size:.92rem; line-height:1.7}
+.pop .life{margin-top:11px; padding-top:11px; border-top:1px dashed var(--line);
+  font-size:.9rem; line-height:1.7}
+.pop .life .tag{display:inline-block; font-size:.7rem; letter-spacing:.08em; font-weight:700;
+  color:var(--on-accent); background:var(--accent); border-radius:5px; padding:1px 7px; margin-right:7px}
+.pop .x{position:absolute; top:7px; right:9px; border:0; background:transparent; color:var(--muted);
+  font-size:1rem; line-height:1; cursor:pointer; padding:5px; border-radius:6px}
+.pop .x:hover{background:var(--accent-soft); color:var(--accent)}
+
+/* 生活化開場 */
+.anchor{background:var(--accent-soft); border-radius:12px; padding:15px 19px;
+  margin-block:20px 6px; max-width:42em}
+.anchor h3{margin:0 0 7px; font-size:1rem; color:var(--accent);
+  font-family:"Noto Sans TC",sans-serif; letter-spacing:.02em}
+.anchor p{margin:0; font-size:.95rem}
+
+/* 快捷鍵提示 */
+.kbd-hint{font-size:.82rem; color:var(--muted); margin:12px 2px 0}
+kbd{font-family:"IBM Plex Mono",monospace; font-size:.85em; border:1px solid var(--line);
+  border-bottom-width:2px; border-radius:5px; padding:1px 7px; background:var(--bg); color:var(--ink)}
 
 /* ============ 挑戰卡 ============ */
 h2{font-family:"Noto Serif TC","Songti TC",serif; font-weight:700; font-size:1.45rem; margin:34px 0 12px}
@@ -128,8 +165,13 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
 <h1>梯度下降實驗室</h1>
 <p class="subtitle">Gradient Descent — 機器修正錯誤的方法，其實是一顆球在找谷底。</p>
 
-<p class="intro">曲線代表<b>誤差</b>（術語叫損失函數 loss function）：橫軸是模型的某個參數，縱軸是「用這個參數值會錯得多嚴重」。球是模型現在的位置。機器學習的核心動作只有一件事：<b>往誤差變小的方向，跳一步</b>。每一步跳多遠，由你手上的 learning rate（學習率）決定。</p>
-<p class="hint">注意：球不是「滾」下去的 — 它是一步一步<b>跳</b>的。每按一下「走一步」，它就依照當下的坡度跳一次。</p>
+<div class="anchor">
+  <h3>先想一件事：洗澡時調水溫</h3>
+  <p>水太冷 → 往熱轉一點；轉過頭變太燙 → 往回轉一點點。你沒有公式，只是<b>感覺差多少、往對的方向轉一下</b>，轉個幾次就好了。恭喜，你已經做過梯度下降了 — 底下這頁只是把你剛剛做的事畫出來。</p>
+</div>
+
+<p class="intro">曲線代表<button class="term" data-t="loss" aria-expanded="false">誤差</button>：橫軸是模型的某個<button class="term" data-t="param" aria-expanded="false">參數</button>（水龍頭轉到的角度），縱軸是「用這個值會錯得多嚴重」（水溫差幾度）。球是模型現在的位置。機器學習的核心動作只有一件事：看<button class="term" data-t="grad" aria-expanded="false">坡度</button>，往誤差變小的方向<b>跳一步</b>。每一步跳多遠，由你手上的 <button class="term" data-t="lr" aria-expanded="false">learning rate</button> 決定。</p>
+<p class="hint">注意：球不是「滾」下去的 — 它是<button class="term" data-t="step" aria-expanded="false">一步</button>一步<b>跳</b>的。每按一下「走一步」，它就依照當下的坡度跳一次。<span style="opacity:.85">（有底線的詞都可以點開，會給你一個比方）</span></p>
 
 <section class="lab" aria-label="梯度下降互動實驗">
   <div class="controls">
@@ -155,6 +197,14 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
         <button class="btn" id="resetBtn">重來</button>
       </div>
     </div>
+    <div>
+      <span class="ctrl-label">速度</span>
+      <div class="seg" role="group" aria-label="播放速度">
+        <button class="spd" data-s="1" aria-pressed="true">1×</button>
+        <button class="spd" data-s="2" aria-pressed="false">2×</button>
+        <button class="spd" data-s="4" aria-pressed="false">4×</button>
+      </div>
+    </div>
   </div>
 
   <div class="plot-wrap">
@@ -169,13 +219,14 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
       <!-- 坡度箭頭 -->
       <g id="arrowLayer"></g>
       <!-- 球 -->
-      <circle id="ball" r="9" fill="var(--ball)" stroke="var(--surface)" stroke-width="2"/>
+      <ellipse id="ball" rx="9" ry="9" fill="var(--ball)" stroke="var(--surface)" stroke-width="2"/>
       <!-- 座標軸文字 -->
       <text id="xAxisLabel" x="790" y="420" text-anchor="end" font-size="13" fill="var(--muted)">參數值 w →</text>
       <text x="14" y="26" font-size="13" fill="var(--muted)">誤差 ↑</text>
     </svg>
   </div>
   <p class="click-hint">👉 點曲線上任何位置，把球放到那裡當起點。</p>
+  <p class="kbd-hint">快捷鍵：<kbd>空白鍵</kbd> 走一步 ・ <kbd>A</kbd> 自動／暫停 ・ <kbd>R</kbd> 重來 ・ <kbd>←</kbd> <kbd>→</kbd> 調學習率 ・ <kbd>1</kbd> <kbd>2</kbd> <kbd>4</kbd> 切速度</p>
 
   <div class="status" id="statusBox"><span class="pill" id="statusText">先猜：球會往哪邊跳、跳多遠？然後按「走一步」驗證你的直覺。</span></div>
 
@@ -188,11 +239,12 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
 
   <div class="spark">
     <h3>誤差記錄（每走一步記一點 — 工程師天天盯著的就是這種圖）</h3>
-    <div id="sparkEmpty" class="spark-empty">還沒有紀錄 — 走幾步就會開始畫。</div>
-    <svg id="spark" viewBox="0 0 820 110" hidden aria-label="誤差隨步數變化">
+    <svg id="spark" viewBox="0 0 820 110" aria-label="誤差隨步數變化">
+      <line x1="8" y1="100" x2="756" y2="100" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 4"/>
       <path id="sparkPath" fill="none" stroke="var(--accent)" stroke-width="2"/>
-      <circle id="sparkDot" r="4" fill="var(--accent)"/>
+      <circle id="sparkDot" r="4" fill="var(--accent)" display="none"/>
       <text id="sparkLabel" font-size="12" fill="var(--muted)" text-anchor="end"></text>
+      <text id="sparkEmpty" x="382" y="58" text-anchor="middle" font-size="13" fill="var(--muted)">走幾步，這裡就會開始畫</text>
     </svg>
   </div>
 </section>
@@ -207,19 +259,19 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
   <div class="card">
     <span class="tag">實驗 2・暴衝</span>
     <h3>把學習率調到 <span class="mono">2.00</span> 以上</h3>
-    <p>先猜球會怎樣，再按「走一步」。每一步都跳過頭，誤差反而越來越大 — 這叫<b>發散 (divergence)</b>。</p>
+    <p>先猜球會怎樣，再按「走一步」。每一步都跳過頭，誤差反而越來越大 — 這叫<button class="term" data-t="diverge" aria-expanded="false">發散</button>。</p>
   </div>
   <div class="card">
     <span class="tag">實驗 3・命運（雙谷）</span>
     <h3>切到雙谷，從最左和最右各出發一次</h3>
-    <p>球停的谷底一樣嗎？右邊那個谷不是最低的 — 停在那裡叫<b>局部最小值 (local minimum)</b>。起點，決定命運。</p>
+    <p>球停的谷底一樣嗎？右邊那個谷不是最低的 — 停在那裡叫<button class="term" data-t="local" aria-expanded="false">局部最小值</button>。起點，決定命運。</p>
   </div>
 </div>
 
 <h2>這跟 AI 有什麼關係？</h2>
 <div class="outro">
   <p>你剛剛調整的只有<b>一個</b>參數。真實的 AI 模型有幾百萬到上兆個參數 — 但每一個參數，都在做你剛剛看到的同一件事：看坡度、跳一步。訓練一個模型，就是幾兆顆球同時往各自的谷底跳。</p>
-  <p>而 learning rate 沒有公式能算出「正確答案」,它是工程師要憑經驗調的<b>超參數 (hyperparameter)</b> — 你剛剛在龜速和暴衝之間找平衡的那個手感，就是 AI 工程師的日常。</p>
+  <p>而 learning rate 沒有公式能算出「正確答案」,它是工程師要憑經驗調的<button class="term" data-t="hyper" aria-expanded="false">超參數</button> — 你剛剛在龜速和暴衝之間找平衡的那個手感，就是 AI 工程師的日常。</p>
   <p>下一個問題：曲線上的「坡度」,機器是怎麼算出來的？這就是下一頁<b>反向傳播 (backpropagation)</b> 的主題。</p>
 </div>
 
@@ -229,6 +281,7 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
 </footer>
 
 </div>
+<div class="pop" id="pop" role="dialog" aria-live="polite"></div>
 
 <script>
 "use strict";
@@ -259,6 +312,74 @@ let running = false;                    // 自動播放中？
 let finished = false;                   // 收斂或發散後鎖住
 let timer = null;
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let speed = 1;                          // 播放與動畫速度倍率
+
+/* ============ 術語辭典：每個詞都配一個「水龍頭版」 ============ */
+const TERMS = {
+  loss:{en:"loss", zh:"誤差（損失函數 loss function）",
+    what:"用目前這組參數，模型會錯得多嚴重。誤差越小代表模型越接近正確答案。",
+    life:"現在的水溫，離你想要的溫度差幾度。差 10 度和差 1 度，你身體的感受完全不同 — 那個「感受」就是誤差。"},
+  param:{en:"parameter", zh:"參數 w",
+    what:"模型內部可以被調整的數值。訓練，就是不斷調整這些數值的過程。",
+    life:"水龍頭轉到的角度。你唯一能動的東西就是它，其他都是結果。"},
+  grad:{en:"gradient", zh:"坡度（梯度 gradient）",
+    what:"在目前這個位置，誤差往哪個方向會變小、以及有多陡。這就是機器判斷「該往哪調」的唯一依據。",
+    life:"你把手伸進水裡的那一瞬間：不只知道「太冷」，還知道「冷很多」還是「差一點點」。差很多就大轉，差一點就微調。"},
+  lr:{en:"learning rate", zh:"學習率 learning rate",
+    what:"每一步要跳多遠的倍率。它乘上坡度，就是這一步實際移動的距離。",
+    life:"你轉水龍頭的手勁。同樣覺得「太冷」，有人轉一格、有人轉半圈 — 結果差很多。"},
+  diverge:{en:"divergence", zh:"發散 divergence",
+    what:"每一步都跳過頭，誤差不減反增，最後整個飛出去。訓練失敗最常見的樣子。",
+    life:"急性子轉水龍頭：太冷→用力轉熱→燙到跳起來→用力轉冷→冰到發抖。越調越誇張，永遠喬不好。"},
+  local:{en:"local minimum", zh:"局部最小值 local minimum",
+    what:"附近最低、但不是全域最低的位置。球停在這裡就不動了，因為往哪走誤差都會變大。",
+    life:"濃霧裡下山：你走到一個窪地，往前往後都是上坡，只好停下來 — 你有充分理由相信自己到底了。但霧散了才看見，山下還有更深的谷。"},
+  step:{en:"iteration", zh:"一步（迭代 iteration）",
+    what:"看一次坡度、跳一次。訓練不是連續滑動，是無數次「看→跳」的重複。真實模型要跳幾萬到幾百萬次。",
+    life:"調水龍頭也是一下一下轉的，不是把手黏在龍頭上慢慢滑。每轉一次就重新伸手感覺一次 — 這一次，就是一步。"},
+  converge:{en:"convergence", zh:"收斂 convergence",
+    what:"誤差越來越小、最後幾乎不再變動，球停在谷底。訓練成功的樣子，跟發散正好相反。",
+    life:"水溫調到剛好，你的手就離開水龍頭了 — 因為再轉任何一邊都只會變差。"},
+  hyper:{en:"hyperparameter", zh:"超參數 hyperparameter",
+    what:"機器自己學不會、必須由人決定的設定。learning rate 就是最典型的一個。",
+    life:"烤箱溫度不是蛋糕決定的，是你決定的。蛋糕只能在你設定的溫度下盡力烤好。"}
+};
+
+/* ============ 彈出視窗 ============ */
+const pop = document.getElementById("pop");
+let openBtn = null;
+function closePop(){
+  pop.dataset.open = "false";
+  if(openBtn){ openBtn.setAttribute("aria-expanded","false"); openBtn = null; }
+}
+function openPop(btn){
+  const t = TERMS[btn.dataset.t];
+  if(!t) return;
+  if(openBtn === btn){ closePop(); return; }
+  closePop();
+  pop.innerHTML =
+    `<button class="x" aria-label="關閉">✕</button>` +
+    `<span class="en">${t.en}</span><h4>${t.zh}</h4><p>${t.what}</p>` +
+    `<div class="life"><span class="tag">打個比方</span>${t.life}</div>`;
+  pop.dataset.open = "true";
+  btn.setAttribute("aria-expanded","true");
+  openBtn = btn;
+  positionPop(btn);
+  pop.querySelector(".x").addEventListener("click", ()=>{ closePop(); btn.focus(); });
+}
+function positionPop(btn){
+  const r = btn.getBoundingClientRect(), w = pop.offsetWidth;
+  const maxL = document.documentElement.clientWidth - w - 14;
+  pop.style.left = Math.max(14, Math.min(r.left + scrollX + r.width/2 - w/2, maxL)) + "px";
+  pop.style.top  = (r.bottom + scrollY + 10) + "px";
+}
+document.addEventListener("click", ev=>{
+  const t = ev.target.closest(".term");
+  if(t){ ev.preventDefault(); openPop(t); return; }
+  if(!ev.target.closest("#pop")) closePop();
+});
+addEventListener("keydown", ev=>{ if(ev.key === "Escape") closePop(); });
+addEventListener("resize", ()=>{ if(openBtn) positionPop(openBtn); });
 
 /* ============ 座標轉換 ============ */
 const px = v => PLOT.padL + (v - terrain.xmin)/(terrain.xmax - terrain.xmin) * (PLOT.w - PLOT.padL - PLOT.padR);
@@ -316,8 +437,8 @@ function drawArrow(){
 /* ============ 誤差記錄 sparkline ============ */
 function drawSpark(){
   if(losses.length < 2){ return; }
-  $("sparkEmpty").hidden = true;
-  $("spark").hidden = false;
+  $("sparkEmpty").setAttribute("display","none");
+  $("sparkDot").setAttribute("display","");
   const W=820, H=110, pl=8, pr=64, pt=10, pb=10;
   const maxL = Math.min(Math.max(...losses, 0.001), 12);   // 發散時封頂，不讓圖爆掉
   const sx = i => pl + i/(Math.max(losses.length-1,1))*(W-pl-pr);
@@ -350,7 +471,7 @@ function updateReadouts(){
 function checkEnd(){
   if(Math.abs(x) > (Math.abs(terrain.xmax)+0.6)){
     finished = "diverged"; stopAuto();
-    setStatus("bad", `💥 球飛出去了！learning rate 太大，每一步都跳過頭 — 這就是<b>發散</b>。調小一點再「重來」。`);
+    setStatus("bad", `💥 球飛出去了！learning rate 太大，每一步都跳過頭 — 這就是<button class="term" data-t="diverge" aria-expanded="false">發散</button>。調小一點再「重來」。`);
     return;
   }
   if(Math.abs(terrain.df(x)) < 0.02 && steps > 0){
@@ -391,13 +512,32 @@ function animateHop(x0, x1){
   $("hopPath").setAttribute("d", `M ${cx0} ${cy0} Q ${(cx0+cx1)/2} ${midY} ${cx1} ${cy1}`);
   $("hopPath").setAttribute("opacity", "0.8");
   if(reduceMotion){ placeBall(xc); drawArrow(); fadeHop(); return; }
-  const t0 = performance.now(), D = 240;
+  const t0 = performance.now(), D = 170/speed;      // 短促：不拖泥帶水
   (function anim(t){
-    const p = Math.min((t-t0)/D, 1), e = 1-(1-p)*(1-p);
+    const p = Math.min((t-t0)/D, 1);
+    const e = 1-Math.pow(1-p, 3);                   // 起跳快、落地收得乾脆
     const bx = cx0+(cx1-cx0)*e;
     const by = (1-e)*(1-e)*cy0 + 2*(1-e)*e*midY + e*e*cy1;
     $("ball").setAttribute("cx",bx); $("ball").setAttribute("cy",by);
-    if(p<1) requestAnimationFrame(anim); else { drawArrow(); fadeHop(); }
+    if(p<1) requestAnimationFrame(anim);
+    else { squash(cy1); drawArrow(); fadeHop(); }
+  })(t0);
+}
+
+/* 落地壓扁再彈回 — 讓「著地」有重量感 */
+function squash(baseCy){
+  const b = $("ball");
+  if(reduceMotion) return;
+  const t0 = performance.now(), D = 150/speed;
+  (function anim(t){
+    const p = Math.min((t-t0)/D, 1);
+    const k = Math.sin(p*Math.PI) * (1-p*0.35);     // 壓扁 → 回彈 → 收斂
+    const ry = 9 - 3.4*k, rx = 9 + 3.4*k;
+    b.setAttribute("rx", rx.toFixed(2));
+    b.setAttribute("ry", ry.toFixed(2));
+    b.setAttribute("cy", (baseCy + (9-ry)).toFixed(2));  // 底部貼住曲線
+    if(p<1) requestAnimationFrame(anim);
+    else { b.setAttribute("rx",9); b.setAttribute("ry",9); b.setAttribute("cy",baseCy); }
   })(t0);
 }
 let hopTimer=null;
@@ -407,7 +547,7 @@ function fadeHop(){ clearTimeout(hopTimer); hopTimer=setTimeout(()=>$("hopPath")
 function startAuto(){
   if(finished) return;
   running = true; $("playBtn").textContent = "暫停";
-  timer = setInterval(()=>{ if(finished){stopAuto();} else step(); }, 520);
+  timer = setInterval(()=>{ if(finished){stopAuto();} else step(); }, 520/speed);
 }
 function stopAuto(){
   running = false; $("playBtn").textContent = "自動";
@@ -421,7 +561,9 @@ function reset(startX){
   x = (startX !== undefined) ? startX : terrain.defaultStart;
   $("trailLayer").innerHTML = ""; $("arrowLayer").innerHTML = "";
   $("hopPath").setAttribute("opacity","0");
-  $("spark").hidden = true; $("sparkEmpty").hidden = false;
+  $("sparkPath").setAttribute("d",""); $("sparkLabel").textContent = "";
+  $("sparkDot").setAttribute("display","none"); $("sparkEmpty").setAttribute("display","");
+  $("ball").setAttribute("rx",9); $("ball").setAttribute("ry",9);
   drawScene(); placeBall(x); drawArrow(); updateReadouts();
   setStatus("", "先猜：球會往哪邊跳、跳多遠？然後按「走一步」驗證你的直覺。");
 }
@@ -433,6 +575,37 @@ $("resetBtn").addEventListener("click", ()=>reset());
 $("lr").addEventListener("input", ()=>{ $("lrVal").textContent = fmt(parseFloat($("lr").value)); });
 $("terrainSingle").addEventListener("click", ()=>switchTerrain("single"));
 $("terrainDouble").addEventListener("click", ()=>switchTerrain("double"));
+/* 速度切換：同時影響自動播放間隔與跳躍動畫 */
+document.querySelectorAll(".spd").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    speed = parseInt(b.dataset.s, 10);
+    document.querySelectorAll(".spd").forEach(o=>o.setAttribute("aria-pressed", o===b));
+    if(running){ stopAuto(); startAuto(); }        // 播放中切速度立刻生效
+  });
+});
+
+/* 快捷鍵 */
+addEventListener("keydown", ev=>{
+  if(ev.metaKey || ev.ctrlKey || ev.altKey) return;
+  const tag = (ev.target.tagName||"").toLowerCase();
+  const typing = tag === "input" || tag === "textarea";
+  const k = ev.key.toLowerCase();
+  if(k === " " && !typing && tag !== "button"){ ev.preventDefault(); stopAuto(); step(); return; }
+  if(k === "a"){ ev.preventDefault(); running ? stopAuto() : startAuto(); return; }
+  if(k === "r"){ ev.preventDefault(); reset(); return; }
+  if(["1","2","4"].includes(k)){
+    const b = document.querySelector(`.spd[data-s="${k}"]`);
+    if(b) b.click();
+    return;
+  }
+  if((k === "arrowleft" || k === "arrowright") && !typing){
+    ev.preventDefault();
+    const el = $("lr"), d = (k === "arrowright" ? 1 : -1) * parseFloat(el.step);
+    el.value = Math.min(parseFloat(el.max), Math.max(parseFloat(el.min), parseFloat(el.value)+d));
+    el.dispatchEvent(new Event("input"));
+  }
+});
+
 function switchTerrain(name){
   terrain = TERRAIN[name];
   $("terrainSingle").setAttribute("aria-pressed", name==="single");
