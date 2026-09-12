@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>訓練與推論</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* ============ 設計 tokens（三頁共用） ============ */
+:root{
+  --bg:#F5F7F4; --surface:#FFFFFF; --ink:#1C2723; --muted:#5C6D64; --line:#DCE4DE;
+  --accent:#22685A; --accent-soft:#E3EFEA; --on-accent:#FFFFFF;
+  --ball:#E07B2E; --danger:#B3423A; --danger-soft:#F6E7E5; --warn:#8A5E10; --grid:#E8EDE8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101714; --surface:#182220; --ink:#E6EEE9; --muted:#9AABA1;
+    --line:#2C3A34; --accent:#57B99F; --accent-soft:#1E332C; --on-accent:#0E1512;
+    --ball:#F09A4E; --danger:#E07A70; --danger-soft:#33211F; --warn:#D9A741; --grid:#22302A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101714; --surface:#182220; --ink:#E6EEE9; --muted:#9AABA1;
+  --line:#2C3A34; --accent:#57B99F; --accent-soft:#1E332C; --on-accent:#0E1512;
+  --ball:#F09A4E; --danger:#E07A70; --danger-soft:#33211F; --warn:#D9A741; --grid:#22302A;
+}
+
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif; font-size:16px; line-height:1.75;
+  padding:0 clamp(16px,4vw,32px); padding-block:0 48px}
+.wrap{max-width:900px; margin:0 auto}
+
+header.site{display:flex; justify-content:space-between; align-items:baseline;
+  padding-block:20px 0; gap:12px; flex-wrap:wrap}
+.brand{font-size:.8rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:700}
+.level{font-size:.75rem; color:var(--accent); border:1px solid var(--accent);
+  border-radius:999px; padding:1px 10px; white-space:nowrap}
+h1{font-family:"Noto Serif TC","Songti TC",serif; font-weight:900;
+  font-size:clamp(1.9rem,5vw,2.7rem); line-height:1.25; margin:18px 0 4px; text-wrap:balance}
+.subtitle{color:var(--muted); margin:0 0 8px; font-size:1.02rem}
+.intro{max-width:42em; margin-block:14px 6px}
+.intro b{color:var(--accent)}
+.hint{color:var(--muted); font-size:.9rem; margin-block:2px 18px}
+
+.lab{background:var(--surface); border:1px solid var(--line); border-radius:14px;
+  padding:clamp(12px,2.5vw,22px); margin-block:8px 26px}
+.ctrl-label{font-size:.78rem; letter-spacing:.08em; color:var(--muted); display:block; margin-bottom:6px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace; font-variant-numeric:tabular-nums}
+.btns{display:flex; gap:8px; flex-wrap:wrap}
+.btn{font:inherit; font-size:.95rem; border-radius:9px; padding:7px 16px; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--ink)}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent); font-weight:700}
+.btn:disabled{opacity:.45; cursor:not-allowed}
+.btn:focus-visible,.cup:focus-visible{outline:2px solid var(--ball); outline-offset:2px}
+
+/* 選一杯 */
+.cups{display:flex; gap:8px; flex-wrap:wrap; padding-bottom:14px;
+  border-bottom:1px dashed var(--line); margin-bottom:14px}
+.cup{font:inherit; font-size:.88rem; border:1px solid var(--line); background:var(--surface);
+  color:var(--ink); border-radius:9px; padding:6px 12px; cursor:pointer; text-align:left}
+.cup[aria-pressed="true"]{background:var(--accent-soft); border-color:var(--accent); color:var(--accent); font-weight:700}
+.cup small{display:block; color:var(--muted); font-size:.76rem; font-weight:400}
+.cup[aria-pressed="true"] small{color:var(--accent)}
+
+/* 四個階段 */
+.steps{display:flex; gap:0; margin-bottom:14px; flex-wrap:wrap}
+.step{flex:1; min-width:132px; padding:9px 12px; border-top:3px solid var(--line);
+  color:var(--muted); font-size:.88rem; transition:color .15s, border-color .15s}
+.step .n{font-family:"IBM Plex Mono",monospace; font-size:.76rem; letter-spacing:.1em; display:block}
+.step[data-on="true"]{border-top-color:var(--accent); color:var(--ink); font-weight:700}
+.step[data-on="true"] .n{color:var(--accent)}
+.step[data-done="true"]{border-top-color:var(--accent); color:var(--muted); font-weight:400}
+.step[data-on="true"].back{border-top-color:var(--danger)}
+.step[data-on="true"].back .n{color:var(--danger)}
+
+.net-wrap{border:1px solid var(--line); border-radius:10px; background:var(--surface); overflow:hidden}
+svg{display:block; width:100%; height:auto}
+.edge-hit{stroke:transparent; stroke-width:11; cursor:pointer; fill:none}
+.node-val{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+
+/* 圖例：會隨階段改變意義 */
+.legend{display:flex; gap:8px 18px; flex-wrap:wrap; margin-top:10px; font-size:.84rem; color:var(--muted)}
+.legend i{display:inline-block; width:22px; height:3px; border-radius:2px; vertical-align:.2em; margin-right:6px}
+
+/* 單條線的算式面板（高度固定） */
+.detail{margin-top:12px; min-height:7.2em; border:1px dashed var(--line); border-radius:10px;
+  padding:12px 15px}
+.detail .placeholder{color:var(--muted); font-size:.92rem}
+.detail h4{margin:0 0 8px; font-size:.98rem}
+.chain{display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:.88rem}
+.chain .f{background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:4px 10px; text-align:center}
+.chain .f b{display:block; font-family:"IBM Plex Mono",monospace; font-size:1rem; color:var(--ink)}
+.chain .f span{font-size:.72rem; color:var(--muted)}
+.chain .op{color:var(--muted); font-weight:700}
+.chain .res{background:var(--danger-soft); border-color:var(--danger)}
+.chain .res b{color:var(--danger)}
+.detail .note{margin:9px 0 0; font-size:.85rem; color:var(--muted)}
+
+.status{margin-top:12px; min-height:4.4em; font-size:.98rem}
+.status .pill{display:inline-block; border-radius:8px; padding:4px 12px; background:var(--accent-soft)}
+.status.back .pill{background:var(--danger-soft); border:1.5px solid var(--danger); color:var(--danger)}
+.status.good .pill{border:1.5px solid var(--accent); color:var(--accent); font-weight:700}
+
+.scoreline{display:flex; gap:10px 26px; flex-wrap:wrap; margin-top:14px;
+  padding-top:12px; border-top:1px dashed var(--line)}
+.scoreline div{font-size:.85rem; color:var(--muted); min-width:6em}
+.scoreline .v{display:block; font-size:1.3rem; color:var(--ink);
+  font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+.scoreline .v.bad{color:var(--danger)}
+.scoreline .v.ok{color:var(--accent)}
+#errSpark{max-width:300px; flex:1; min-width:180px; align-self:center}
+
+/* ============ 術語彈出視窗 ============ */
+.term{font:inherit; color:var(--accent); background:transparent; border:0; padding:0 2px;
+  cursor:pointer; font-weight:700; border-bottom:1.5px dotted var(--accent); border-radius:3px}
+.term::after{content:"›"; font-size:.8em; opacity:.55; margin-left:3px; vertical-align:.08em}
+.term:hover,.term[aria-expanded="true"]{background:var(--accent-soft)}
+.term:focus-visible{outline:2px solid var(--ball); outline-offset:2px}
+.pop{position:absolute; z-index:40; width:min(340px,calc(100vw - 40px));
+  background:var(--surface); border:1px solid var(--accent); border-radius:12px;
+  padding:15px 17px 16px; box-shadow:0 12px 34px -10px rgba(0,0,0,.3);
+  opacity:0; transform:translateY(-5px) scale(.985); pointer-events:none;
+  transition:opacity .12s ease, transform .12s ease}
+.pop[data-open="true"]{opacity:1; transform:none; pointer-events:auto}
+.pop .en{font-family:"IBM Plex Mono",monospace; font-size:.7rem; letter-spacing:.1em;
+  color:var(--accent); text-transform:uppercase}
+.pop h4{margin:3px 0 7px; font-size:1.06rem}
+.pop p{margin:0; font-size:.92rem; line-height:1.7}
+.pop .life{margin-top:11px; padding-top:11px; border-top:1px dashed var(--line);
+  font-size:.9rem; line-height:1.7}
+.pop .life .tag{display:inline-block; font-size:.7rem; letter-spacing:.08em; font-weight:700;
+  color:var(--on-accent); background:var(--accent); border-radius:5px; padding:1px 7px; margin-right:7px}
+.pop .x{position:absolute; top:7px; right:9px; border:0; background:transparent; color:var(--muted);
+  font-size:1rem; line-height:1; cursor:pointer; padding:5px; border-radius:6px}
+.pop .x:hover{background:var(--accent-soft); color:var(--accent)}
+
+.anchor{background:var(--accent-soft); border-radius:12px; padding:15px 19px;
+  margin-block:20px 6px; max-width:42em}
+.anchor h3{margin:0 0 7px; font-size:1rem; color:var(--accent); letter-spacing:.02em}
+.anchor p{margin:0; font-size:.95rem}
+
+h2{font-family:"Noto Serif TC","Songti TC",serif; font-weight:700; font-size:1.45rem; margin:34px 0 12px}
+.cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px 18px}
+.card .tag{font-size:.75rem; letter-spacing:.1em; color:var(--accent); font-weight:700}
+.card h3{margin:6px 0 6px; font-size:1.05rem}
+.card p{margin:0; font-size:.92rem; color:var(--muted)}
+.card .mono{color:var(--ink)}
+
+.recap{background:var(--surface); border:1px solid var(--line); border-radius:12px;
+  padding:18px 20px; margin-block:16px}
+.recap ol{margin:0; padding-left:1.3em}
+.recap li{margin-block:7px}
+.recap li b{color:var(--accent)}
+
+.outro{max-width:42em}
+.outro p{margin-block:10px}
+footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
+  display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  color:var(--muted); font-size:.85rem}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+
+/* ============ 骨架專用：待開發標示（做完這一頁後刪掉） ============ */
+.scaffold{border:2px dashed var(--ball); border-radius:14px; padding:18px 20px; margin-block:8px 26px;
+  background:var(--surface)}
+.scaffold > .flag{display:inline-block; font-size:.72rem; letter-spacing:.1em; font-weight:700;
+  color:var(--on-accent); background:var(--ball); border-radius:6px; padding:2px 9px; margin-bottom:10px}
+.scaffold h3{margin:0 0 8px; font-size:1rem}
+.scaffold ul{margin:0 0 4px; padding-left:1.25em}
+.scaffold li{font-size:.92rem; color:var(--muted); margin-block:5px}
+.scaffold li b{color:var(--ink); font-weight:500}
+.brief{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px 22px;
+  margin:0 0 16px; padding-bottom:14px; border-bottom:1px dashed var(--line)}
+.brief div b{display:block; font-size:.74rem; letter-spacing:.08em; color:var(--muted); font-weight:500}
+.brief div span{font-size:.94rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="site">
+  <span class="brand">AI Concept Visualizer</span>
+  <span class="level">初級・AI 到底是什麼 2/3</span>
+</header>
+
+<h1>訓練與推論</h1>
+<p class="subtitle">Training vs. Inference — 模型「上課」和「考試」是兩件完全不同的事。</p>
+
+<div class="anchor">
+  <h3>先想一件事：考試的時候，你會變聰明嗎？</h3>
+  <p>不會。考試時你只是<b>把已經會的拿出來用</b>，腦袋裡的東西一點都沒變 —— 讀書的時候才會變。AI 也一樣：訓練是讀書，推論是考試。而你每天在用的 AI，幾乎都在考試。</p>
+</div>
+
+<p class="intro">（待寫：承接上面的比喻，把它對應到這一頁要示範的機制，並在關鍵字上掛 <code>&lt;button class="term" data-t="…"&gt;</code>。術語辭典已經先備好在頁尾的 script 裡。）</p>
+<p class="hint">（待寫：一句話說明這一頁要怎麼操作。）（有底線的詞都可以點開，會給你一個比方）</p>
+
+<section class="scaffold" aria-label="這一頁的開發規格">
+  <span class="flag">骨架・尚未實作</span>
+  <div class="brief">
+    <div><b>要拆掉的誤解</b><span>「我每次跟 AI 聊天，它就學到一點東西」</span></div>
+    <div><b>要產生的理解</b><span>為什麼 ChatGPT 不記得你昨天說過什麼</span></div>
+  </div>
+  <h3>預定的互動設計</h3>
+  <ul>
+    <li>一個明顯的模式切換開關：訓練模式 / 推論模式</li>
+    <li>訓練模式：餵資料 → 看模型內部的數字（權重）真的在變</li>
+    <li>推論模式：餵資料 → 模型輸出答案，但權重<b>紋風不動</b>（這是整頁的關鍵畫面）</li>
+    <li>可以直接沿用中級的 3→2→1 網路與手搖飲情境，讓讀過中級的人有連貫感</li>
+    <li>收尾：那為什麼 AI 好像記得我剛剛說的話？→ 帶出「上下文」不等於「學習」</li>
+    <li>待討論：要不要順帶講微調 (fine-tuning)，或留給高級</li>
+  </ul>
+</section>
+
+<h2>三個實驗，三個發現</h2>
+<div class="cards">
+  <div class="card"><span class="tag">實驗 1</span><h3>（待寫）</h3>
+    <p>每張卡都要是<b>可複現的操作指令</b>，不是說明文字 —— 例如「把學習率調到 0.10 以下，數數看要幾步」。</p></div>
+  <div class="card"><span class="tag">實驗 2</span><h3>（待寫）</h3>
+    <p>第二張通常是「破壞它」：讓學生動手把東西弄壞，從壞掉的樣子反推機制。</p></div>
+  <div class="card"><span class="tag">實驗 3</span><h3>（待寫）</h3>
+    <p>第三張拉回現實：讓學生用自己的情況試一次，體會這個機制在真實世界的後果。</p></div>
+</div>
+
+<h2>這跟 AI 有什麼關係？</h2>
+<div class="outro">
+  <p>（待寫：從這一頁的小規模示範，接到真實模型的量級。）</p>
+  <p>（待寫：這個機制帶來什麼能力、又有什麼代價或限制。）</p>
+  <p>（待寫：留一個問題，導向下一頁。）</p>
+</div>
+
+<footer class="site">
+  <span>AI Concept Visualizer</span>
+  <span>上一頁：從規則到學習（規劃中） ・ 下一頁：AI 為什麼會錯（規劃中）</span>
+</footer>
+
+</div>
+<div class="pop" id="pop" role="dialog" aria-live="polite"></div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+
+/* ============ 術語辭典（已先備好，文案可再調） ============ */
+const TERMS = {
+  train:{en:"training", zh:"訓練 training",
+    what:"餵大量範例、反覆調整模型內部的參數。這個階段模型會改變，而且很貴很慢。",
+    life:"讀書。花很多時間，但讀完之後你的腦袋真的不一樣了。"},
+  infer:{en:"inference", zh:"推論 inference",
+    what:"拿訓練好的模型來用。輸入進去、答案出來，模型本身一個字都沒變。",
+    life:"考試。你只是把會的東西拿出來用，考完腦袋裡的東西還是一樣。"},
+  frozen:{en:"frozen weights", zh:"參數凍結 frozen weights",
+    what:"推論時所有權重都固定不動。這就是為什麼同樣的問題問十次，模型的「能力」不會因此變強。",
+    life:"考卷不會讓你變聰明。寫十份考卷還是同一個你。"},
+  context:{en:"context window", zh:"上下文 context",
+    what:"模型看得到的當下這段對話。它會參考，但不會把它寫進自己的參數裡 —— 關掉視窗就沒了。",
+    life:"考試時桌上那張自己抄的小抄。你看得到、會參考，但它不等於你腦袋裡的知識，交卷就收走了。"}
+};
+
+/* ============ 彈出視窗（全站共用，不必改） ============ */
+
+const pop = $("pop");
+let openBtn = null;
+function closePop(){
+  pop.dataset.open = "false";
+  if(openBtn){ openBtn.setAttribute("aria-expanded","false"); openBtn = null; }
+}
+function positionPop(btn){
+  const r = btn.getBoundingClientRect(), w = pop.offsetWidth;
+  pop.style.left = Math.max(14, Math.min(r.left + scrollX + r.width/2 - w/2,
+    document.documentElement.clientWidth - w - 14)) + "px";
+  pop.style.top = (r.bottom + scrollY + 10) + "px";
+}
+function openPop(btn){
+  const t = TERMS[btn.dataset.t];
+  if(!t) return;
+  if(openBtn === btn){ closePop(); return; }
+  closePop();
+  pop.innerHTML = `<button class="x" aria-label="關閉">✕</button>` +
+    `<span class="en">${t.en}</span><h4>${t.zh}</h4><p>${t.what}</p>` +
+    `<div class="life"><span class="tag">打個比方</span>${t.life}</div>`;
+  pop.dataset.open = "true";
+  btn.setAttribute("aria-expanded","true");
+  openBtn = btn;
+  positionPop(btn);
+  pop.querySelector(".x").addEventListener("click", ()=>{ closePop(); btn.focus(); });
+}
+document.addEventListener("click", ev=>{
+  const t = ev.target.closest(".term");
+  if(t){ ev.preventDefault(); openPop(t); return; }
+  if(!ev.target.closest("#pop")) closePop();
+});
+addEventListener("keydown", ev=>{ if(ev.key === "Escape") closePop(); });
+addEventListener("resize", ()=>{ if(openBtn) positionPop(openBtn); });
+</script>
+</body>
+</html>

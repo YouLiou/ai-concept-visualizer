@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>反向傳播實驗室</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* ============ 設計 tokens（三頁共用） ============ */
+:root{
+  --bg:#F5F7F4; --surface:#FFFFFF; --ink:#1C2723; --muted:#5C6D64; --line:#DCE4DE;
+  --accent:#22685A; --accent-soft:#E3EFEA; --on-accent:#FFFFFF;
+  --ball:#E07B2E; --danger:#B3423A; --danger-soft:#F6E7E5; --warn:#8A5E10; --grid:#E8EDE8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101714; --surface:#182220; --ink:#E6EEE9; --muted:#9AABA1;
+    --line:#2C3A34; --accent:#57B99F; --accent-soft:#1E332C; --on-accent:#0E1512;
+    --ball:#F09A4E; --danger:#E07A70; --danger-soft:#33211F; --warn:#D9A741; --grid:#22302A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101714; --surface:#182220; --ink:#E6EEE9; --muted:#9AABA1;
+  --line:#2C3A34; --accent:#57B99F; --accent-soft:#1E332C; --on-accent:#0E1512;
+  --ball:#F09A4E; --danger:#E07A70; --danger-soft:#33211F; --warn:#D9A741; --grid:#22302A;
+}
+
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif; font-size:16px; line-height:1.75;
+  padding:0 clamp(16px,4vw,32px); padding-block:0 48px}
+.wrap{max-width:900px; margin:0 auto}
+
+header.site{display:flex; justify-content:space-between; align-items:baseline;
+  padding-block:20px 0; gap:12px; flex-wrap:wrap}
+.brand{font-size:.8rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:700}
+.level{font-size:.75rem; color:var(--accent); border:1px solid var(--accent);
+  border-radius:999px; padding:1px 10px; white-space:nowrap}
+h1{font-family:"Noto Serif TC","Songti TC",serif; font-weight:900;
+  font-size:clamp(1.9rem,5vw,2.7rem); line-height:1.25; margin:18px 0 4px; text-wrap:balance}
+.subtitle{color:var(--muted); margin:0 0 8px; font-size:1.02rem}
+.intro{max-width:42em; margin-block:14px 6px}
+.intro b{color:var(--accent)}
+.hint{color:var(--muted); font-size:.9rem; margin-block:2px 18px}
+
+.lab{background:var(--surface); border:1px solid var(--line); border-radius:14px;
+  padding:clamp(12px,2.5vw,22px); margin-block:8px 26px}
+.ctrl-label{font-size:.78rem; letter-spacing:.08em; color:var(--muted); display:block; margin-bottom:6px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace; font-variant-numeric:tabular-nums}
+.btns{display:flex; gap:8px; flex-wrap:wrap}
+.btn{font:inherit; font-size:.95rem; border-radius:9px; padding:7px 16px; cursor:pointer;
+  border:1px solid var(--line); background:var(--surface); color:var(--ink)}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent); font-weight:700}
+.btn:disabled{opacity:.45; cursor:not-allowed}
+.btn:focus-visible,.cup:focus-visible{outline:2px solid var(--ball); outline-offset:2px}
+
+/* 選一杯 */
+.cups{display:flex; gap:8px; flex-wrap:wrap; padding-bottom:14px;
+  border-bottom:1px dashed var(--line); margin-bottom:14px}
+.cup{font:inherit; font-size:.88rem; border:1px solid var(--line); background:var(--surface);
+  color:var(--ink); border-radius:9px; padding:6px 12px; cursor:pointer; text-align:left}
+.cup[aria-pressed="true"]{background:var(--accent-soft); border-color:var(--accent); color:var(--accent); font-weight:700}
+.cup small{display:block; color:var(--muted); font-size:.76rem; font-weight:400}
+.cup[aria-pressed="true"] small{color:var(--accent)}
+
+/* 四個階段 */
+.steps{display:flex; gap:0; margin-bottom:14px; flex-wrap:wrap}
+.step{flex:1; min-width:132px; padding:9px 12px; border-top:3px solid var(--line);
+  color:var(--muted); font-size:.88rem; transition:color .15s, border-color .15s}
+.step .n{font-family:"IBM Plex Mono",monospace; font-size:.76rem; letter-spacing:.1em; display:block}
+.step[data-on="true"]{border-top-color:var(--accent); color:var(--ink); font-weight:700}
+.step[data-on="true"] .n{color:var(--accent)}
+.step[data-done="true"]{border-top-color:var(--accent); color:var(--muted); font-weight:400}
+.step[data-on="true"].back{border-top-color:var(--danger)}
+.step[data-on="true"].back .n{color:var(--danger)}
+
+.net-wrap{border:1px solid var(--line); border-radius:10px; background:var(--surface); overflow:hidden}
+svg{display:block; width:100%; height:auto}
+.edge-hit{stroke:transparent; stroke-width:11; cursor:pointer; fill:none}
+.node-val{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+
+/* 圖例：會隨階段改變意義 */
+.legend{display:flex; gap:8px 18px; flex-wrap:wrap; margin-top:10px; font-size:.84rem; color:var(--muted)}
+.legend i{display:inline-block; width:22px; height:3px; border-radius:2px; vertical-align:.2em; margin-right:6px}
+
+/* 單條線的算式面板（高度固定） */
+.detail{margin-top:12px; min-height:7.2em; border:1px dashed var(--line); border-radius:10px;
+  padding:12px 15px}
+.detail .placeholder{color:var(--muted); font-size:.92rem}
+.detail h4{margin:0 0 8px; font-size:.98rem}
+.chain{display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:.88rem}
+.chain .f{background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:4px 10px; text-align:center}
+.chain .f b{display:block; font-family:"IBM Plex Mono",monospace; font-size:1rem; color:var(--ink)}
+.chain .f span{font-size:.72rem; color:var(--muted)}
+.chain .op{color:var(--muted); font-weight:700}
+.chain .res{background:var(--danger-soft); border-color:var(--danger)}
+.chain .res b{color:var(--danger)}
+.detail .note{margin:9px 0 0; font-size:.85rem; color:var(--muted)}
+
+.status{margin-top:12px; min-height:4.4em; font-size:.98rem}
+.status .pill{display:inline-block; border-radius:8px; padding:4px 12px; background:var(--accent-soft)}
+.status.back .pill{background:var(--danger-soft); border:1.5px solid var(--danger); color:var(--danger)}
+.status.good .pill{border:1.5px solid var(--accent); color:var(--accent); font-weight:700}
+
+.scoreline{display:flex; gap:10px 26px; flex-wrap:wrap; margin-top:14px;
+  padding-top:12px; border-top:1px dashed var(--line)}
+.scoreline div{font-size:.85rem; color:var(--muted); min-width:6em}
+.scoreline .v{display:block; font-size:1.3rem; color:var(--ink);
+  font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+.scoreline .v.bad{color:var(--danger)}
+.scoreline .v.ok{color:var(--accent)}
+#errSpark{max-width:300px; flex:1; min-width:180px; align-self:center}
+
+/* ============ 術語彈出視窗 ============ */
+.term{font:inherit; color:var(--accent); background:transparent; border:0; padding:0 2px;
+  cursor:pointer; font-weight:700; border-bottom:1.5px dotted var(--accent); border-radius:3px}
+.term::after{content:"›"; font-size:.8em; opacity:.55; margin-left:3px; vertical-align:.08em}
+.term:hover,.term[aria-expanded="true"]{background:var(--accent-soft)}
+.term:focus-visible{outline:2px solid var(--ball); outline-offset:2px}
+.pop{position:absolute; z-index:40; width:min(340px,calc(100vw - 40px));
+  background:var(--surface); border:1px solid var(--accent); border-radius:12px;
+  padding:15px 17px 16px; box-shadow:0 12px 34px -10px rgba(0,0,0,.3);
+  opacity:0; transform:translateY(-5px) scale(.985); pointer-events:none;
+  transition:opacity .12s ease, transform .12s ease}
+.pop[data-open="true"]{opacity:1; transform:none; pointer-events:auto}
+.pop .en{font-family:"IBM Plex Mono",monospace; font-size:.7rem; letter-spacing:.1em;
+  color:var(--accent); text-transform:uppercase}
+.pop h4{margin:3px 0 7px; font-size:1.06rem}
+.pop p{margin:0; font-size:.92rem; line-height:1.7}
+.pop .life{margin-top:11px; padding-top:11px; border-top:1px dashed var(--line);
+  font-size:.9rem; line-height:1.7}
+.pop .life .tag{display:inline-block; font-size:.7rem; letter-spacing:.08em; font-weight:700;
+  color:var(--on-accent); background:var(--accent); border-radius:5px; padding:1px 7px; margin-right:7px}
+.pop .x{position:absolute; top:7px; right:9px; border:0; background:transparent; color:var(--muted);
+  font-size:1rem; line-height:1; cursor:pointer; padding:5px; border-radius:6px}
+.pop .x:hover{background:var(--accent-soft); color:var(--accent)}
+
+.anchor{background:var(--accent-soft); border-radius:12px; padding:15px 19px;
+  margin-block:20px 6px; max-width:42em}
+.anchor h3{margin:0 0 7px; font-size:1rem; color:var(--accent); letter-spacing:.02em}
+.anchor p{margin:0; font-size:.95rem}
+
+h2{font-family:"Noto Serif TC","Songti TC",serif; font-weight:700; font-size:1.45rem; margin:34px 0 12px}
+.cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px 18px}
+.card .tag{font-size:.75rem; letter-spacing:.1em; color:var(--accent); font-weight:700}
+.card h3{margin:6px 0 6px; font-size:1.05rem}
+.card p{margin:0; font-size:.92rem; color:var(--muted)}
+.card .mono{color:var(--ink)}
+
+.recap{background:var(--surface); border:1px solid var(--line); border-radius:12px;
+  padding:18px 20px; margin-block:16px}
+.recap ol{margin:0; padding-left:1.3em}
+.recap li{margin-block:7px}
+.recap li b{color:var(--accent)}
+
+.outro{max-width:42em}
+.outro p{margin-block:10px}
+footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
+  display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  color:var(--muted); font-size:.85rem}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="site">
+  <span class="brand">AI Concept Visualizer</span>
+  <span class="level">中級・機器是怎麼「學」的 3/3</span>
+</header>
+
+<h1>反向傳播實驗室</h1>
+<p class="subtitle">Backpropagation — 錯了之後，怎麼算出「每一條線該負多少責任」。</p>
+
+<div class="anchor">
+  <h3>先想一件事：一杯飲料被客訴了</h3>
+  <p>老闆問主管：「你為什麼給這杯這麼高分？」主管說：「因為評審 A 給我高分，而我很<b>信任</b> A。」於是責任往回推給 A。A 說：「因為珍珠加很多，而我很<b>看重</b>珍珠。」責任就這樣一層一層回推 —— 而每個人分到多少，取決於<b>他被信任的程度</b>。這整套究責流程，就是反向傳播。</p>
+</div>
+
+<p class="intro">先講一個最容易搞錯的事：反向傳播<b>不是把資料倒著送回去</b>。往回走的不是飲料，是「這個錯，誰該扛多少」。每一條線最後會拿到一個數字，叫它的<button class="term" data-t="grad" aria-expanded="false">梯度</button> —— 意思是「這條線動一點點，誤差會變多少」。拿到這個數字，就知道該往哪個方向修。</p>
+<p class="hint">按「下一步」走完一輪：送一杯 → 算誤差 → 往回追責 → 照責任修正。<b>點任何一條線</b>可以看它的責任是怎麼乘出來的。（有底線的詞都可以點開，會給你一個比方）</p>
+
+<section class="lab" aria-label="反向傳播互動實驗">
+  <div>
+    <span class="ctrl-label">拿阿哲喝過的哪一杯來教它？</span>
+    <div class="cups" id="cups"></div>
+  </div>
+
+  <div class="steps" id="steps">
+    <div class="step" data-s="1"><span class="n">STEP 1</span>送一杯進去</div>
+    <div class="step" data-s="2"><span class="n">STEP 2</span>算它錯多少</div>
+    <div class="step back" data-s="3"><span class="n">STEP 3</span>往回追責任</div>
+    <div class="step" data-s="4"><span class="n">STEP 4</span>照責任修正</div>
+  </div>
+
+  <div class="net-wrap">
+    <svg id="net" viewBox="0 0 820 400" role="img" aria-label="三層神經網路；前向階段線的粗細代表權重，反向階段代表責任大小">
+      <text x="140" y="22" text-anchor="middle" font-size="12" fill="var(--muted)" letter-spacing="1.5">輸入層</text>
+      <text x="430" y="22" text-anchor="middle" font-size="12" fill="var(--muted)" letter-spacing="1.5">隱藏層</text>
+      <text x="690" y="22" text-anchor="middle" font-size="12" fill="var(--muted)" letter-spacing="1.5">輸出層</text>
+      <g id="edgeLayer"></g>
+      <g id="labelLayer"></g>
+      <g id="flowLayer"></g>
+      <g id="nodeLayer"></g>
+      <g id="hitLayer"></g>
+    </svg>
+  </div>
+  <div class="legend" id="legend"></div>
+
+  <div class="detail" id="detail">
+    <span class="placeholder">👆 點圖上任何一條線，看它的責任是怎麼一層一層乘出來的。</span>
+  </div>
+
+  <div class="status" id="statusBox"><span class="pill" id="statusText">選一杯飲料，然後按「下一步」開始。現在的權重是隨機的，它一定會猜錯 —— 這正是我們要的。</span></div>
+
+  <div class="scoreline">
+    <div>網路猜<span class="v" id="roGuess">—</span></div>
+    <div>阿哲給<span class="v" id="roTrue">—</span></div>
+    <div>差多少<span class="v" id="roErr">—</span></div>
+    <div>已跑輪數<span class="v" id="roRound">0</span></div>
+    <svg id="errSpark" viewBox="0 0 300 56" aria-label="誤差隨輪數變化">
+      <line x1="4" y1="50" x2="296" y2="50" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 4"/>
+      <path id="errPath" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text id="errEmpty" x="150" y="30" text-anchor="middle" font-size="11" fill="var(--muted)">誤差變化會畫在這</text>
+    </svg>
+  </div>
+
+  <div class="btns" style="margin-top:16px">
+    <button class="btn primary" id="nextBtn">下一步 →</button>
+    <button class="btn" id="fastBtn">連跑 30 輪</button>
+    <button class="btn" id="resetBtn">全部重來</button>
+  </div>
+</section>
+
+<h2>三個實驗，三個發現</h2>
+<div class="cards">
+  <div class="card">
+    <span class="tag">實驗 1・責任不是平均分</span>
+    <h3>走到 STEP 3，看哪條線最粗</h3>
+    <p>九條線扛的責任差很多。<b>被信任得越多的人，要負的責任越大</b> —— 這就是為什麼責任要乘上權重，而不是大家分一樣。</p>
+  </div>
+  <div class="card">
+    <span class="tag">實驗 2・換一杯就換一批</span>
+    <h3>用不同的杯子各跑一輪，比較 STEP 3</h3>
+    <p>責任的分布會整個變。因為「這條線該負多少責任」，本來就取決於<b>這一次餵的是什麼資料</b>。</p>
+  </div>
+  <div class="card">
+    <span class="tag">實驗 3・它會自己停</span>
+    <h3>連跑 30 輪，再看責任有多大</h3>
+    <p>誤差接近 0 時，所有責任也跟著趨近 0 —— 沒有人要為一個正確答案負責，權重自然就不動了。這就是<button class="term" data-t="converge" aria-expanded="false">收斂</button>。</p>
+  </div>
+</div>
+
+<h2>三頁到這裡，就是完整的訓練</h2>
+<div class="recap">
+  <ol>
+    <li><b>神經網路</b>：模型 = 一堆權重。資料從左流到右，變成一個答案。</li>
+    <li><b>梯度下降</b>：錯了就往誤差變小的方向跳一步，跳多遠由學習率決定。</li>
+    <li><b>反向傳播</b>：而「誤差變小的方向」，是從輸出往回追責任、一層一層乘出來的。</li>
+  </ol>
+</div>
+
+<h2>這跟 AI 有什麼關係？</h2>
+<div class="outro">
+  <p>你剛剛跑的一輪，是九條線。訓練 ChatGPT 這種模型，是把同樣一輪跑在<b>幾千億條線</b>上、重複<b>幾百萬次</b>。所謂「訓練要燒幾千萬美金」，燒的就是這個 —— 不是什麼神祕的智慧，是同一套究責流程重複到天荒地老。</p>
+  <p>也因為機制就是這樣，它的極限也很清楚：模型只會朝著「讓訓練資料的誤差變小」的方向走。<b>資料裡沒有的東西，它學不到；資料裡有的偏見，它會忠實地學起來。</b></p>
+  <p>如果你剛剛點開過幾條線的算式，那你已經看過<button class="term" data-t="chain" aria-expanded="false">連鎖律</button>了 —— 那是微積分裡的東西，但它在這裡的意思很簡單：<b>責任按信任度，一層一層乘下去。</b></p>
+</div>
+
+<footer class="site">
+  <span>AI Concept Visualizer</span>
+  <span>上一頁：梯度下降 ・ 中級完</span>
+</footer>
+
+</div>
+<div class="pop" id="pop" role="dialog" aria-live="polite"></div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ============ 術語辭典 ============ */
+const TERMS = {
+  grad:{en:"gradient", zh:"梯度 gradient",
+    what:"「這條線動一點點，誤差會變多少」。它同時告訴你該往哪個方向調、以及該調多用力。這一頁說的「責任」，講的就是它。",
+    life:"跟上一頁那顆球腳下的坡度是同一個東西 —— 只是那裡只有一個參數，這裡有九個，所以要一條一條算出來。"},
+  chain:{en:"chain rule", zh:"連鎖律 chain rule",
+    what:"把一長串環環相扣的影響，用乘法串起來。反向傳播的每一條責任鏈，都是這樣乘出來的。",
+    life:"主管扛 100 分責任，他有七成判斷來自評審 A，A 就分到 70 分；A 又有一半判斷來自珍珠，珍珠那條線就分到 35 分。一路乘下去就對了。"},
+  converge:{en:"convergence", zh:"收斂 convergence",
+    what:"誤差降到幾乎不再變動，權重也跟著停下來。因為沒有誤差，就沒有責任可分。",
+    life:"客訴解決了，就沒有人需要被檢討 —— 大家維持原樣繼續做事。"},
+  lr:{en:"learning rate", zh:"學習率 learning rate",
+    what:"算出責任之後，要照著改多少。責任只告訴你方向和相對大小，改多用力是另一個決定。",
+    life:"知道某個評審要為這次失誤負三成責任，是一回事；要因此把他的發言權砍掉多少，是另一回事。砍太狠會矯枉過正，砍太輕又等於沒改。"}
+};
+
+/* ============ 彈出視窗 ============ */
+const pop = $("pop");
+let openBtn = null;
+function closePop(){
+  pop.dataset.open = "false";
+  if(openBtn){ openBtn.setAttribute("aria-expanded","false"); openBtn = null; }
+}
+function positionPop(btn){
+  const r = btn.getBoundingClientRect(), w = pop.offsetWidth;
+  pop.style.left = Math.max(14, Math.min(r.left + scrollX + r.width/2 - w/2,
+    document.documentElement.clientWidth - w - 14)) + "px";
+  pop.style.top = (r.bottom + scrollY + 10) + "px";
+}
+function openPop(btn){
+  const t = TERMS[btn.dataset.t];
+  if(!t) return;
+  if(openBtn === btn){ closePop(); return; }
+  closePop();
+  pop.innerHTML = `<button class="x" aria-label="關閉">✕</button>` +
+    `<span class="en">${t.en}</span><h4>${t.zh}</h4><p>${t.what}</p>` +
+    `<div class="life"><span class="tag">打個比方</span>${t.life}</div>`;
+  pop.dataset.open = "true";
+  btn.setAttribute("aria-expanded","true");
+  openBtn = btn;
+  positionPop(btn);
+  pop.querySelector(".x").addEventListener("click", ()=>{ closePop(); btn.focus(); });
+}
+document.addEventListener("click", ev=>{
+  const t = ev.target.closest(".term");
+  if(t){ ev.preventDefault(); openPop(t); return; }
+  if(!ev.target.closest("#pop")) closePop();
+});
+addEventListener("keydown", ev=>{ if(ev.key === "Escape") closePop(); });
+addEventListener("resize", ()=>{ if(openBtn) positionPop(openBtn); });
+
+/* ============ 網路：與第一頁完全相同的 3 → 2 → 1 ============ */
+const IN_NAMES = ["甜度","冰塊","珍珠"];
+const HID_NAMES = ["評審 A","評審 B"];
+const LR = 3.0;
+let W;
+function randW(){
+  const r = () => (Math.random()*2-1)*1.2;
+  return { w1:[[r(),r(),r()],[r(),r(),r()]], b1:[r(),r()], w2:[r(),r()], b2:r() };
+}
+function forward(x){
+  const z1 = [], h = [];
+  for(let j=0;j<2;j++){
+    let z = W.b1[j];
+    for(let k=0;k<3;k++) z += W.w1[j][k]*x[k];
+    z1.push(z); h.push(Math.tanh(z));
+  }
+  let z2 = W.b2;
+  for(let j=0;j<2;j++) z2 += W.w2[j]*h[j];
+  return { z1, h, z2, y: 1/(1+Math.exp(-z2)) };
+}
+
+const DATA = [
+  {s:10, i:3,  p:10, t:0.94},
+  {s:0,  i:10, p:0,  t:0.03},
+  {s:5,  i:7,  p:10, t:0.71},
+  {s:10, i:10, p:0,  t:0.23},
+  {s:3,  i:0,  p:10, t:0.87}
+];
+const norm = d => [d.s/10, d.i/10, d.p/10];
+const sweetLbl = v => v>=9?"全糖":v>=7?"少糖":v>=4?"半糖":v>=1?"微糖":"無糖";
+const iceLbl   = v => v>=9?"多冰":v>=6?"正常冰":v>=3?"少冰":v>=1?"微冰":"去冰";
+const pearlLbl = v => v>=8?"加滿":v>=4?"半份":v>=1?"一點點":"不加";
+const cupText  = d => `${sweetLbl(d.s)}、${iceLbl(d.i)}、珍珠${pearlLbl(d.p)}`;
+
+/* ============ 版面 ============ */
+const POS = { in:[{x:140,y:120},{x:140,y:235},{x:140,y:350}],
+              hid:[{x:430,y:175},{x:430,y:300}], out:{x:690,y:235} };
+const R_IN = 30, R_HID = 27, R_OUT = 36;
+const EDGES = [];
+for(let j=0;j<2;j++) for(let k=0;k<3;k++)
+  EDGES.push({a:POS.in[k], b:POS.hid[j], ra:R_IN, rb:R_HID, path:"w1", j, k, t:(j===0?0.42:0.62)});
+for(let j=0;j<2;j++)
+  EDGES.push({a:POS.hid[j], b:POS.out, ra:R_HID, rb:R_OUT, path:"w2", j, t:0.5});
+
+const wOf = e => e.path === "w1" ? W.w1[e.j][e.k] : W.w2[e.j];
+const edgeName = e => e.path === "w1"
+  ? `${IN_NAMES[e.k]} → ${HID_NAMES[e.j]}` : `${HID_NAMES[e.j]} → 最後分數`;
+function trim(e){
+  const dx = e.b.x-e.a.x, dy = e.b.y-e.a.y, L = Math.hypot(dx,dy);
+  return { x1:e.a.x+dx/L*e.ra, y1:e.a.y+dy/L*e.ra, x2:e.b.x-dx/L*e.rb, y2:e.b.y-dy/L*e.rb };
+}
+
+/* ============ 狀態 ============ */
+let cup = 0, phase = 0, round = 0, selected = null, errHist = [], busy = false;
+let F = null, G = null;                  // 這一輪的前向結果與責任
+
+/* ============ 算責任（反向傳播本體） ============ */
+function backward(){
+  const x = norm(DATA[cup]), t = DATA[cup].t;
+  const {h, y} = F;
+  const dz2 = 2*(y-t)*y*(1-y);           // 輸出這一層的責任
+  const g = { w1:[[0,0,0],[0,0,0]], b1:[0,0], w2:[0,0], b2:dz2, dz2, dz1:[0,0] };
+  for(let j=0;j<2;j++){
+    g.w2[j] = dz2*h[j];
+    const dz1 = dz2*W.w2[j]*(1-h[j]*h[j]);
+    g.dz1[j] = dz1; g.b1[j] = dz1;
+    for(let k=0;k<3;k++) g.w1[j][k] = dz1*x[k];
+  }
+  return g;
+}
+const gradOf = e => e.path === "w1" ? G.w1[e.j][e.k] : G.w2[e.j];
+function blameShare(e){                  // 這條線佔全部責任的百分比
+  let total = 0;
+  for(const o of EDGES) total += Math.abs(o.path === "w1" ? G.w1[o.j][o.k] : G.w2[o.j]);
+  return total < 1e-9 ? 0 : Math.abs(gradOf(e))/total*100;
+}
+function applyUpdate(){
+  W.b2 -= LR*G.b2;
+  for(let j=0;j<2;j++){
+    W.w2[j] -= LR*G.w2[j];
+    W.b1[j] -= LR*G.b1[j];
+    for(let k=0;k<3;k++) W.w1[j][k] -= LR*G.w1[j][k];
+  }
+}
+
+/* ============ 繪圖 ============ */
+const showBlame = () => phase >= 3 && G;
+
+function drawEdges(){
+  const el = $("edgeLayer"), hl = $("hitLayer"), ll = $("labelLayer");
+  el.innerHTML = ""; hl.innerHTML = ""; ll.innerHTML = "";
+  // 反向階段：只標前三大責任 + 被選取的那條，避免九個數字打架
+  let top3 = [];
+  if(showBlame()){
+    top3 = EDGES.map((e,i)=>({i, v:blameShare(e)})).sort((a,b)=>b.v-a.v).slice(0,3).map(o=>o.i);
+  }
+  EDGES.forEach((e,idx)=>{
+    const t = trim(e), sel = selected === idx;
+    let width, color;
+    if(showBlame()){
+      const share = blameShare(e);
+      width = Math.min(0.8 + share*0.30, 9);
+      color = share < 1.5 ? "var(--line)" : "var(--danger)";
+    }else{
+      const w = wOf(e);
+      width = Math.min(0.8 + Math.abs(w)*2.6, 9);
+      color = Math.abs(w) < 0.06 ? "var(--line)" : (w > 0 ? "var(--accent)" : "var(--danger)");
+    }
+    el.insertAdjacentHTML("beforeend",
+      (sel ? `<line x1="${t.x1}" y1="${t.y1}" x2="${t.x2}" y2="${t.y2}" stroke="var(--ball)" ` +
+             `stroke-width="${(width+5).toFixed(2)}" stroke-linecap="round" opacity=".32"/>` : "") +
+      `<line x1="${t.x1}" y1="${t.y1}" x2="${t.x2}" y2="${t.y2}" stroke="${color}" ` +
+      `stroke-width="${width.toFixed(2)}" stroke-linecap="round" opacity="${sel?1:.85}"/>`);
+    if(showBlame() && (top3.includes(idx) || sel)){
+      const lx = t.x1+(t.x2-t.x1)*e.t, ly = t.y1+(t.y2-t.y1)*e.t;
+      const txt = blameShare(e).toFixed(0)+"%";
+      ll.insertAdjacentHTML("beforeend",
+        `<rect x="${lx-19}" y="${ly-11}" width="38" height="20" rx="6" fill="var(--surface)" ` +
+        `stroke="var(--danger)" stroke-width="1"/>` +
+        `<text class="node-val" x="${lx}" y="${ly+4}" text-anchor="middle" font-size="12" ` +
+        `font-weight="700" fill="var(--danger)">${txt}</text>`);
+    }
+    hl.insertAdjacentHTML("beforeend",
+      `<line class="edge-hit" data-i="${idx}" x1="${t.x1}" y1="${t.y1}" x2="${t.x2}" y2="${t.y2}">` +
+      `<title>${edgeName(e)}</title></line>`);
+  });
+}
+
+function node(x,y,r,fill,stroke,label,value){
+  return `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>` +
+    `<text x="${x}" y="${y-r-11}" text-anchor="middle" font-size="13" fill="var(--muted)">${label}</text>` +
+    `<text class="node-val" x="${x}" y="${y+5}" text-anchor="middle" font-size="${r>32?16:14}" ` +
+    `font-weight="700" fill="${stroke}">${value}</text>`;
+}
+function drawNodes(){
+  const d = DATA[cup], x = norm(d);
+  const vals = [d.s, d.i, d.p];
+  let s = "";
+  POS.in.forEach((p,k)=>{
+    s += node(p.x,p.y,R_IN,"var(--accent-soft)","var(--accent)",IN_NAMES[k],
+              phase >= 1 ? vals[k] : "—");
+  });
+  POS.hid.forEach((p,j)=>{
+    s += node(p.x,p.y,R_HID,"var(--surface)","var(--ball)",HID_NAMES[j],
+              phase >= 1 && F ? F.h[j].toFixed(2) : "—");
+  });
+  s += node(POS.out.x,POS.out.y,R_OUT,"var(--accent)","var(--on-accent)","最後分數",
+            phase >= 1 && F ? Math.round(F.y*100) : "—");
+  $("nodeLayer").innerHTML = s;
+}
+
+function drawLegend(){
+  $("legend").innerHTML = showBlame()
+    ? `<span><i style="background:var(--danger)"></i>線越粗 = 這條線要扛的<b>責任</b>越大</span>` +
+      `<span><i style="background:var(--line)"></i>幾乎沒有責任</span>` +
+      `<span style="color:var(--danger)">⚠ 注意：這個階段線的粗細換了意思，不再是權重</span>`
+    : `<span><i style="background:var(--accent)"></i>綠色 = 正權重（越多越加分）</span>` +
+      `<span><i style="background:var(--danger)"></i>紅色 = 負權重（越多越扣分）</span>` +
+      `<span><i style="background:var(--line)"></i>幾乎不在乎</span>`;
+}
+
+function drawSteps(){
+  [...$("steps").children].forEach(el=>{
+    const s = +el.dataset.s;
+    el.dataset.on = (s === phase);
+    el.dataset.done = (s < phase);
+  });
+}
+
+function drawSpark(){
+  if(errHist.length < 2) return;
+  $("errEmpty").setAttribute("display","none");
+  const Wd=300, Hd=56, pl=6, pr=8, pt=8, pb=8;
+  const mx = Math.max(...errHist, 1e-6);
+  const sx = i => pl + i/(errHist.length-1)*(Wd-pl-pr);
+  const sy = v => Hd-pb - (v/mx)*(Hd-pt-pb);
+  let d = "";
+  errHist.forEach((v,i)=>{ d += (i?"L":"M")+sx(i).toFixed(1)+" "+sy(v).toFixed(1)+" "; });
+  $("errPath").setAttribute("d", d);
+}
+
+function drawScores(){
+  const d = DATA[cup];
+  if(phase >= 1 && F){
+    $("roGuess").textContent = Math.round(F.y*100);
+    $("roTrue").textContent = Math.round(d.t*100);
+  }else{
+    $("roGuess").textContent = "—"; $("roTrue").textContent = "—";
+  }
+  if(phase >= 2 && F){
+    const gap = Math.abs(F.y-d.t)*100;
+    const el = $("roErr");
+    el.textContent = gap.toFixed(0);
+    el.className = "v " + (gap > 15 ? "bad" : gap < 6 ? "ok" : "");
+  }else{
+    $("roErr").textContent = "—"; $("roErr").className = "v";
+  }
+  $("roRound").textContent = round;
+}
+
+function drawDetail(){
+  const el = $("detail");
+  if(selected === null){
+    el.innerHTML = `<span class="placeholder">👆 點圖上任何一條線，看它的責任是怎麼一層一層乘出來的。</span>`;
+    return;
+  }
+  const e = EDGES[selected];
+  if(!showBlame()){
+    el.innerHTML = `<h4>${edgeName(e)}</h4>` +
+      `<p class="note">目前權重 <b class="mono">${wOf(e).toFixed(2)}</b>。` +
+      `走到 <b>STEP 3</b> 之後，這裡會展開它的責任是怎麼乘出來的。</p>`;
+    return;
+  }
+  const f = (label, val) => `<span class="f"><b>${val}</b><span>${label}</span></span>`;
+  const x = norm(DATA[cup]);
+  let chain;
+  if(e.path === "w2"){
+    chain = f("最後錯了多少", G.dz2.toFixed(3)) + `<span class="op">×</span>` +
+            f(`${HID_NAMES[e.j]}當時的意見`, F.h[e.j].toFixed(2)) + `<span class="op">=</span>` +
+            `<span class="f res"><b>${gradOf(e).toFixed(3)}</b><span>這條線的責任</span></span>`;
+  }else{
+    const sens = (1-F.h[e.j]*F.h[e.j]);
+    chain = f("最後錯了多少", G.dz2.toFixed(3)) + `<span class="op">×</span>` +
+            f(`主管對${HID_NAMES[e.j]}的信任`, W.w2[e.j].toFixed(2)) + `<span class="op">×</span>` +
+            f(`${HID_NAMES[e.j]}的靈敏度`, sens.toFixed(2)) + `<span class="op">×</span>` +
+            f(`${IN_NAMES[e.k]}的量`, x[e.k].toFixed(2)) + `<span class="op">=</span>` +
+            `<span class="f res"><b>${gradOf(e).toFixed(3)}</b><span>這條線的責任</span></span>`;
+  }
+  const note = e.path === "w2"
+    ? "意見越極端的評審，要扛的責任越大 —— 因為錯誤有更多是他造成的。"
+    : "「靈敏度」是指這位評審還推得動嗎。他的意見如果已經很極端（接近 +1 或 −1），再怎麼調他都動不了，責任自然就小。";
+  el.innerHTML = `<h4>${edgeName(e)}　責任佔比 ${blameShare(e).toFixed(0)}%</h4>` +
+    `<div class="chain">${chain}</div><p class="note">${note}</p>`;
+}
+
+function render(){ drawEdges(); drawNodes(); drawLegend(); drawSteps(); drawScores(); drawDetail(); drawSpark(); }
+function setStatus(cls, html){
+  $("statusBox").className = "status " + cls;
+  $("statusText").innerHTML = html;
+}
+
+/* ============ 資料流動畫 ============ */
+function flow(dir, done){
+  if(reduceMotion){ done(); return; }
+  const layer = $("flowLayer");
+  const color = dir > 0 ? "var(--ball)" : "var(--danger)";
+  const seq = dir > 0
+    ? [EDGES.filter(e=>e.path==="w1"), EDGES.filter(e=>e.path==="w2")]
+    : [EDGES.filter(e=>e.path==="w2"), EDGES.filter(e=>e.path==="w1")];
+  const step = i => {
+    if(i >= seq.length){ done(); return; }
+    const dots = seq[i].map(e=>{
+      const t = trim(e);
+      const from = dir > 0 ? [t.x1,t.y1] : [t.x2,t.y2];
+      layer.insertAdjacentHTML("beforeend",
+        `<circle r="5.5" fill="${color}" stroke="var(--surface)" stroke-width="1.5" cx="${from[0]}" cy="${from[1]}"/>`);
+      return {el:layer.lastElementChild, t};
+    });
+    const t0 = performance.now(), D = 480;
+    (function anim(now){
+      const p = Math.min((now-t0)/D, 1), e = p<.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
+      dots.forEach(d=>{
+        const [ax,ay,bx,by] = dir > 0
+          ? [d.t.x1,d.t.y1,d.t.x2,d.t.y2] : [d.t.x2,d.t.y2,d.t.x1,d.t.y1];
+        d.el.setAttribute("cx", ax+(bx-ax)*e);
+        d.el.setAttribute("cy", ay+(by-ay)*e);
+      });
+      if(p<1) requestAnimationFrame(anim);
+      else { dots.forEach(d=>d.el.remove()); step(i+1); }
+    })(t0);
+  };
+  step(0);
+}
+
+/* ============ 四個階段 ============ */
+function next(){
+  if(busy) return;
+  const d = DATA[cup];
+  if(phase >= 4){ phase = 0; }
+
+  if(phase === 0){
+    phase = 1; F = forward(norm(d)); G = null; selected = null;
+    busy = true; $("nextBtn").disabled = true;
+    render();
+    setStatus("", `<b>STEP 1</b>　把這杯「${cupText(d)}」送進網路，一層一層算到底 —— 這就是上上頁的前向傳遞。`);
+    flow(1, ()=>{ busy = false; $("nextBtn").disabled = false; render(); });
+    return;
+  }
+  if(phase === 1){
+    phase = 2; render();
+    const gap = Math.abs(F.y-d.t)*100;
+    setStatus("", `<b>STEP 2</b>　網路猜 <b class="mono">${Math.round(F.y*100)}</b> 分，阿哲給 <b class="mono">${Math.round(d.t*100)}</b> 分 —— 差了 <b class="mono">${gap.toFixed(0)}</b> 分。這就是要被追究的那個錯。`);
+    return;
+  }
+  if(phase === 2){
+    phase = 3; G = backward(); selected = null;
+    busy = true; $("nextBtn").disabled = true;
+    render();
+    setStatus("back", `<b>STEP 3</b>　責任從右往左傳：先算出主管該負多少，再按「信任程度」分給兩位評審，最後分到每一條線。<b>注意線的粗細換意思了 —— 現在代表責任，不是權重。</b>`);
+    flow(-1, ()=>{ busy = false; $("nextBtn").disabled = false; render(); });
+    return;
+  }
+  if(phase === 3){
+    const before = Math.abs(F.y-d.t)*100;
+    applyUpdate();
+    round++;
+    F = forward(norm(d));
+    const after = Math.abs(F.y-d.t)*100;
+    errHist.push(after);
+    phase = 4; G = null; selected = null;
+    render();
+    setStatus("good", `<b>STEP 4</b>　每條線都照自己的責任往回修了一點點 —— 這杯的誤差從 <b class="mono">${before.toFixed(0)}</b> 分降到 <b class="mono">${after.toFixed(0)}</b> 分。<br>一輪就是這樣。真實模型要跑幾百萬輪。`);
+    $("nextBtn").textContent = "再跑一輪 →";
+    return;
+  }
+}
+
+/* ============ 連跑 ============ */
+function fastRun(){
+  if(busy) return;
+  busy = true; $("fastBtn").disabled = true; $("nextBtn").disabled = true;
+  let n = 0;
+  const timer = setInterval(()=>{
+    for(let i=0;i<3;i++){
+      F = forward(norm(DATA[cup]));
+      G = backward();
+      applyUpdate();
+      round++;
+      cup = (cup+1) % DATA.length;         // 輪流用每一杯，跟真實訓練一樣
+      errHist.push(Math.abs(forward(norm(DATA[cup])).y - DATA[cup].t)*100);
+      n++;
+    }
+    phase = 4; F = forward(norm(DATA[cup])); G = null;
+    drawCups(); render();
+    $("nextBtn").textContent = "再跑一輪 →";
+    setStatus("", `連跑中… 已完成 <b class="mono">${round}</b> 輪，目前這杯差 <b class="mono">${(Math.abs(F.y-DATA[cup].t)*100).toFixed(0)}</b> 分。`);
+    if(n >= 30){
+      clearInterval(timer);
+      busy = false; $("fastBtn").disabled = false; $("nextBtn").disabled = false;
+      setStatus("good", `跑完 <b class="mono">30</b> 輪。現在按「下一步」走到 STEP 3，看看責任還剩多少 —— 誤差小了，責任也跟著變小，權重自然就不太動了。`);
+    }
+  }, 90);
+}
+
+/* ============ 選杯子 ============ */
+function drawCups(){
+  $("cups").innerHTML = DATA.map((d,i)=>
+    `<button class="cup" data-i="${i}" aria-pressed="${i===cup}">${cupText(d)}` +
+    `<small>阿哲給 ${Math.round(d.t*100)} 分</small></button>`).join("");
+}
+
+/* ============ 事件 ============ */
+$("cups").addEventListener("click", ev=>{
+  const b = ev.target.closest(".cup");
+  if(!b || busy) return;
+  cup = +b.dataset.i; phase = 0; F = null; G = null; selected = null;
+  $("nextBtn").textContent = "下一步 →";
+  drawCups(); render();
+  setStatus("", `換成「${cupText(DATA[cup])}」—— 阿哲給它 ${Math.round(DATA[cup].t*100)} 分。按「下一步」送進去。`);
+});
+$("net").addEventListener("click", ev=>{
+  const hit = ev.target.closest(".edge-hit");
+  if(!hit) return;
+  const i = +hit.dataset.i;
+  selected = (selected === i) ? null : i;
+  render();
+});
+$("nextBtn").addEventListener("click", next);
+$("fastBtn").addEventListener("click", fastRun);
+$("resetBtn").addEventListener("click", init);
+
+/* ============ 啟動 ============ */
+function init(){
+  W = randW(); cup = 0; phase = 0; round = 0; selected = null; errHist = []; F = null; G = null;
+  $("errPath").setAttribute("d",""); $("errEmpty").setAttribute("display","");
+  $("nextBtn").textContent = "下一步 →";
+  $("nextBtn").disabled = false; $("fastBtn").disabled = false; busy = false;
+  drawCups(); render();
+  setStatus("", "選一杯飲料，然後按「下一步」開始。現在的權重是隨機的，它一定會猜錯 —— 這正是我們要的。");
+}
+init();
+</script>
+</body>
+</html>

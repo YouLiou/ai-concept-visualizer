@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 概念視覺化</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* ============ 設計 tokens（全站共用） ============ */
+:root{
+  --bg:#F5F7F4; --surface:#FFFFFF; --ink:#1C2723; --muted:#5C6D64; --line:#DCE4DE;
+  --accent:#22685A; --accent-soft:#E3EFEA; --on-accent:#FFFFFF;
+  --ball:#E07B2E; --danger:#B3423A; --warn:#8A5E10;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101714; --surface:#182220; --ink:#E6EEE9; --muted:#9AABA1;
+    --line:#2C3A34; --accent:#57B99F; --accent-soft:#1E332C; --on-accent:#0E1512;
+    --ball:#F09A4E; --danger:#E07A70; --warn:#D9A741;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101714; --surface:#182220; --ink:#E6EEE9; --muted:#9AABA1;
+  --line:#2C3A34; --accent:#57B99F; --accent-soft:#1E332C; --on-accent:#0E1512;
+  --ball:#F09A4E; --danger:#E07A70; --warn:#D9A741;
+}
+
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif; font-size:16px; line-height:1.75;
+  padding:0 clamp(16px,4vw,32px); padding-block:0 56px}
+.wrap{max-width:940px; margin:0 auto}
+
+/* ============ 頁首 ============ */
+header.site{padding-block:28px 0}
+.brand{font-size:.8rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:700}
+h1{font-family:"Noto Serif TC","Songti TC",serif; font-weight:900;
+  font-size:clamp(2rem,5.5vw,3rem); line-height:1.22; margin:14px 0 10px; text-wrap:balance}
+.thesis{max-width:40em; font-size:1.06rem; margin:0 0 6px}
+.thesis b{color:var(--accent)}
+.meta{color:var(--muted); font-size:.9rem; margin-block:14px 0}
+
+/* ============ 學習地圖 ============ */
+.map{margin-top:38px; position:relative}
+.tier{display:grid; grid-template-columns:112px 1fr; gap:0 26px;
+  padding-bottom:34px; position:relative}
+.tier:last-child{padding-bottom:0}
+/* 左側的登山軌 */
+.rail{position:relative}
+.rail::before{content:""; position:absolute; left:13px; top:30px; bottom:-34px;
+  width:2px; background:var(--line)}
+.tier:last-child .rail::before{display:none}
+.rail .dot{position:absolute; left:6px; top:12px; width:16px; height:16px; border-radius:50%;
+  background:var(--bg); border:3px solid var(--line)}
+.tier.live .rail .dot{border-color:var(--accent); background:var(--accent)}
+.rail .name{display:block; padding-left:34px; font-family:"Noto Serif TC",serif;
+  font-weight:700; font-size:1.22rem; line-height:1.5; padding-top:4px}
+.rail .en{display:block; padding-left:34px; font-family:"IBM Plex Mono",monospace;
+  font-size:.68rem; letter-spacing:.12em; color:var(--muted); text-transform:uppercase}
+.tier:not(.live) .rail .name{color:var(--muted)}
+
+.tier-goal{margin:0 0 14px; font-size:.95rem; color:var(--muted); max-width:44em}
+.tier-goal b{color:var(--ink); font-weight:500}
+.cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:13px}
+
+/* 已完成的頁面卡 */
+.card{display:block; text-decoration:none; color:inherit; background:var(--surface);
+  border:1px solid var(--line); border-radius:12px; padding:15px 17px 16px;
+  transition:border-color .14s, transform .14s, box-shadow .14s}
+a.card:hover,a.card:focus-visible{border-color:var(--accent); transform:translateY(-2px);
+  box-shadow:0 10px 24px -14px rgba(0,0,0,.4)}
+a.card:focus-visible{outline:2px solid var(--ball); outline-offset:2px}
+.card .seq{font-family:"IBM Plex Mono",monospace; font-size:.72rem; letter-spacing:.1em;
+  color:var(--accent); font-weight:500}
+.card h3{margin:5px 0 3px; font-size:1.08rem; font-family:"Noto Serif TC",serif; font-weight:700}
+.card .en{display:block; font-family:"IBM Plex Mono",monospace; font-size:.7rem;
+  letter-spacing:.04em; color:var(--muted); margin-bottom:9px}
+.card .aha{margin:0; font-size:.92rem; color:var(--ink)}
+.card .via{margin:10px 0 0; padding-top:9px; border-top:1px dashed var(--line);
+  font-size:.82rem; color:var(--muted)}
+.card .via b{color:var(--accent); font-weight:500}
+
+/* 規劃中的卡 */
+.card.soon{background:transparent; border:1px dashed var(--line); cursor:default}
+.card.soon h3{color:var(--muted); font-size:1rem}
+.card.soon .aha{color:var(--muted); font-size:.88rem}
+.card.soon .seq{color:var(--muted)}
+.badge{float:right; font-size:.68rem; line-height:1.6; letter-spacing:.1em; color:var(--muted);
+  border:1px solid var(--line); border-radius:999px; padding:0 9px; margin-left:8px}
+
+/* ============ 設計原則 ============ */
+.why{margin-top:46px; border-top:1px solid var(--line); padding-top:26px}
+h2{font-family:"Noto Serif TC","Songti TC",serif; font-weight:700; font-size:1.3rem; margin:0 0 14px}
+.principles{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:18px 26px}
+.principles h3{margin:0 0 4px; font-size:.98rem}
+.principles p{margin:0; font-size:.9rem; color:var(--muted)}
+
+footer.site{margin-top:44px; padding-top:16px; border-top:1px solid var(--line);
+  display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+  color:var(--muted); font-size:.85rem}
+footer a{color:var(--muted)}
+
+@media (max-width:560px){
+  .tier{grid-template-columns:1fr; gap:10px}
+  .rail::before{display:none}
+  .rail .dot{top:8px}
+  .rail .name,.rail .en{padding-left:30px}
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="site">
+  <span class="brand">AI Concept Visualizer</span>
+  <h1>AI 概念視覺化</h1>
+  <p class="thesis">一條從<b>完全不懂</b>到<b>真的理解 AI 在做什麼</b>的互動學習路徑。每一頁都不只是把概念畫出來 —— 而是先讓你動手做一次，做到卡住，再告訴你那個卡住的地方叫什麼名字。</p>
+  <p class="meta">給高中生與 AI 初學者・全部是單檔 HTML，打開就能用，不需要安裝任何東西</p>
+</header>
+
+<main class="map">
+
+  <!-- ============ 初級 ============ -->
+  <section class="tier">
+    <div class="rail">
+      <span class="dot"></span>
+      <span class="name">初級</span>
+      <span class="en">Foundations</span>
+    </div>
+    <div>
+      <p class="tier-goal"><b>AI 到底是什麼</b> —— 完全不碰數學。要產生的理解是：「寫規則做不到的事，用『學』的居然可以。」</p>
+      <div class="cards">
+        <div class="card soon">
+          <span class="badge">規劃中</span>
+          <span class="seq">01</span>
+          <h3>從規則到學習</h3>
+          <span class="en">rule-based → machine learning</span>
+          <p class="aha">自己當一次「規則工程師」，再改用餵範例的方式做同一件事，體感兩者的差距。</p>
+        </div>
+        <div class="card soon">
+          <span class="badge">規劃中</span>
+          <span class="seq">02</span>
+          <h3>訓練與推論</h3>
+          <span class="en">training vs. inference</span>
+          <p class="aha">模型「上課」和「考試」是兩件不同的事 —— 這解釋了為什麼 AI 不會記得你昨天說過什麼。</p>
+        </div>
+        <div class="card soon">
+          <span class="badge">規劃中</span>
+          <span class="seq">03</span>
+          <h3>AI 為什麼會錯</h3>
+          <span class="en">bias &amp; hallucination</span>
+          <p class="aha">資料裡沒有的東西它學不到，資料裡有的偏見它會忠實地學起來。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 中級 ============ -->
+  <section class="tier live">
+    <div class="rail">
+      <span class="dot"></span>
+      <span class="name">中級</span>
+      <span class="en">How it learns</span>
+    </div>
+    <div>
+      <p class="tier-goal"><b>機器是怎麼「學」的</b> —— 三頁串成一個完整的訓練循環。要產生的理解是：「機器學習就是一個會自我修正的函數。」</p>
+      <div class="cards">
+        <a class="card" href="pages/neural_network.html">
+          <span class="seq">01</span>
+          <h3>神經網路</h3>
+          <span class="en">neural network</span>
+          <p class="aha">模型 = 一堆權重。拉滑桿點一杯手搖飲，看資料流過去變成一個分數 —— 然後親手改一條線，看模型整個變了。</p>
+          <p class="via">用<b>手搖飲試喝團</b>來理解</p>
+        </a>
+        <a class="card" href="pages/gradient_descent.html">
+          <span class="seq">02</span>
+          <h3>梯度下降</h3>
+          <span class="en">gradient descent</span>
+          <p class="aha">錯了就往誤差變小的方向跳一步。調學習率，親眼看見「太小龜速、太大暴衝」之間那條線。</p>
+          <p class="via">用<b>洗澡調水溫</b>來理解</p>
+        </a>
+        <a class="card" href="pages/backpropagation.html">
+          <span class="seq">03</span>
+          <h3>反向傳播</h3>
+          <span class="en">backpropagation</span>
+          <p class="aha">而「往哪跳」是算出來的：從輸出往回追究，每條線按被信任的程度分到自己該扛的責任。</p>
+          <p class="via">用<b>客訴究責</b>來理解</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 高級 ============ -->
+  <section class="tier">
+    <div class="rail">
+      <span class="dot"></span>
+      <span class="name">高級</span>
+      <span class="en">Modern AI</span>
+    </div>
+    <div>
+      <p class="tier-goal"><b>現代 AI 的引擎室</b> —— 在已經懂訓練循環的前提下，看今天這些模型多做了什麼。</p>
+      <div class="cards">
+        <div class="card soon">
+          <span class="badge">規劃中</span>
+          <span class="seq">01</span>
+          <h3>注意力機制</h3>
+          <span class="en">transformer / attention</span>
+          <p class="aha">為什麼模型讀一句話時，知道哪幾個字才是重點。</p>
+        </div>
+        <div class="card soon">
+          <span class="badge">規劃中</span>
+          <span class="seq">02</span>
+          <h3>擴散模型</h3>
+          <span class="en">diffusion</span>
+          <p class="aha">拉一條去噪步數的滑桿，看一張圖從雜訊裡慢慢浮出來。</p>
+        </div>
+        <div class="card soon">
+          <span class="badge">規劃中</span>
+          <span class="seq">03</span>
+          <h3>不只有神經網路</h3>
+          <span class="en">decision tree / k-means</span>
+          <p class="aha">機器學習還有別的做法，而且有些比神經網路更適合實際問題。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<section class="why">
+  <h2>這些頁面怎麼設計的</h2>
+  <div class="principles">
+    <div>
+      <h3>先體驗，再命名</h3>
+      <p>術語永遠出現在學生已經做過那件事之後。球飛出去的那一刻，才告訴他這叫「發散」。</p>
+    </div>
+    <div>
+      <h3>每個比喻都要經得起追問</h3>
+      <p>比喻不是為了親切，是為了精確。「責任按被信任的程度往回分」之所以能用，是因為它就是連鎖律本身。</p>
+    </div>
+    <div>
+      <h3>針對誤解，不是針對知識點</h3>
+      <p>每一頁都先設定一個要拆掉的錯誤心智模型 —— 例如「梯度下降是滑下去的」、「反向傳播是資料倒著流」。</p>
+    </div>
+    <div>
+      <h3>可操作才算數</h3>
+      <p>每頁的挑戰卡都是可複現的操作指令，不是說明文字。看得懂和做得出來是兩件事。</p>
+    </div>
+  </div>
+</section>
+
+<footer class="site">
+  <span>AI Concept Visualizer</span>
+  <span>單檔 HTML / CSS / JS・無框架・無外部相依</span>
+</footer>
+
+</div>
+</body>
+</html>
