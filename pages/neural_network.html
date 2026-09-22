@@ -204,7 +204,7 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
       <div class="big"><span id="outVal">—</span><span style="font-size:.5em">分</span></div>
     </div>
     <div class="btns" style="margin-left:auto">
-      <button class="btn primary" id="flowBtn">看它流過去</button>
+      <button class="btn primary" id="flowBtn">送去試喝檢測</button>
       <button class="btn" id="randBtn">隨機打亂權重</button>
       <button class="btn" id="resetBtn">重設</button>
     </div>
@@ -508,40 +508,51 @@ function setStatus(cls, html){
   $("statusText").innerHTML = html;
 }
 
-/* ============ 前向傳遞動畫 ============ */
+/* ============ 前向傳遞動畫（分兩段，各自要點一下才會播下一段） ============ */
 let flowing = false;
-function playFlow(){
-  if(flowing) return;
+let flowStage = 0;     // 0 = 準備播第一段（或重播） 1 = 第一段播完，等你點下一段
+function resetFlow(){
+  flowStage = 0;
+  $("flowBtn").textContent = "送去試喝檢測";
+}
+function runStage(edges, done){
   flowing = true;
   $("flowBtn").disabled = true;
   const layer = $("flowLayer");
-  const D = reduceMotion ? 1 : 520;
-  const run = (edges, delay, done) => {
-    const dots = edges.map(e=>{
-      const t = trim(e);
-      layer.insertAdjacentHTML("beforeend",
-        `<circle r="5.5" fill="var(--ball)" stroke="var(--surface)" stroke-width="1.5" cx="${t.x1}" cy="${t.y1}"/>`);
-      return {el:layer.lastElementChild, t};
+  const D = reduceMotion ? 1 : 650;
+  const dots = edges.map(e=>{
+    const t = trim(e);
+    layer.insertAdjacentHTML("beforeend",
+      `<circle r="5.5" fill="var(--ball)" stroke="var(--surface)" stroke-width="1.5" cx="${t.x1}" cy="${t.y1}"/>`);
+    return {el:layer.lastElementChild, t};
+  });
+  const t0 = performance.now();
+  (function anim(now){
+    const p = Math.min((now-t0)/D, 1), e = p<.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
+    dots.forEach(d=>{
+      d.el.setAttribute("cx", d.t.x1+(d.t.x2-d.t.x1)*e);
+      d.el.setAttribute("cy", d.t.y1+(d.t.y2-d.t.y1)*e);
     });
-    const t0 = performance.now();
-    (function anim(now){
-      const p = Math.min((now-t0)/D, 1), e = p<.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
-      dots.forEach(d=>{
-        d.el.setAttribute("cx", d.t.x1+(d.t.x2-d.t.x1)*e);
-        d.el.setAttribute("cy", d.t.y1+(d.t.y2-d.t.y1)*e);
-      });
-      if(p<1) requestAnimationFrame(anim);
-      else { dots.forEach(d=>d.el.remove()); done(); }
-    })(t0);
-  };
-  setStatus("", "第一段：三個輸入分別送進兩位評審，每條線上的數字都先乘過權重。");
-  run(EDGES.filter(e=>e.path==="w1"), 0, ()=>{
+    if(p<1) requestAnimationFrame(anim);
+    else { dots.forEach(d=>d.el.remove()); flowing = false; $("flowBtn").disabled = false; done(); }
+  })(t0);
+}
+function playFlow(){
+  if(flowing) return;
+  if(flowStage === 0){
+    setStatus("", "第一段：三個輸入分別送進兩位評審，每條線上的數字都先乘過權重。看完再點一次按鈕，繼續看第二段。");
+    runStage(EDGES.filter(e=>e.path==="w1"), ()=>{
+      flowStage = 1;
+      $("flowBtn").textContent = "看評審怎麼合成分數 →";
+    });
+  } else {
     setStatus("", "第二段：兩位評審各自的意見，再加權合成最後的分數。");
-    run(EDGES.filter(e=>e.path==="w2"), 0, ()=>{
-      flowing = false; $("flowBtn").disabled = false;
+    runStage(EDGES.filter(e=>e.path==="w2"), ()=>{
+      flowStage = 0;
+      $("flowBtn").textContent = "重新檢測一次";
       setStatus("good", `這趟就是<button class="term" data-t="forward" aria-expanded="false">前向傳遞</button> —— 你每次用 AI，它跑的都是這個。`);
     });
-  });
+  }
 }
 
 /* ============ 自動訓練 ============ */
@@ -610,6 +621,7 @@ function train(){
 ["inSweet","inIce","inPearl"].forEach(id=>{
   $(id).addEventListener("input", ()=>{
     render();
+    if(!flowing) resetFlow();
     setStatus("", "換一杯飲料，數字就從左邊重新流一次 —— 但權重沒變，模型還是同一個模型。");
   });
 });
@@ -626,6 +638,7 @@ $("randBtn").addEventListener("click", ()=>{
   $("trainStatus").className = "status";
   $("trainText").textContent = "權重被打亂了 —— 網路回到「什麼都不懂」的狀態。再訓練一次看看。";
   render();
+  if(!flowing) resetFlow();
   setStatus("", "全部重來一次：現在它又是個從沒喝過飲料的人了。");
 });
 $("resetBtn").addEventListener("click", ()=>{ init(); });
@@ -635,6 +648,7 @@ $("trainBtn").addEventListener("click", train);
 function init(){
   W = randW(); selected = null; errHist = [];
   $("inSweet").value = 10; $("inIce").value = 3; $("inPearl").value = 10;
+  resetFlow();
   $("errPath").setAttribute("d",""); $("errEmpty").setAttribute("display","");
   $("trainStatus").className = "status";
   $("trainText").textContent = "訓練 = 反覆微調每一條線的權重，直到網路的猜測貼近阿哲的評分。";

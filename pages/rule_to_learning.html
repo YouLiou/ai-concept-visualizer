@@ -10,19 +10,19 @@
 :root{
   --bg:#F5F7F4; --surface:#FFFFFF; --ink:#1C2723; --muted:#5C6D64; --line:#DCE4DE;
   --accent:#22685A; --accent-soft:#E3EFEA; --on-accent:#FFFFFF;
-  --ball:#E07B2E; --danger:#B3423A; --danger-soft:#F6E7E5; --warn:#8A5E10; --grid:#E8EDE8;
+  --ball:#E07B2E; --ball-soft:#FBE9D6; --danger:#B3423A; --danger-soft:#F6E7E5; --warn:#8A5E10; --grid:#E8EDE8;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#101714; --surface:#182220; --ink:#E6EEE9; --muted:#9AABA1;
     --line:#2C3A34; --accent:#57B99F; --accent-soft:#1E332C; --on-accent:#0E1512;
-    --ball:#F09A4E; --danger:#E07A70; --danger-soft:#33211F; --warn:#D9A741; --grid:#22302A;
+    --ball:#F09A4E; --ball-soft:#3A2B18; --danger:#E07A70; --danger-soft:#33211F; --warn:#D9A741; --grid:#22302A;
   }
 }
 :root[data-theme="dark"]{
   --bg:#101714; --surface:#182220; --ink:#E6EEE9; --muted:#9AABA1;
   --line:#2C3A34; --accent:#57B99F; --accent-soft:#1E332C; --on-accent:#0E1512;
-  --ball:#F09A4E; --danger:#E07A70; --danger-soft:#33211F; --warn:#D9A741; --grid:#22302A;
+  --ball:#F09A4E; --ball-soft:#3A2B18; --danger:#E07A70; --danger-soft:#33211F; --warn:#D9A741; --grid:#22302A;
 }
 
 *{box-sizing:border-box}
@@ -47,69 +47,59 @@ h1{font-family:"Noto Serif TC","Songti TC",serif; font-weight:900;
   padding:clamp(12px,2.5vw,22px); margin-block:8px 26px}
 .ctrl-label{font-size:.78rem; letter-spacing:.08em; color:var(--muted); display:block; margin-bottom:6px}
 .mono{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace; font-variant-numeric:tabular-nums}
-.btns{display:flex; gap:8px; flex-wrap:wrap}
+.btns{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
 .btn{font:inherit; font-size:.95rem; border-radius:9px; padding:7px 16px; cursor:pointer;
   border:1px solid var(--line); background:var(--surface); color:var(--ink)}
 .btn.primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent); font-weight:700}
 .btn:disabled{opacity:.45; cursor:not-allowed}
-.btn:focus-visible,.cup:focus-visible{outline:2px solid var(--ball); outline-offset:2px}
+.btn:focus-visible,select:focus-visible,.creature:focus-visible{outline:2px solid var(--ball); outline-offset:2px}
+select{font:inherit; font-size:.92rem; border-radius:9px; padding:7px 10px; border:1px solid var(--line);
+  background:var(--surface); color:var(--ink); max-width:100%}
+.rulerow{display:flex; gap:10px 14px; flex-wrap:wrap; align-items:center; margin-bottom:4px}
+.andline{display:flex; align-items:center; gap:8px; font-size:.9rem; color:var(--muted); margin:8px 0 4px}
 
-/* 選一杯 */
-.cups{display:flex; gap:8px; flex-wrap:wrap; padding-bottom:14px;
-  border-bottom:1px dashed var(--line); margin-bottom:14px}
-.cup{font:inherit; font-size:.88rem; border:1px solid var(--line); background:var(--surface);
-  color:var(--ink); border-radius:9px; padding:6px 12px; cursor:pointer; text-align:left}
-.cup[aria-pressed="true"]{background:var(--accent-soft); border-color:var(--accent); color:var(--accent); font-weight:700}
-.cup small{display:block; color:var(--muted); font-size:.76rem; font-weight:400}
-.cup[aria-pressed="true"] small{color:var(--accent)}
-
-/* 四個階段 */
-.steps{display:flex; gap:0; margin-bottom:14px; flex-wrap:wrap}
-.step{flex:1; min-width:132px; padding:9px 12px; border-top:3px solid var(--line);
-  color:var(--muted); font-size:.88rem; transition:color .15s, border-color .15s}
-.step .n{font-family:"IBM Plex Mono",monospace; font-size:.76rem; letter-spacing:.1em; display:block}
-.step[data-on="true"]{border-top-color:var(--accent); color:var(--ink); font-weight:700}
-.step[data-on="true"] .n{color:var(--accent)}
-.step[data-done="true"]{border-top-color:var(--accent); color:var(--muted); font-weight:400}
-.step[data-on="true"].back{border-top-color:var(--danger)}
-.step[data-on="true"].back .n{color:var(--danger)}
-
-.net-wrap{border:1px solid var(--line); border-radius:10px; background:var(--surface); overflow:hidden}
-svg{display:block; width:100%; height:auto}
-.edge-hit{stroke:transparent; stroke-width:11; cursor:pointer; fill:none}
-.node-val{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
-
-/* 圖例：會隨階段改變意義 */
-.legend{display:flex; gap:8px 18px; flex-wrap:wrap; margin-top:10px; font-size:.84rem; color:var(--muted)}
-.legend i{display:inline-block; width:22px; height:3px; border-radius:2px; vertical-align:.2em; margin-right:6px}
-
-/* 單條線的算式面板（高度固定） */
-.detail{margin-top:12px; min-height:7.2em; border:1px dashed var(--line); border-radius:10px;
-  padding:12px 15px}
-.detail .placeholder{color:var(--muted); font-size:.92rem}
-.detail h4{margin:0 0 8px; font-size:.98rem}
-.chain{display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:.88rem}
-.chain .f{background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:4px 10px; text-align:center}
-.chain .f b{display:block; font-family:"IBM Plex Mono",monospace; font-size:1rem; color:var(--ink)}
-.chain .f span{font-size:.72rem; color:var(--muted)}
-.chain .op{color:var(--muted); font-weight:700}
-.chain .res{background:var(--danger-soft); border-color:var(--danger)}
-.chain .res b{color:var(--danger)}
-.detail .note{margin:9px 0 0; font-size:.85rem; color:var(--muted)}
-
-.status{margin-top:12px; min-height:4.4em; font-size:.98rem}
+.status{margin-top:12px; min-height:3.4em; font-size:.98rem}
 .status .pill{display:inline-block; border-radius:8px; padding:4px 12px; background:var(--accent-soft)}
-.status.back .pill{background:var(--danger-soft); border:1.5px solid var(--danger); color:var(--danger)}
 .status.good .pill{border:1.5px solid var(--accent); color:var(--accent); font-weight:700}
+.status.warn .pill{border:1.5px solid var(--warn); color:var(--warn)}
 
-.scoreline{display:flex; gap:10px 26px; flex-wrap:wrap; margin-top:14px;
-  padding-top:12px; border-top:1px dashed var(--line)}
-.scoreline div{font-size:.85rem; color:var(--muted); min-width:6em}
-.scoreline .v{display:block; font-size:1.3rem; color:var(--ink);
-  font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
-.scoreline .v.bad{color:var(--danger)}
-.scoreline .v.ok{color:var(--accent)}
-#errSpark{max-width:300px; flex:1; min-width:180px; align-self:center}
+/* ============ 派典時間軸 ============ */
+.timeline{display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:10px; align-items:stretch; margin-block:8px 26px}
+.era{position:relative; background:var(--surface); border:1px solid var(--line); border-radius:14px;
+  padding:16px 16px 15px; overflow:hidden; min-width:0}
+.era .yr{position:absolute; right:8px; top:2px; font-family:"Noto Serif TC",serif; font-weight:900;
+  font-size:2.3rem; color:var(--grid); z-index:0; line-height:1; user-select:none}
+.era h3{position:relative; margin:2px 0 7px; font-size:1.05rem; z-index:1}
+.era p{position:relative; margin:0 0 10px; font-size:.87rem; color:var(--muted); z-index:1}
+.era .anchors{position:relative; display:flex; gap:6px; flex-wrap:wrap; z-index:1}
+.era .anchors span{font-size:.74rem; background:var(--accent-soft); color:var(--accent); border-radius:999px; padding:2px 9px}
+.arrow{display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:1.3rem}
+@media (max-width:760px){
+  .timeline{grid-template-columns:1fr}
+  .arrow{transform:rotate(90deg); margin:-6px auto}
+}
+
+/* ============ 生物卡 ============ */
+.deck{display:grid; grid-template-columns:repeat(auto-fill,minmax(82px,1fr)); gap:10px; margin-block:4px 4px}
+.creature{position:relative; background:var(--bg); border:2.5px solid var(--line); border-radius:12px;
+  padding:5px 5px 4px; cursor:pointer; transition:border-color .12s; text-align:center}
+.creature svg{display:block; width:100%; height:auto}
+.creature .tag{display:block; font-size:.72rem; margin-top:1px; color:var(--muted); min-height:1.3em}
+.creature[data-mark="correct"]{border-color:var(--accent)}
+.creature[data-mark="wrong"]{border-color:var(--danger)}
+.creature[data-mark="correct"] .tag{color:var(--accent); font-weight:700}
+.creature[data-mark="wrong"] .tag{color:var(--danger); font-weight:700}
+.creature[data-train="true"]{border-color:var(--ball); border-style:dashed}
+.creature[data-train="true"] .tag{color:var(--ball); font-weight:700}
+.legend-row{display:flex; gap:14px 20px; flex-wrap:wrap; font-size:.82rem; color:var(--muted); margin:10px 0 2px}
+.legend-row i{display:inline-block; width:14px; height:14px; border-radius:4px; vertical-align:-2px; margin-right:5px; border:2.5px solid}
+.legend-row i.l1{border-color:var(--line)}
+.legend-row i.l2{border-color:var(--ball); border-style:dashed}
+.legend-row i.l3{border-color:var(--accent)}
+.legend-row i.l4{border-color:var(--danger)}
+
+.progress{font-size:.9rem; color:var(--muted); margin:12px 0 2px}
+.progress b{color:var(--ink)}
 
 /* ============ 術語彈出視窗 ============ */
 .term{font:inherit; color:var(--accent); background:transparent; border:0; padding:0 2px;
@@ -141,6 +131,7 @@ svg{display:block; width:100%; height:auto}
 .anchor p{margin:0; font-size:.95rem}
 
 h2{font-family:"Noto Serif TC","Songti TC",serif; font-weight:700; font-size:1.45rem; margin:34px 0 12px}
+h2 + p.lede{margin-top:-4px; color:var(--muted); max-width:42em}
 .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px}
 .card{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px 18px}
 .card .tag{font-size:.75rem; letter-spacing:.1em; color:var(--accent); font-weight:700}
@@ -148,32 +139,12 @@ h2{font-family:"Noto Serif TC","Songti TC",serif; font-weight:700; font-size:1.4
 .card p{margin:0; font-size:.92rem; color:var(--muted)}
 .card .mono{color:var(--ink)}
 
-.recap{background:var(--surface); border:1px solid var(--line); border-radius:12px;
-  padding:18px 20px; margin-block:16px}
-.recap ol{margin:0; padding-left:1.3em}
-.recap li{margin-block:7px}
-.recap li b{color:var(--accent)}
-
 .outro{max-width:42em}
 .outro p{margin-block:10px}
 footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
   display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
   color:var(--muted); font-size:.85rem}
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
-
-/* ============ 骨架專用：待開發標示（做完這一頁後刪掉） ============ */
-.scaffold{border:2px dashed var(--ball); border-radius:14px; padding:18px 20px; margin-block:8px 26px;
-  background:var(--surface)}
-.scaffold > .flag{display:inline-block; font-size:.72rem; letter-spacing:.1em; font-weight:700;
-  color:var(--on-accent); background:var(--ball); border-radius:6px; padding:2px 9px; margin-bottom:10px}
-.scaffold h3{margin:0 0 8px; font-size:1rem}
-.scaffold ul{margin:0 0 4px; padding-left:1.25em}
-.scaffold li{font-size:.92rem; color:var(--muted); margin-block:5px}
-.scaffold li b{color:var(--ink); font-weight:500}
-.brief{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px 22px;
-  margin:0 0 16px; padding-bottom:14px; border-bottom:1px dashed var(--line)}
-.brief div b{display:block; font-size:.74rem; letter-spacing:.08em; color:var(--muted); font-weight:500}
-.brief div span{font-size:.94rem}
 </style>
 </head>
 <body>
@@ -192,42 +163,119 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
   <p>你大概說不出一條「只要符合這幾點就是貓」的規則。但你看一眼就知道 —— 而且你是<b>看過很多貓</b>才會的，不是背過貓的定義。這一頁要讓你親手體驗這兩條路的差別。</p>
 </div>
 
-<p class="intro">（待寫：承接上面的比喻，把它對應到這一頁要示範的機制，並在關鍵字上掛 <code>&lt;button class="term" data-t="…"&gt;</code>。術語辭典已經先備好在頁尾的 script 裡。）</p>
-<p class="hint">（待寫：一句話說明這一頁要怎麼操作。）（有底線的詞都可以點開，會給你一個比方）</p>
+<p class="intro">下面會用十四隻長得有點像貓又有點像狗的生物卡示範這兩條路。第一關，你來當<button class="term" data-t="rule" aria-expanded="false">規則</button>工程師：自己挑一個判斷依據，看看猜不猜得準。第二關，你改用<button class="term" data-t="ml" aria-expanded="false">機器學習</button>的方式 —— 不寫規則，只把一部分生物卡連同正確答案交出去，讓機器自己找出剩下的答案。</p>
+<p class="hint">（有底線的詞都可以點開，會給你一個比方）</p>
 
-<section class="scaffold" aria-label="這一頁的開發規格">
-  <span class="flag">骨架・尚未實作</span>
-  <div class="brief">
-    <div><b>要拆掉的誤解</b><span>「AI 是人寫了一堆 if-else 規則」</span></div>
-    <div><b>要產生的理解</b><span>寫規則做不到的事，用「學」的居然可以</span></div>
+<h2>AI 怎麼一路走到這裡</h2>
+<p class="lede">不是要你背年份，是要你看懂三個時代各自在解決什麼問題。</p>
+<div class="timeline">
+  <div class="era">
+    <span class="yr">1950s<br>–90s</span>
+    <h3>規則時代</h3>
+    <p>人把判斷條件一條一條寫死給機器，機器只會照著執行，寫的人沒想到的狀況一律不會。</p>
+    <div class="anchors"><span>專家系統</span><span>深藍（西洋棋）</span></div>
   </div>
-  <h3>預定的互動設計</h3>
-  <ul>
-    <li>派典時間軸（單位是 paradigm 不是年份）：規則時代 → 學習時代 → 深度學習時代</li>
-    <li>歷史事件降級為旁白：每段派典配 2-3 個學生認得的錨點（深藍、AlphaGo、ChatGPT），年份只當背景字</li>
-    <li>實驗一「你來當規則工程師」：給幾張貓狗圖，用下拉選單組規則（例：有鬍鬚→貓？），再丟反例讓規則當場破功</li>
-    <li>實驗二「改用餵範例」：同一個任務，學生標記約 10 張圖當訓練資料，看機器自己分類剩下的</li>
-    <li>  → 背後用極簡方法（最近鄰／加權即可），不需要真的訓練模型</li>
-    <li>收尾：「而現代 AI 的規則長這樣」→ 導向中級三頁</li>
-    <li>待討論：貓狗實驗的規則選項清單、哪些反例最有戲劇效果（教學現場經驗優先）</li>
-  </ul>
+  <div class="arrow">→</div>
+  <div class="era">
+    <span class="yr">1990s<br>–2010s</span>
+    <h3>學習時代</h3>
+    <p>改成餵機器大量的「題目＋答案」，讓它自己從例子裡找出規律，不用人把規則寫死。</p>
+    <div class="anchors"><span>垃圾郵件過濾</span><span>推薦系統</span></div>
+  </div>
+  <div class="arrow">→</div>
+  <div class="era">
+    <span class="yr">2012<br>–現在</span>
+    <h3>深度學習時代</h3>
+    <p>學到的規則多到連寫程式的人都看不懂，但效果好到嚇人 —— 這是中級三頁要拆開來看的東西。</p>
+    <div class="anchors"><span>AlphaGo</span><span>ChatGPT</span></div>
+  </div>
+</div>
+
+<h2>實驗一・你來當規則工程師</h2>
+<p class="lede">挑一個你覺得可靠的判斷依據，套用到全部十四隻生物卡上，看看猜對幾隻。</p>
+
+<section class="lab" aria-label="規則工程師實驗">
+  <div class="rulerow">
+    <div>
+      <span class="ctrl-label">判斷依據</span>
+      <select id="rule1">
+        <option value="" selected>— 請選一個特徵 —</option>
+        <option value="ears:pointy">耳朵尖尖的 → 算貓</option>
+        <option value="whiskers:true">有鬍鬚 → 算貓</option>
+        <option value="pupil:slit">瞳孔是豎的 → 算貓</option>
+        <option value="tail:fluffy">尾巴蓬鬆 → 算貓</option>
+        <option value="size:small">體型比較小 → 算貓</option>
+      </select>
+    </div>
+  </div>
+  <div class="andline">
+    <label><input type="checkbox" id="andToggle"> 想試試更嚴格一點：加第二條「而且」條件</label>
+  </div>
+  <div class="rulerow" id="rule2Row" hidden>
+    <div>
+      <span class="ctrl-label">而且</span>
+      <select id="rule2">
+        <option value="" selected>— 請選第二個特徵 —</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="deck" id="deck1"></div>
+  <div class="legend-row">
+    <span><i class="l1"></i>還沒套用規則</span>
+    <span><i class="l3"></i>規則猜對</span>
+    <span><i class="l4"></i>規則猜錯</span>
+  </div>
+
+  <div class="status" id="status1"><span class="pill" id="statusText1">先選一個判斷依據，看看你的規則在十四隻裡猜得準不準。</span></div>
+</section>
+
+<h2>實驗二・改用餵範例</h2>
+<p class="lede">不寫規則。挑一部分生物卡加進「訓練資料」（正確答案會直接顯示），讓機器從這些例子裡，自己判斷你沒挑的那些。</p>
+
+<section class="lab" aria-label="範例學習實驗">
+  <div class="deck" id="deck2"></div>
+  <div class="legend-row">
+    <span><i class="l1"></i>還沒加進訓練資料</span>
+    <span><i class="l2"></i>已加進訓練資料（答案已知）</span>
+    <span><i class="l3"></i>機器猜對</span>
+    <span><i class="l4"></i>機器猜錯</span>
+  </div>
+
+  <div class="progress" id="progress2">已加進訓練資料：<b>0</b>／14（貓 <b>0</b>・狗 <b>0</b>）</div>
+
+  <div class="btns" style="margin-top:10px">
+    <button class="btn primary" id="classifyBtn" disabled>讓機器分類剩下的</button>
+    <button class="btn" id="reset2Btn">重新開始這一關</button>
+  </div>
+
+  <div class="status" id="status2"><span class="pill" id="statusText2">點生物卡，把它加進訓練資料 —— 答案會直接顯示給機器看。貓狗都要選幾隻，至少選 6 隻。</span></div>
 </section>
 
 <h2>三個實驗，三個發現</h2>
 <div class="cards">
-  <div class="card"><span class="tag">實驗 1</span><h3>（待寫）</h3>
-    <p>每張卡都要是<b>可複現的操作指令</b>，不是說明文字 —— 例如「把學習率調到 0.10 以下，數數看要幾步」。</p></div>
-  <div class="card"><span class="tag">實驗 2</span><h3>（待寫）</h3>
-    <p>第二張通常是「破壞它」：讓學生動手把東西弄壞，從壞掉的樣子反推機制。</p></div>
-  <div class="card"><span class="tag">實驗 3</span><h3>（待寫）</h3>
-    <p>第三張拉回現實：讓學生用自己的情況試一次，體會這個機制在真實世界的後果。</p></div>
+  <div class="card">
+    <span class="tag">挑戰 1・換個判斷依據</span>
+    <h3>實驗一換另一個特徵試試</h3>
+    <p>五個特徵輪流當規則，正確率會不會一直卡在七成左右？有沒有哪個特徵完全不能用？</p>
+  </div>
+  <div class="card">
+    <span class="tag">挑戰 2・訓練資料變少</span>
+    <h3>實驗二只挑 6 隻當訓練資料</h3>
+    <p>貓狗都要有。訓練資料變少，機器分類剩下那些的正確率會掉多少？</p>
+  </div>
+  <div class="card">
+    <span class="tag">挑戰 3・兩邊都猜錯的</span>
+    <h3>找出規則和機器都判斷錯的那隻</h3>
+    <p>有一兩隻生物卡，不管用規則還是用範例學習都容易猜錯 —— 看看牠的特徵組合特別在哪裡。</p>
+  </div>
 </div>
 
 <h2>這跟 AI 有什麼關係？</h2>
 <div class="outro">
-  <p>（待寫：從這一頁的小規模示範，接到真實模型的量級。）</p>
-  <p>（待寫：這個機制帶來什麼能力、又有什麼代價或限制。）</p>
-  <p>（待寫：留一個問題，導向下一頁。）</p>
+  <p>你剛剛用五個<button class="term" data-t="feature" aria-expanded="false">特徵</button>、十四隻生物卡做的事，現在的 AI 也在做 —— 只是特徵從五個變成幾百萬個，生物卡從十四隻變成幾十億筆<button class="term" data-t="data" aria-expanded="false">訓練資料</button>。特徵不再是人一個一個想出來的，而是模型自己從資料裡找出來的，這也是為什麼深度學習學出來的「規則」，人已經看不懂。</p>
+  <p>但你應該也發現了：範例學習不是萬靈丹，總有一兩隻生物卡怎麼看都容易猜錯。這不是故障，是機器學習的本質 —— 它從來不是百分之百正確，只是比寫死的規則更能應付例外。</p>
+  <p>那機器到底是怎麼從範例「學」出判斷方式的？它又怎麼知道要看哪個特徵、給多少份量？這就是中級三頁要拆開來看的事 —— <button class="term" data-t="ml" aria-expanded="false">學習</button>不是魔法。下一頁先來看一件更基本的事：同一個模型，「上課」和「考試」其實是兩件完全不同的事。</p>
 </div>
 
 <footer class="site">
@@ -242,7 +290,7 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
 "use strict";
 const $ = id => document.getElementById(id);
 
-/* ============ 術語辭典（已先備好，文案可再調） ============ */
+/* ============ 術語辭典 ============ */
 const TERMS = {
   rule:{en:"rule-based system", zh:"規則系統 rule-based system",
     what:"人事先把判斷條件一條一條寫死，機器照著執行。符合條件就這樣做，不符合就那樣做。",
@@ -258,8 +306,7 @@ const TERMS = {
     life:"你之所以認得貓，是因為你這輩子看過幾千隻貓。那幾千隻，就是你的訓練資料。"}
 };
 
-/* ============ 彈出視窗（全站共用，不必改） ============ */
-
+/* ============ 彈出視窗 ============ */
 const pop = $("pop");
 let openBtn = null;
 function closePop(){
@@ -293,6 +340,236 @@ document.addEventListener("click", ev=>{
 });
 addEventListener("keydown", ev=>{ if(ev.key === "Escape") closePop(); });
 addEventListener("resize", ()=>{ if(openBtn) positionPop(openBtn); });
+
+/* ============ 十四隻生物卡（刻意設計：任何單一特徵都猜不準） ============ */
+const CREATURES = [
+  {id:1,  species:"cat", ears:"pointy", whiskers:true,  pupil:"slit",  tail:"fluffy", size:"small"},
+  {id:2,  species:"cat", ears:"pointy", whiskers:true,  pupil:"slit",  tail:"fluffy", size:"medium"},
+  {id:3,  species:"cat", ears:"pointy", whiskers:true,  pupil:"slit",  tail:"short",  size:"small"},
+  {id:4,  species:"cat", ears:"round",  whiskers:true,  pupil:"slit",  tail:"fluffy", size:"small"},
+  {id:5,  species:"cat", ears:"pointy", whiskers:false, pupil:"slit",  tail:"fluffy", size:"small"},
+  {id:6,  species:"cat", ears:"pointy", whiskers:true,  pupil:"round", tail:"fluffy", size:"small"},
+  {id:13, species:"cat", ears:"round",  whiskers:false, pupil:"round", tail:"short",  size:"medium"},
+  {id:7,  species:"dog", ears:"round",  whiskers:false, pupil:"round", tail:"short",  size:"medium"},
+  {id:8,  species:"dog", ears:"round",  whiskers:false, pupil:"round", tail:"short",  size:"small"},
+  {id:9,  species:"dog", ears:"round",  whiskers:true,  pupil:"round", tail:"short",  size:"medium"},
+  {id:10, species:"dog", ears:"pointy", whiskers:false, pupil:"round", tail:"short",  size:"medium"},
+  {id:11, species:"dog", ears:"round",  whiskers:false, pupil:"round", tail:"fluffy", size:"small"},
+  {id:12, species:"dog", ears:"round",  whiskers:false, pupil:"slit",  tail:"short",  size:"medium"},
+  {id:14, species:"dog", ears:"pointy", whiskers:true,  pupil:"slit",  tail:"fluffy", size:"small"}
+];
+const FEATS = ["ears","whiskers","pupil","tail","size"];
+const speciesLabel = s => s==="cat" ? "貓" : "狗";
+
+/* ============ 生物卡 SVG（純幾何圖形，不用照片） ============ */
+function creatureSVG(f){
+  const small = f.size === "small";
+  const bw = small?19:23, bh = small?12:15, bx=50, by=77;
+  const hr = small?16:19, hx=50, hy=41;
+  let s = `<svg viewBox="0 0 100 100" role="img" aria-hidden="true">`;
+  s += `<ellipse cx="${bx}" cy="${by}" rx="${bw}" ry="${bh}" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.6"/>`;
+  if(f.tail === "fluffy"){
+    s += `<circle cx="${bx+bw-1}" cy="${by-5}" r="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.3"/>`;
+    s += `<circle cx="${bx+bw+6}" cy="${by-11}" r="4.4" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.3"/>`;
+    s += `<circle cx="${bx+bw+10}" cy="${by-18}" r="3.8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.3"/>`;
+  } else {
+    s += `<path d="M ${bx+bw-2} ${by-2} Q ${bx+bw+10} ${by-7} ${bx+bw+7} ${by-15}" fill="none" stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round"/>`;
+  }
+  s += `<circle cx="${hx}" cy="${hy}" r="${hr}" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.8"/>`;
+  const earDx = hr*0.62, earY = hy - hr*0.72;
+  if(f.ears === "pointy"){
+    s += `<polygon points="${hx-earDx-6},${earY+8} ${hx-earDx+2},${earY-9} ${hx-earDx+9},${earY+7}" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.8" stroke-linejoin="round"/>`;
+    s += `<polygon points="${hx+earDx-9},${earY+7} ${hx+earDx-2},${earY-9} ${hx+earDx+6},${earY+8}" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.8" stroke-linejoin="round"/>`;
+  } else {
+    s += `<circle cx="${hx-earDx}" cy="${earY}" r="7" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.8"/>`;
+    s += `<circle cx="${hx+earDx}" cy="${earY}" r="7" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.8"/>`;
+  }
+  const eyeDx = 8, eyeY = hy - 2;
+  s += `<circle cx="${hx-eyeDx}" cy="${eyeY}" r="5" fill="#fff" stroke="var(--ink)" stroke-width="1.1"/>`;
+  s += `<circle cx="${hx+eyeDx}" cy="${eyeY}" r="5" fill="#fff" stroke="var(--ink)" stroke-width="1.1"/>`;
+  if(f.pupil === "slit"){
+    s += `<ellipse cx="${hx-eyeDx}" cy="${eyeY}" rx="1.5" ry="4.2" fill="var(--ink)"/>`;
+    s += `<ellipse cx="${hx+eyeDx}" cy="${eyeY}" rx="1.5" ry="4.2" fill="var(--ink)"/>`;
+  } else {
+    s += `<circle cx="${hx-eyeDx}" cy="${eyeY}" r="2.6" fill="var(--ink)"/>`;
+    s += `<circle cx="${hx+eyeDx}" cy="${eyeY}" r="2.6" fill="var(--ink)"/>`;
+  }
+  const noseY = hy + 8;
+  s += `<polygon points="${hx-2.5},${noseY} ${hx+2.5},${noseY} ${hx},${noseY+3.5}" fill="var(--ball)"/>`;
+  if(f.whiskers){
+    [-4,0,4].forEach(dy=>{
+      s += `<line x1="${hx-6}" y1="${noseY+dy*0.6}" x2="${hx-hr+2}" y2="${noseY+dy}" stroke="var(--muted)" stroke-width="1"/>`;
+      s += `<line x1="${hx+6}" y1="${noseY+dy*0.6}" x2="${hx+hr-2}" y2="${noseY+dy}" stroke="var(--muted)" stroke-width="1"/>`;
+    });
+  }
+  s += `</svg>`;
+  return s;
+}
+
+/* ============ 實驗一：規則工程師 ============ */
+const RULE_LABELS = {
+  ears:"耳朵尖尖的", whiskers:"有鬍鬚", pupil:"瞳孔是豎的", tail:"尾巴蓬鬆", size:"體型比較小"
+};
+function parseRuleVal(feat, raw){ return feat === "whiskers" ? raw === "true" : raw; }
+
+function renderDeck1(){
+  $("deck1").innerHTML = CREATURES.map(c =>
+    `<div class="creature" data-id="${c.id}">${creatureSVG(c)}<span class="tag"></span></div>`
+  ).join("");
+}
+
+function buildRule2Options(excludeFeat){
+  const opts = [`<option value="" selected>— 請選第二個特徵 —</option>`];
+  const vals = { ears:["pointy","耳朵尖尖的"], whiskers:["true","有鬍鬚"], pupil:["slit","瞳孔是豎的"], tail:["fluffy","尾巴蓬鬆"], size:["small","體型比較小"] };
+  FEATS.forEach(f=>{
+    if(f === excludeFeat) return;
+    opts.push(`<option value="${f}:${vals[f][0]}">${vals[f][1]} → 算貓</option>`);
+  });
+  $("rule2").innerHTML = opts.join("");
+}
+
+function applyRule(){
+  const raw1 = $("rule1").value;
+  const cards = document.querySelectorAll("#deck1 .creature");
+  if(!raw1){
+    cards.forEach(el=>{ el.dataset.mark=""; el.querySelector(".tag").textContent = ""; });
+    $("status1").className = "status";
+    $("statusText1").textContent = "先選一個判斷依據，看看你的規則在十四隻裡猜得準不準。";
+    return;
+  }
+  const [f1, v1raw] = raw1.split(":");
+  const v1 = parseRuleVal(f1, v1raw);
+  const andOn = $("andToggle").checked;
+  const raw2 = andOn ? $("rule2").value : "";
+  let f2 = null, v2 = null;
+  if(raw2){ const [ff,vv] = raw2.split(":"); f2 = ff; v2 = parseRuleVal(ff, vv); }
+
+  let correct = 0;
+  cards.forEach(el=>{
+    const c = CREATURES.find(x => x.id === +el.dataset.id);
+    let m1 = c[f1] === v1;
+    let guessCat = f2 ? (m1 && c[f2] === v2) : m1;
+    const guess = guessCat ? "cat" : "dog";
+    const ok = guess === c.species;
+    if(ok) correct++;
+    el.dataset.mark = ok ? "correct" : "wrong";
+    el.querySelector(".tag").textContent = `猜${speciesLabel(guess)}`;
+  });
+
+  window.rule1Accuracy = { correct, total: CREATURES.length };
+  const pct = Math.round(correct / CREATURES.length * 100);
+  $("status1").className = "status " + (pct >= 85 ? "good" : "");
+  $("statusText1").innerHTML = `這條規則在 14 隻裡猜對 <b class="mono">${correct}</b> 隻（<b class="mono">${pct}%</b>）。紅框都是它猜錯的。`;
+  updateStatus2Comparison();
+}
+
+$("rule1").addEventListener("change", ()=>{
+  buildRule2Options($("rule1").value.split(":")[0]);
+  applyRule();
+});
+$("andToggle").addEventListener("change", ()=>{
+  $("rule2Row").hidden = !$("andToggle").checked;
+  if(!$("andToggle").checked){ $("rule2").value = ""; }
+  applyRule();
+});
+$("rule2").addEventListener("change", applyRule);
+
+/* ============ 實驗二：範例學習 ============ */
+let trainSet = new Set();
+
+function renderDeck2(){
+  $("deck2").innerHTML = CREATURES.map(c =>
+    `<div class="creature" data-id="${c.id}" tabindex="0" role="button" aria-pressed="false">${creatureSVG(c)}<span class="tag"></span></div>`
+  ).join("");
+}
+
+function hamming(a, b){
+  let d = 0;
+  FEATS.forEach(k=>{ if(a[k] !== b[k]) d++; });
+  return d;
+}
+
+function updateProgress(){
+  const trained = CREATURES.filter(c => trainSet.has(c.id));
+  const cats = trained.filter(c=>c.species==="cat").length;
+  const dogs = trained.filter(c=>c.species==="dog").length;
+  $("progress2").innerHTML = `已加進訓練資料：<b class="mono">${trained.length}</b>／14（貓 <b class="mono">${cats}</b>・狗 <b class="mono">${dogs}</b>）`;
+  $("classifyBtn").disabled = !(trained.length >= 6 && cats >= 1 && dogs >= 1);
+}
+
+function toggleTrain(id){
+  if(trainSet.has(id)) trainSet.delete(id); else trainSet.add(id);
+  const el = document.querySelector(`#deck2 .creature[data-id="${id}"]`);
+  const c = CREATURES.find(x=>x.id===id);
+  const on = trainSet.has(id);
+  el.dataset.train = on ? "true" : "false";
+  el.dataset.mark = "";
+  el.setAttribute("aria-pressed", on ? "true" : "false");
+  el.querySelector(".tag").textContent = on ? `訓練：${speciesLabel(c.species)}` : "";
+  updateProgress();
+  $("status2").className = "status";
+  $("statusText2").textContent = "點生物卡，把它加進訓練資料 —— 答案會直接顯示給機器看。貓狗都要選幾隻，至少選 6 隻。";
+}
+
+$("deck2").addEventListener("click", ev=>{
+  const el = ev.target.closest(".creature");
+  if(!el) return;
+  toggleTrain(+el.dataset.id);
+});
+$("deck2").addEventListener("keydown", ev=>{
+  if(ev.key !== "Enter" && ev.key !== " ") return;
+  const el = ev.target.closest(".creature");
+  if(!el) return;
+  ev.preventDefault();
+  toggleTrain(+el.dataset.id);
+});
+
+function classify(){
+  const trained = CREATURES.filter(c => trainSet.has(c.id));
+  const untrained = CREATURES.filter(c => !trainSet.has(c.id));
+  const k = Math.min(3, trained.length);
+  let correct = 0;
+  untrained.forEach(c=>{
+    const ranked = trained.map(t => ({ t, d: hamming(c, t) })).sort((a,b)=>a.d-b.d).slice(0, k);
+    const votes = { cat:0, dog:0 };
+    ranked.forEach(r => votes[r.t.species]++);
+    const guess = votes.cat >= votes.dog ? "cat" : "dog";
+    const ok = guess === c.species;
+    if(ok) correct++;
+    const el = document.querySelector(`#deck2 .creature[data-id="${c.id}"]`);
+    el.dataset.mark = ok ? "correct" : "wrong";
+    el.querySelector(".tag").textContent = `猜${speciesLabel(guess)}`;
+  });
+  window.nn2Accuracy = { correct, total: untrained.length };
+  const pct = untrained.length ? Math.round(correct / untrained.length * 100) : 0;
+  $("status2").className = "status " + (pct >= 85 ? "good" : "");
+  $("statusText2").innerHTML = `範例學習在沒被挑進訓練資料的 <b class="mono">${untrained.length}</b> 隻裡猜對 <b class="mono">${correct}</b> 隻（<b class="mono">${pct}%</b>）。`;
+  updateStatus2Comparison();
+}
+
+function updateStatus2Comparison(){
+  if(window.rule1Accuracy && window.nn2Accuracy){
+    const r = window.rule1Accuracy, n = window.nn2Accuracy;
+    const rPct = Math.round(r.correct / r.total * 100);
+    const nPct = Math.round(n.correct / n.total * 100);
+    $("statusText2").innerHTML += `<br>對照實驗一：規則在全部 14 隻裡是 <b class="mono">${rPct}%</b>，範例學習在沒看過的那幾隻裡是 <b class="mono">${nPct}%</b>。`;
+  }
+}
+
+$("classifyBtn").addEventListener("click", classify);
+$("reset2Btn").addEventListener("click", ()=>{
+  trainSet = new Set();
+  window.nn2Accuracy = null;
+  renderDeck2();
+  updateProgress();
+  $("status2").className = "status";
+  $("statusText2").textContent = "點生物卡，把它加進訓練資料 —— 答案會直接顯示給機器看。貓狗都要選幾隻，至少選 6 隻。";
+});
+
+/* ============ 啟動 ============ */
+renderDeck1();
+renderDeck2();
+updateProgress();
 </script>
 </body>
 </html>
