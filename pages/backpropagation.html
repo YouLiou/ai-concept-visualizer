@@ -54,7 +54,7 @@ h1{font-family:"Noto Serif TC","Songti TC",serif; font-weight:900;
 .btn:disabled{opacity:.45; cursor:not-allowed}
 .btn:focus-visible,.cup:focus-visible{outline:2px solid var(--ball); outline-offset:2px}
 
-/* 選一杯 */
+/* 選一張卡 */
 .cups{display:flex; gap:8px; flex-wrap:wrap; padding-bottom:14px;
   border-bottom:1px dashed var(--line); margin-bottom:14px}
 .cup{font:inherit; font-size:.88rem; border:1px solid var(--line); background:var(--surface);
@@ -174,21 +174,21 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
 <p class="subtitle">Backpropagation — 錯了之後，怎麼算出「每一條線該負多少責任」。</p>
 
 <div class="anchor">
-  <h3>先想一件事：一杯飲料被客訴了</h3>
-  <p>老闆問主管：「你為什麼給這杯這麼高分？」主管說：「因為評審 A 給我高分，而我很<b>信任</b> A。」於是責任往回推給 A。A 說：「因為珍珠加很多，而我很<b>看重</b>珍珠。」責任就這樣一層一層回推 —— 而每個人分到多少，取決於<b>他被信任的程度</b>。這整套究責流程，就是反向傳播。</p>
+  <h3>先想一件事：一張卡的鑑定被抱怨了</h3>
+  <p>玩家問版主：「你為什麼給這張卡打這麼高分？」版主說：「因為鑑定師 A 給我高分，而我很<b>信任</b> A。」於是責任往回推給 A。A 說：「因為立繪很華麗，而我很<b>看重</b>立繪。」責任就這樣一層一層回推 —— 而每個人分到多少，取決於<b>他被信任的程度</b>。這整套究責流程，就是反向傳播。</p>
 </div>
 
-<p class="intro">先講一個最容易搞錯的事：反向傳播<b>不是把資料倒著送回去</b>。往回走的不是飲料，是「這個錯，誰該扛多少」。每一條線最後會拿到一個數字，叫它的<button class="term" data-t="grad" aria-expanded="false">梯度</button> —— 意思是「這條線動一點點，誤差會變多少」。拿到這個數字，就知道該往哪個方向修。</p>
-<p class="hint">按「下一步」走完一輪：送一杯 → 算誤差 → 往回追責 → 照責任修正。<b>點任何一條線</b>可以看它的責任是怎麼乘出來的。（有底線的詞都可以點開，會給你一個比方）</p>
+<p class="intro">先講一個最容易搞錯的事：反向傳播<b>不是把資料倒著送回去</b>。往回走的不是卡片，是「這個錯，誰該扛多少」。每一條線最後會拿到一個數字，叫它的<button class="term" data-t="grad" aria-expanded="false">梯度</button> —— 意思是「這條線動一點點，誤差會變多少」。拿到這個數字，就知道該往哪個方向修。</p>
+<p class="hint">按「下一步」走完一輪：送一張卡 → 算誤差 → 往回追責 → 照責任修正。<b>點任何一條線</b>可以看它的責任是怎麼乘出來的。（有底線的詞都可以點開，會給你一個比方）</p>
 
 <section class="lab" aria-label="反向傳播互動實驗">
   <div>
-    <span class="ctrl-label">拿阿哲喝過的哪一杯來教它？</span>
+    <span class="ctrl-label">拿阿哲抽過的哪一張卡來教它？</span>
     <div class="cups" id="cups"></div>
   </div>
 
   <div class="steps" id="steps">
-    <div class="step" data-s="1"><span class="n">STEP 1</span>送一杯進去</div>
+    <div class="step" data-s="1"><span class="n">STEP 1</span>送一張卡進去</div>
     <div class="step" data-s="2"><span class="n">STEP 2</span>算它錯多少</div>
     <div class="step back" data-s="3"><span class="n">STEP 3</span>往回追責任</div>
     <div class="step" data-s="4"><span class="n">STEP 4</span>照責任修正</div>
@@ -212,7 +212,7 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
     <span class="placeholder">👆 點圖上任何一條線，看它的責任是怎麼一層一層乘出來的。</span>
   </div>
 
-  <div class="status" id="statusBox"><span class="pill" id="statusText">選一杯飲料，然後按「下一步」開始。現在的權重是隨機的，它一定會猜錯 —— 這正是我們要的。</span></div>
+  <div class="status" id="statusBox"><span class="pill" id="statusText">選一張卡，然後按「下一步」開始。現在的權重是隨機的，它一定會猜錯 —— 這正是我們要的。</span></div>
 
   <div class="scoreline">
     <div>網路猜<span class="v" id="roGuess">—</span></div>
@@ -241,7 +241,7 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
     <p>九條線扛的責任差很多。<b>被信任得越多的人，要負的責任越大</b> —— 這就是為什麼責任要乘上權重，而不是大家分一樣。</p>
   </div>
   <div class="card">
-    <span class="tag">實驗 2・換一杯就換一批</span>
+    <span class="tag">實驗 2・換一張卡就換一批</span>
     <h3>用不同的杯子各跑一輪，比較 STEP 3</h3>
     <p>責任的分布會整個變。因為「這條線該負多少責任」，本來就取決於<b>這一次餵的是什麼資料</b>。</p>
   </div>
@@ -288,13 +288,13 @@ const TERMS = {
     life:"跟上一頁那顆球腳下的坡度是同一個東西 —— 只是那裡只有一個參數，這裡有九個，所以要一條一條算出來。"},
   chain:{en:"chain rule", zh:"連鎖律 chain rule",
     what:"把一長串環環相扣的影響，用乘法串起來。反向傳播的每一條責任鏈，都是這樣乘出來的。",
-    life:"主管扛 100 分責任，他有七成判斷來自評審 A，A 就分到 70 分；A 又有一半判斷來自珍珠，珍珠那條線就分到 35 分。一路乘下去就對了。"},
+    life:"版主扛 100 分責任，他有七成判斷來自鑑定師 A，A 就分到 70 分；A 又有一半判斷來自立繪，立繪那條線就分到 35 分。一路乘下去就對了。"},
   converge:{en:"convergence", zh:"收斂 convergence",
     what:"誤差降到幾乎不再變動，權重也跟著停下來。因為沒有誤差，就沒有責任可分。",
-    life:"客訴解決了，就沒有人需要被檢討 —— 大家維持原樣繼續做事。"},
+    life:"鑑定爭議解決了，就沒有人需要被檢討 —— 大家維持原樣繼續做事。"},
   lr:{en:"learning rate", zh:"學習率 learning rate",
     what:"算出責任之後，要照著改多少。責任只告訴你方向和相對大小，改多用力是另一個決定。",
-    life:"知道某個評審要為這次失誤負三成責任，是一回事；要因此把他的發言權砍掉多少，是另一回事。砍太狠會矯枉過正，砍太輕又等於沒改。"}
+    life:"知道某個鑑定師要為這次失誤負三成責任，是一回事；要因此把他的發言權砍掉多少，是另一回事。砍太狠會矯枉過正，砍太輕又等於沒改。"}
 };
 
 /* ============ 彈出視窗 ============ */
@@ -333,8 +333,8 @@ addEventListener("keydown", ev=>{ if(ev.key === "Escape") closePop(); });
 addEventListener("resize", ()=>{ if(openBtn) positionPop(openBtn); });
 
 /* ============ 網路：與第一頁完全相同的 3 → 2 → 1 ============ */
-const IN_NAMES = ["甜度","冰塊","珍珠"];
-const HID_NAMES = ["評審 A","評審 B"];
+const IN_NAMES = ["稀有度","數值","立繪"];
+const HID_NAMES = ["鑑定師 A","鑑定師 B"];
 const LR = 3.0;
 let W;
 function randW(){
@@ -361,10 +361,10 @@ const DATA = [
   {s:3,  i:0,  p:10, t:0.87}
 ];
 const norm = d => [d.s/10, d.i/10, d.p/10];
-const sweetLbl = v => v>=9?"全糖":v>=7?"少糖":v>=4?"半糖":v>=1?"微糖":"無糖";
-const iceLbl   = v => v>=9?"多冰":v>=6?"正常冰":v>=3?"少冰":v>=1?"微冰":"去冰";
-const pearlLbl = v => v>=8?"加滿":v>=4?"半份":v>=1?"一點點":"不加";
-const cupText  = d => `${sweetLbl(d.s)}、${iceLbl(d.i)}、珍珠${pearlLbl(d.p)}`;
+const rarityLbl = v => v>=9?"傳說":v>=7?"史詩":v>=4?"精良":v>=1?"普通":"基礎";
+const powerLbl  = v => v>=9?"爆表":v>=6?"強力":v>=3?"中等":v>=1?"偏弱":"貧弱";
+const artLbl    = v => v>=8?"華麗":v>=4?"精緻":v>=1?"簡樸":"陽春";
+const cardText  = d => `${rarityLbl(d.s)}、${powerLbl(d.i)}、立繪${artLbl(d.p)}`;
 
 /* ============ 版面 ============ */
 const POS = { in:[{x:140,y:120},{x:140,y:235},{x:140,y:350}],
@@ -555,14 +555,14 @@ function drawDetail(){
   }else{
     const sens = (1-F.h[e.j]*F.h[e.j]);
     chain = f("最後錯了多少", G.dz2.toFixed(3)) + `<span class="op">×</span>` +
-            f(`主管對${HID_NAMES[e.j]}的信任`, W.w2[e.j].toFixed(2)) + `<span class="op">×</span>` +
+            f(`版主對${HID_NAMES[e.j]}的信任`, W.w2[e.j].toFixed(2)) + `<span class="op">×</span>` +
             f(`${HID_NAMES[e.j]}的靈敏度`, sens.toFixed(2)) + `<span class="op">×</span>` +
             f(`${IN_NAMES[e.k]}的量`, x[e.k].toFixed(2)) + `<span class="op">=</span>` +
             `<span class="f res"><b>${gradOf(e).toFixed(3)}</b><span>這條線的責任</span></span>`;
   }
   const note = e.path === "w2"
-    ? "意見越極端的評審，要扛的責任越大 —— 因為錯誤有更多是他造成的。"
-    : "「靈敏度」是指這位評審還推得動嗎。他的意見如果已經很極端（接近 +1 或 −1），再怎麼調他都動不了，責任自然就小。";
+    ? "意見越極端的鑑定師，要扛的責任越大 —— 因為錯誤有更多是他造成的。"
+    : "「靈敏度」是指這位鑑定師還推得動嗎。他的意見如果已經很極端（接近 +1 或 −1），再怎麼調他都動不了，責任自然就小。";
   el.innerHTML = `<h4>${edgeName(e)}　責任佔比 ${blameShare(e).toFixed(0)}%</h4>` +
     `<div class="chain">${chain}</div><p class="note">${note}</p>`;
 }
@@ -616,7 +616,7 @@ function next(){
     phase = 1; F = forward(norm(d)); G = null; selected = null;
     busy = true; $("nextBtn").disabled = true;
     render();
-    setStatus("", `<b>STEP 1</b>　把這杯「${cupText(d)}」送進網路，一層一層算到底 —— 這就是上上頁的前向傳遞。`);
+    setStatus("", `<b>STEP 1</b>　把這張卡「${cardText(d)}」送進網路，一層一層算到底 —— 這就是上上頁的前向傳遞。`);
     flow(1, ()=>{ busy = false; $("nextBtn").disabled = false; render(); });
     return;
   }
@@ -630,7 +630,7 @@ function next(){
     phase = 3; G = backward(); selected = null;
     busy = true; $("nextBtn").disabled = true;
     render();
-    setStatus("back", `<b>STEP 3</b>　責任從右往左傳：先算出主管該負多少，再按「信任程度」分給兩位評審，最後分到每一條線。<b>注意線的粗細換意思了 —— 現在代表責任，不是權重。</b>`);
+    setStatus("back", `<b>STEP 3</b>　責任從右往左傳：先算出版主該負多少，再按「信任程度」分給兩位鑑定師，最後分到每一條線。<b>注意線的粗細換意思了 —— 現在代表責任，不是權重。</b>`);
     flow(-1, ()=>{ busy = false; $("nextBtn").disabled = false; render(); });
     return;
   }
@@ -643,7 +643,7 @@ function next(){
     errHist.push(after);
     phase = 4; G = null; selected = null;
     render();
-    setStatus("good", `<b>STEP 4</b>　每條線都照自己的責任往回修了一點點 —— 這杯的誤差從 <b class="mono">${before.toFixed(0)}</b> 分降到 <b class="mono">${after.toFixed(0)}</b> 分。<br>一輪就是這樣。真實模型要跑幾百萬輪。`);
+    setStatus("good", `<b>STEP 4</b>　每條線都照自己的責任往回修了一點點 —— 這張卡的誤差從 <b class="mono">${before.toFixed(0)}</b> 分降到 <b class="mono">${after.toFixed(0)}</b> 分。<br>一輪就是這樣。真實模型要跑幾百萬輪。`);
     $("nextBtn").textContent = "再跑一輪 →";
     return;
   }
@@ -660,14 +660,14 @@ function fastRun(){
       G = backward();
       applyUpdate();
       round++;
-      cup = (cup+1) % DATA.length;         // 輪流用每一杯，跟真實訓練一樣
+      cup = (cup+1) % DATA.length;         // 輪流用每一張卡，跟真實訓練一樣
       errHist.push(Math.abs(forward(norm(DATA[cup])).y - DATA[cup].t)*100);
       n++;
     }
     phase = 4; F = forward(norm(DATA[cup])); G = null;
     drawCups(); render();
     $("nextBtn").textContent = "再跑一輪 →";
-    setStatus("", `連跑中… 已完成 <b class="mono">${round}</b> 輪，目前這杯差 <b class="mono">${(Math.abs(F.y-DATA[cup].t)*100).toFixed(0)}</b> 分。`);
+    setStatus("", `連跑中… 已完成 <b class="mono">${round}</b> 輪，目前這張卡差 <b class="mono">${(Math.abs(F.y-DATA[cup].t)*100).toFixed(0)}</b> 分。`);
     if(n >= 30){
       clearInterval(timer);
       busy = false; $("fastBtn").disabled = false; $("nextBtn").disabled = false;
@@ -679,7 +679,7 @@ function fastRun(){
 /* ============ 選杯子 ============ */
 function drawCups(){
   $("cups").innerHTML = DATA.map((d,i)=>
-    `<button class="cup" data-i="${i}" aria-pressed="${i===cup}">${cupText(d)}` +
+    `<button class="cup" data-i="${i}" aria-pressed="${i===cup}">${cardText(d)}` +
     `<small>阿哲給 ${Math.round(d.t*100)} 分</small></button>`).join("");
 }
 
@@ -690,7 +690,7 @@ $("cups").addEventListener("click", ev=>{
   cup = +b.dataset.i; phase = 0; F = null; G = null; selected = null;
   $("nextBtn").textContent = "下一步 →";
   drawCups(); render();
-  setStatus("", `換成「${cupText(DATA[cup])}」—— 阿哲給它 ${Math.round(DATA[cup].t*100)} 分。按「下一步」送進去。`);
+  setStatus("", `換成「${cardText(DATA[cup])}」—— 阿哲給它 ${Math.round(DATA[cup].t*100)} 分。按「下一步」送進去。`);
 });
 $("net").addEventListener("click", ev=>{
   const hit = ev.target.closest(".edge-hit");
@@ -710,7 +710,7 @@ function init(){
   $("nextBtn").textContent = "下一步 →";
   $("nextBtn").disabled = false; $("fastBtn").disabled = false; busy = false;
   drawCups(); render();
-  setStatus("", "選一杯飲料，然後按「下一步」開始。現在的權重是隨機的，它一定會猜錯 —— 這正是我們要的。");
+  setStatus("", "選一張卡，然後按「下一步」開始。現在的權重是隨機的，它一定會猜錯 —— 這正是我們要的。");
 }
 init();
 </script>

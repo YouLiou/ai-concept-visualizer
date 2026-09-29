@@ -55,7 +55,7 @@ h1{font-family:"Noto Serif TC","Songti TC",serif; font-weight:900;
 .btn:focus-visible,input:focus-visible{outline:2px solid var(--ball); outline-offset:2px}
 input[type=range]{accent-color:var(--accent); width:100%}
 
-/* 一杯飲料的三個輸入 */
+/* 一張卡的三個輸入 */
 .order{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px 20px;
   padding-bottom:14px; margin-bottom:6px; border-bottom:1px dashed var(--line)}
 .order .f{display:flex; justify-content:space-between; align-items:baseline; gap:8px}
@@ -159,25 +159,25 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
 <p class="subtitle">Neural Network — 拆開來看，它只是一排「各有偏好的評分員」。</p>
 
 <div class="anchor">
-  <h3>先想一件事：你怎麼判斷一杯手搖飲好不好喝</h3>
-  <p>甜度、冰塊、珍珠 —— 你心裡對每一項的<b>在乎程度</b>都不一樣。有人珍珠是關鍵，有人多一分甜就扣一分。你沒有公式，但你有一套「權重」。神經網路做的事一模一樣，差別只在它的權重是<b>數字</b>，而且可以被調整。</p>
+  <h3>先想一件事：你怎麼判斷抽到一張卡值不值得開心</h3>
+  <p>稀有度、數值、立繪 —— 你心裡對每一項的<b>在乎程度</b>都不一樣。有人立繪是關鍵，有人看到數值灌好灌滿反而扣分。你沒有公式，但你有一套「權重」。神經網路做的事一模一樣，差別只在它的權重是<b>數字</b>，而且可以被調整。</p>
 </div>
 
-<p class="intro">下面這張圖就是一個真的<button class="term" data-t="nn" aria-expanded="false">神經網路</button>。左邊三個圓圈是你點的飲料，中間兩個是<button class="term" data-t="hidden" aria-expanded="false">隱藏層</button>的<button class="term" data-t="neuron" aria-expanded="false">神經元</button>，右邊吐出一個「好喝程度」。連接它們的每一條線都有一個<button class="term" data-t="weight" aria-expanded="false">權重</button> —— <b>線越粗代表越在乎，綠色是加分、紅色是扣分</b>。這些線，就是模型的全部。</p>
-<p class="hint">拉上面的滑桿換一杯飲料，或直接<b>點任何一條線</b>調整它的權重。（有底線的詞都可以點開，會給你一個比方）</p>
+<p class="intro">下面這張圖就是一個真的<button class="term" data-t="nn" aria-expanded="false">神經網路</button>。左邊三個圓圈是你抽到的卡，中間兩個是<button class="term" data-t="hidden" aria-expanded="false">隱藏層</button>的<button class="term" data-t="neuron" aria-expanded="false">神經元</button>，右邊吐出一個「歐氣值」。連接它們的每一條線都有一個<button class="term" data-t="weight" aria-expanded="false">權重</button> —— <b>線越粗代表越在乎，綠色是加分、紅色是扣分</b>。這些線，就是模型的全部。</p>
+<p class="hint">拉上面的滑桿換一張卡，或直接<b>點任何一條線</b>調整它的權重。（有底線的詞都可以點開，會給你一個比方）</p>
 
 <section class="lab" aria-label="神經網路互動實驗">
   <div class="order">
     <div>
-      <div class="f"><b>甜度</b><span class="val" id="lblSweet">全糖</span></div>
+      <div class="f"><b>稀有度</b><span class="val" id="lblSweet">傳說</span></div>
       <input type="range" id="inSweet" min="0" max="10" step="1" value="10">
     </div>
     <div>
-      <div class="f"><b>冰塊</b><span class="val" id="lblIce">少冰</span></div>
+      <div class="f"><b>數值</b><span class="val" id="lblIce">中等</span></div>
       <input type="range" id="inIce" min="0" max="10" step="1" value="3">
     </div>
     <div>
-      <div class="f"><b>珍珠</b><span class="val" id="lblPearl">加滿</span></div>
+      <div class="f"><b>立繪</b><span class="val" id="lblPearl">華麗</span></div>
       <input type="range" id="inPearl" min="0" max="10" step="1" value="10">
     </div>
   </div>
@@ -200,27 +200,27 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
 
   <div class="outbar">
     <div>
-      <span class="cap">這杯的預測分數</span>
+      <span class="cap">這張卡的預測分數</span>
       <div class="big"><span id="outVal">—</span><span style="font-size:.5em">分</span></div>
     </div>
     <div class="btns" style="margin-left:auto">
-      <button class="btn primary" id="flowBtn">送去試喝檢測</button>
+      <button class="btn primary" id="flowBtn">送去鑑定</button>
       <button class="btn" id="randBtn">隨機打亂權重</button>
       <button class="btn" id="resetBtn">重設</button>
     </div>
   </div>
 
-  <div class="status" id="statusBox"><span class="pill" id="statusText">現在的權重是隨機的，所以它的評分毫無道理 —— 就像一個從沒喝過飲料的人在猜。</span></div>
+  <div class="status" id="statusBox"><span class="pill" id="statusText">現在的權重是隨機的，所以它的評分毫無道理 —— 就像一個從沒抽過卡的人在猜。</span></div>
 </section>
 
-<h2>讓它學會「阿哲的口味」</h2>
-<p class="lede">阿哲喝過五杯，也給了分數。網路現在猜得亂七八糟 —— 按下自動訓練，看它自己把每條線調到對的粗細。</p>
+<h2>讓它學會「阿哲的品味」</h2>
+<p class="lede">阿哲抽過五張卡，也給了評分。網路現在猜得亂七八糟 —— 按下自動訓練，看它自己把每條線調到對的粗細。</p>
 
 <section class="lab" aria-label="訓練">
   <div class="tbl-wrap">
     <table>
       <thead>
-        <tr><th>阿哲喝過的</th><th class="num">他給幾分</th><th class="num">網路猜幾分</th><th class="num">差多少</th></tr>
+        <tr><th>阿哲抽過的</th><th class="num">他給幾分</th><th class="num">網路猜幾分</th><th class="num">差多少</th></tr>
       </thead>
       <tbody id="dataBody"></tbody>
     </table>
@@ -249,7 +249,7 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
   <div class="card">
     <span class="tag">實驗 1・誰最重要</span>
     <h3>訓練完後，看哪條線最粗</h3>
-    <p>從三個輸入拉出來的線，粗細代表阿哲最在乎什麼。網路沒有人告訴它答案 —— 它是<b>從五杯飲料裡自己看出來的</b>。</p>
+    <p>從三個輸入拉出來的線，粗細代表阿哲最在乎什麼。網路沒有人告訴它答案 —— 它是<b>從五張卡裡自己看出來的</b>。</p>
   </div>
   <div class="card">
     <span class="tag">實驗 2・破壞它</span>
@@ -258,14 +258,14 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
   </div>
   <div class="card">
     <span class="tag">實驗 3・它只認識阿哲</span>
-    <h3>點一杯「你」覺得好喝的，看它給幾分</h3>
-    <p>如果你不喜歡珍珠，它大概會猜錯。它學到的不是「客觀的好喝」，是<button class="term" data-t="data" aria-expanded="false">訓練資料</button>裡那個人的口味。</p>
+    <h3>抽一張「你」覺得歐氣爆棚的，看它給幾分</h3>
+    <p>如果你不喜歡華麗立繪，它大概會猜錯。它學到的不是「客觀的歐氣」，是<button class="term" data-t="data" aria-expanded="false">訓練資料</button>裡那個人的品味。</p>
   </div>
 </div>
 
 <h2>這跟 AI 有什麼關係？</h2>
 <div class="outro">
-  <p>你剛剛看到的是 <b class="mono">11</b> 個權重。ChatGPT 這類模型有幾千億個 —— 但每一個都在做一樣的事：把上一層傳來的數字乘上自己的在乎程度，加起來，往下傳。整趟過程叫<button class="term" data-t="forward" aria-expanded="false">前向傳遞</button>，你按「看它流過去」時看到的就是它。</p>
+  <p>你剛剛看到的是 <b class="mono">11</b> 個權重。ChatGPT 這類模型有幾千億個 —— 但每一個都在做一樣的事：把上一層傳來的數字乘上自己的在乎程度，加起來，往下傳。整趟過程叫<button class="term" data-t="forward" aria-expanded="false">前向傳遞</button>，你按「送去鑑定」時看到的就是它。</p>
   <p>所謂「訓練一個模型」，從來不是教它規則，而是<b>調整這幾千億個數字</b>，直到它的輸出貼近訓練資料。模型檔案幾十 GB，裡面裝的就是這些數字。</p>
   <p>但問題來了：剛剛按下「自動訓練」時，它<b>怎麼知道每一條線該往哪個方向調</b>？十一個權重還能猜，幾千億個不可能用猜的。這就是下一頁<b>梯度下降 (gradient descent)</b> 要回答的事。</p>
 </div>
@@ -287,28 +287,28 @@ const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const TERMS = {
   nn:{en:"neural network", zh:"神經網路 neural network",
     what:"一排「神經元」分層連在一起。資料從左邊進去，每經過一層就被重新組合一次，最後變成一個答案。",
-    life:"一間手搖飲店的試喝團：先讓兩位評審各自給意見，再由主管綜合他們的意見打最後分數。"},
+    life:"一個抽卡鑑定站：先讓兩位鑑定師各自給意見，再由版主綜合他們的意見打最後分數。"},
   neuron:{en:"neuron", zh:"神經元 neuron",
     what:"網路裡最小的單位。它只做三件事：把收到的每個數字乘上自己的權重、全部加起來、再擠壓成一個輸出。",
     life:"一個小評分員。他不管別人怎麼想，只按自己在乎的東西打分 —— 而且只給一個數字，不寫評語。"},
   weight:{en:"weight", zh:"權重 weight",
     what:"連線上的一個數字，代表「這個輸入對我有多重要」。正的表示越多越加分，負的表示越多越扣分，接近 0 表示不在乎。",
-    life:"你心裡對甜度、冰塊、珍珠各自的在乎程度。有人珍珠佔一半分數，有人多一分甜就扣一分 —— 那個「一分」就是權重。"},
+    life:"你心裡對稀有度、數值、立繪各自的在乎程度。有人立繪佔一半分數，有人數值越灌越扣分 —— 那個「一分」就是權重。"},
   hidden:{en:"hidden layer", zh:"隱藏層 hidden layer",
     what:"夾在輸入和輸出之間的那幾層。它們不直接接觸原始資料、也不給最終答案，而是整理出中間判斷再往下傳。",
-    life:"試喝團裡的兩位評審。他們不決定最後分數，只各自整理出「這杯的甜冰平衡如何」這種中間看法。你看不到他們心裡想什麼，所以叫「隱藏」。"},
+    life:"鑑定站裡的兩位鑑定師。他們不決定最後分數，只各自整理出「這張卡的稀有度跟數值搭不搭」這種中間看法。你看不到他們心裡想什麼，所以叫「隱藏」。"},
   bias:{en:"bias", zh:"偏誤 bias",
     what:"每個神經元自帶的一個常數，跟輸入無關。它決定這個神經元的「起跑點」有多高或多低。",
-    life:"有的評審天生嚴格，什麼飲料先扣二十分；有的天生寬鬆。這跟飲料本身沒關係，是他自己的基本盤。"},
+    life:"有的鑑定師天生嚴格，什麼卡先扣二十分；有的天生寬鬆。這跟卡本身沒關係，是他自己的基本盤。"},
   act:{en:"activation", zh:"激活函數 activation function",
     what:"把加總的結果擠進一個固定範圍的動作。沒有它，整個網路疊幾層都等於一層，學不出複雜的東西。",
     life:"評分表最高只能給十分。你再喜歡也不能給十五分 —— 那個「上限與下限」就是激活函數在做的事。"},
   forward:{en:"forward pass", zh:"前向傳遞 forward pass",
     what:"資料從輸入層一路算到輸出層、變成一個答案的整趟過程。你用 AI 的每一次，它跑的就是這個。",
-    life:"你把飲料遞給試喝團：先傳給兩位評審，他們各自給意見，再交給主管打出最後分數。遞出去到拿回分數的整趟，就是前向傳遞。"},
+    life:"你把卡遞給鑑定站：先傳給兩位鑑定師，他們各自給意見，再交給版主打出最後分數。遞出去到拿回分數的整趟，就是前向傳遞。"},
   data:{en:"training data", zh:"訓練資料 training data",
     what:"拿來教模型的範例，每一筆都附了正確答案。模型的能力上限，幾乎完全由這些資料決定。",
-    life:"這頁的訓練資料是「阿哲喝過的五杯和他給的分數」。所以網路學到的是阿哲的口味 —— 不是客觀的好喝。換一個人來評，答案就不一樣。"}
+    life:"這頁的訓練資料是「阿哲抽過的五張卡和他給的評分」。所以網路學到的是阿哲的品味 —— 不是客觀的歐氣。換一個人來評，答案就不一樣。"}
 };
 
 /* ============ 彈出視窗 ============ */
@@ -347,8 +347,8 @@ addEventListener("keydown", ev=>{ if(ev.key === "Escape") closePop(); });
 addEventListener("resize", ()=>{ if(openBtn) positionPop(openBtn); });
 
 /* ============ 網路本體：3 → 2 → 1 ============ */
-const IN_NAMES = ["甜度","冰塊","珍珠"];
-const HID_NAMES = ["評審 A","評審 B"];
+const IN_NAMES = ["稀有度","數值","立繪"];
+const HID_NAMES = ["鑑定師 A","鑑定師 B"];
 let W;                                   // 權重與偏誤
 function randW(){
   const r = () => (Math.random()*2-1)*1.2;
@@ -366,7 +366,7 @@ function forward(x){
   return { h, y: 1/(1+Math.exp(-z2)) }; // 擠壓成 0 ~ 1
 }
 
-/* ============ 阿哲的口味（訓練資料） ============ */
+/* ============ 阿哲的品味（訓練資料） ============ */
 const DATA = [
   {s:10, i:3,  p:10, t:0.94},
   {s:0,  i:10, p:0,  t:0.03},
@@ -376,11 +376,11 @@ const DATA = [
 ];
 const norm = d => [d.s/10, d.i/10, d.p/10];
 
-/* ============ 手搖飲用語 ============ */
-const sweetLbl = v => v>=9?"全糖":v>=7?"少糖":v>=4?"半糖":v>=1?"微糖":"無糖";
-const iceLbl   = v => v>=9?"多冰":v>=6?"正常冰":v>=3?"少冰":v>=1?"微冰":"去冰";
-const pearlLbl = v => v>=8?"加滿":v>=4?"半份":v>=1?"一點點":"不加";
-const cupText  = d => `${sweetLbl(d.s)}、${iceLbl(d.i)}、珍珠${pearlLbl(d.p)}`;
+/* ============ 抽卡用語 ============ */
+const rarityLbl = v => v>=9?"傳說":v>=7?"史詩":v>=4?"精良":v>=1?"普通":"基礎";
+const powerLbl  = v => v>=9?"爆表":v>=6?"強力":v>=3?"中等":v>=1?"偏弱":"貧弱";
+const artLbl    = v => v>=8?"華麗":v>=4?"精緻":v>=1?"簡樸":"陽春";
+const cardText  = d => `${rarityLbl(d.s)}、${powerLbl(d.i)}、立繪${artLbl(d.p)}`;
 
 /* ============ 版面座標 ============ */
 const POS = {
@@ -397,7 +397,7 @@ const wOf = e => e.path === "w1" ? W.w1[e.j][e.k] : W.w2[e.j];
 const setW = (e,v) => { if(e.path === "w1") W.w1[e.j][e.k] = v; else W.w2[e.j] = v; };
 const edgeName = e => e.path === "w1"
   ? `${IN_NAMES[e.k]} → ${HID_NAMES[e.j]}`
-  : `${HID_NAMES[e.j]} → 好喝程度`;
+  : `${HID_NAMES[e.j]} → 歐氣值`;
 
 /* 線的端點：從圓的邊緣出發，不要插進圓裡 */
 function trim(e){
@@ -443,16 +443,16 @@ function drawNodes(){
   POS.hid.forEach((p,j)=>{
     s += node(p.x,p.y,R_HID,"var(--surface)","var(--ball)",HID_NAMES[j],h[j].toFixed(2));
   });
-  s += node(POS.out.x,POS.out.y,R_OUT,"var(--accent)","var(--on-accent)","好喝程度",Math.round(y*100));
+  s += node(POS.out.x,POS.out.y,R_OUT,"var(--accent)","var(--on-accent)","歐氣值",Math.round(y*100));
   $("nodeLayer").innerHTML = s;
   $("outVal").textContent = Math.round(y*100);
 }
 
 /* ============ 輸入標籤與整體更新 ============ */
 function render(){
-  $("lblSweet").textContent = sweetLbl(+$("inSweet").value);
-  $("lblIce").textContent   = iceLbl(+$("inIce").value);
-  $("lblPearl").textContent = pearlLbl(+$("inPearl").value);
+  $("lblSweet").textContent = rarityLbl(+$("inSweet").value);
+  $("lblIce").textContent   = powerLbl(+$("inIce").value);
+  $("lblPearl").textContent = artLbl(+$("inPearl").value);
   drawEdges(); drawNodes(); drawTable(); updateWPanel();
 }
 
@@ -463,7 +463,7 @@ function drawTable(){
     const guess = forward(norm(d)).y;
     const gap = Math.abs(guess - d.t)*100;
     const cls = gap > 18 ? "big" : (gap < 8 ? "ok" : "");
-    rows += `<tr><td>${cupText(d)}</td><td class="num">${Math.round(d.t*100)}</td>` +
+    rows += `<tr><td>${cardText(d)}</td><td class="num">${Math.round(d.t*100)}</td>` +
       `<td class="num">${Math.round(guess*100)}</td>` +
       `<td class="num"><span class="gap ${cls}">${gap.toFixed(0)}</span></td></tr>`;
   });
@@ -513,7 +513,7 @@ let flowing = false;
 let flowStage = 0;     // 0 = 準備播第一段（或重播） 1 = 第一段播完，等你點下一段
 function resetFlow(){
   flowStage = 0;
-  $("flowBtn").textContent = "送去試喝檢測";
+  $("flowBtn").textContent = "送去鑑定";
 }
 function runStage(edges, done){
   flowing = true;
@@ -540,16 +540,16 @@ function runStage(edges, done){
 function playFlow(){
   if(flowing) return;
   if(flowStage === 0){
-    setStatus("", "第一段：三個輸入分別送進兩位評審，每條線上的數字都先乘過權重。看完再點一次按鈕，繼續看第二段。");
+    setStatus("", "第一段：三個輸入分別送進兩位鑑定師，每條線上的數字都先乘過權重。看完再點一次按鈕，繼續看第二段。");
     runStage(EDGES.filter(e=>e.path==="w1"), ()=>{
       flowStage = 1;
-      $("flowBtn").textContent = "看評審怎麼合成分數 →";
+      $("flowBtn").textContent = "看鑑定師怎麼合成分數 →";
     });
   } else {
-    setStatus("", "第二段：兩位評審各自的意見，再加權合成最後的分數。");
+    setStatus("", "第二段：兩位鑑定師各自的意見，再加權合成最後的分數。");
     runStage(EDGES.filter(e=>e.path==="w2"), ()=>{
       flowStage = 0;
-      $("flowBtn").textContent = "重新檢測一次";
+      $("flowBtn").textContent = "重新鑑定一次";
       setStatus("good", `這趟就是<button class="term" data-t="forward" aria-expanded="false">前向傳遞</button> —— 你每次用 AI，它跑的都是這個。`);
     });
   }
@@ -598,23 +598,23 @@ function train(){
   const startErr = errHist[0];
   let tick = 0;
   const timer = setInterval(()=>{
-    for(let i=0;i<25;i++) trainEpoch(3.0);
+    for(let i=0;i<8;i++) trainEpoch(3.0);
     tick++;
     errHist.push(totalErr());
     drawEdges(); drawNodes(); drawTable(); drawErrSpark();
-    $("trainText").innerHTML = `第 <b class="mono">${tick*25}</b> 輪 —— 平均誤差從 <b class="mono">${startErr.toFixed(1)}</b> 分降到 <b class="mono">${totalErr().toFixed(1)}</b> 分。注意線的粗細正在改變。`;
-    if(tick >= 60 || totalErr() < 2){
+    $("trainText").innerHTML = `第 <b class="mono">${tick*8}</b> 輪 —— 平均誤差從 <b class="mono">${startErr.toFixed(1)}</b> 分降到 <b class="mono">${totalErr().toFixed(1)}</b> 分。注意線的粗細正在改變。`;
+    if(tick >= 150 || totalErr() < 2){
       clearInterval(timer);
       training = false;
       $("trainBtn").disabled = false;
       $("trainBtn").textContent = "再訓練一次";
       $("trainStatus").className = "status good";
-      setStatus("good", "現在這些線的粗細，就是「阿哲的口味」被寫成數字的樣子。試著拉滑桿點一杯新的飲料，看它猜得準不準。");
+      setStatus("good", "現在這些線的粗細，就是「阿哲的品味」被寫成數字的樣子。試著拉滑桿抽一張新的卡，看它猜得準不準。");
       $("trainText").innerHTML =
         `✅ 訓練完成，平均只差 <b class="mono">${totalErr().toFixed(1)}</b> 分。現在看看圖上哪條線最粗 —— 那就是阿哲最在乎的東西。` +
         `<br>但它<b>怎麼知道每條線該往哪邊調</b>？這就是下一頁的主題。`;
     }
-  }, 60);
+  }, 100);
 }
 
 /* ============ 事件 ============ */
@@ -622,7 +622,7 @@ function train(){
   $(id).addEventListener("input", ()=>{
     render();
     if(!flowing) resetFlow();
-    setStatus("", "換一杯飲料，數字就從左邊重新流一次 —— 但權重沒變，模型還是同一個模型。");
+    setStatus("", "換一張卡，數字就從左邊重新流一次 —— 但權重沒變，模型還是同一個模型。");
   });
 });
 $("net").addEventListener("click", ev=>{
@@ -639,7 +639,7 @@ $("randBtn").addEventListener("click", ()=>{
   $("trainText").textContent = "權重被打亂了 —— 網路回到「什麼都不懂」的狀態。再訓練一次看看。";
   render();
   if(!flowing) resetFlow();
-  setStatus("", "全部重來一次：現在它又是個從沒喝過飲料的人了。");
+  setStatus("", "全部重來一次：現在它又是個從沒抽過卡的人了。");
 });
 $("resetBtn").addEventListener("click", ()=>{ init(); });
 $("trainBtn").addEventListener("click", train);
@@ -654,7 +654,7 @@ function init(){
   $("trainText").textContent = "訓練 = 反覆微調每一條線的權重，直到網路的猜測貼近阿哲的評分。";
   $("trainBtn").textContent = "自動訓練";
   render();
-  setStatus("", "現在的權重是隨機的，所以它的評分毫無道理 —— 就像一個從沒喝過飲料的人在猜。");
+  setStatus("", "現在的權重是隨機的，所以它的評分毫無道理 —— 就像一個從沒抽過卡的人在猜。");
 }
 init();
 </script>
