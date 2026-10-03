@@ -52,18 +52,19 @@ h1{font-family:"Noto Serif TC","Songti TC",serif; font-weight:900;
   border:1px solid var(--line); background:var(--surface); color:var(--ink)}
 .btn.primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent); font-weight:700}
 .btn:disabled{opacity:.45; cursor:not-allowed}
-.btn:focus-visible,.cup:focus-visible{outline:2px solid var(--ball); outline-offset:2px}
+.btn:focus-visible,.mode:focus-visible,input:focus-visible{outline:2px solid var(--ball); outline-offset:2px}
+input[type=range]{accent-color:var(--accent); width:100%}
 
-/* 選一杯 */
-.cups{display:flex; gap:8px; flex-wrap:wrap; padding-bottom:14px;
+/* 模式切換 */
+.modes{display:flex; gap:8px; flex-wrap:wrap; padding-bottom:14px;
   border-bottom:1px dashed var(--line); margin-bottom:14px}
-.cup{font:inherit; font-size:.88rem; border:1px solid var(--line); background:var(--surface);
-  color:var(--ink); border-radius:9px; padding:6px 12px; cursor:pointer; text-align:left}
-.cup[aria-pressed="true"]{background:var(--accent-soft); border-color:var(--accent); color:var(--accent); font-weight:700}
-.cup small{display:block; color:var(--muted); font-size:.76rem; font-weight:400}
-.cup[aria-pressed="true"] small{color:var(--accent)}
+.mode{font:inherit; font-size:.88rem; border:1px solid var(--line); background:var(--surface);
+  color:var(--ink); border-radius:9px; padding:6px 14px; cursor:pointer; text-align:left}
+.mode[aria-pressed="true"]{background:var(--accent-soft); border-color:var(--accent); color:var(--accent); font-weight:700}
+.mode small{display:block; color:var(--muted); font-size:.76rem; font-weight:400}
+.mode[aria-pressed="true"] small{color:var(--accent)}
 
-/* 四個階段 */
+/* 四個階段：推論其實是整條線最後一步 */
 .steps{display:flex; gap:0; margin-bottom:14px; flex-wrap:wrap}
 .step{flex:1; min-width:132px; padding:9px 12px; border-top:3px solid var(--line);
   color:var(--muted); font-size:.88rem; transition:color .15s, border-color .15s}
@@ -76,15 +77,28 @@ h1{font-family:"Noto Serif TC","Songti TC",serif; font-weight:900;
 
 .net-wrap{border:1px solid var(--line); border-radius:10px; background:var(--surface); overflow:hidden}
 svg{display:block; width:100%; height:auto}
-.edge-hit{stroke:transparent; stroke-width:11; cursor:pointer; fill:none}
+.edge-hit{stroke:transparent; stroke-width:14; cursor:default; fill:none}
 .node-val{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
 
-/* 圖例：會隨階段改變意義 */
 .legend{display:flex; gap:8px 18px; flex-wrap:wrap; margin-top:10px; font-size:.84rem; color:var(--muted)}
 .legend i{display:inline-block; width:22px; height:3px; border-radius:2px; vertical-align:.2em; margin-right:6px}
 
-/* 單條線的算式面板（高度固定） */
-.detail{margin-top:12px; min-height:7.2em; border:1px dashed var(--line); border-radius:10px;
+/* 卡片輸入（三個滑桿） */
+.order{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px 20px;
+  padding-bottom:14px; margin-bottom:14px; border-bottom:1px dashed var(--line)}
+.order .f{display:flex; justify-content:space-between; align-items:baseline; gap:8px}
+.order .f b{font-size:.92rem; font-weight:500}
+.order .f .val{font-size:.9rem; color:var(--accent); font-weight:700}
+
+.outbar{margin-top:14px; display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+.outbar .big{font-family:"Noto Serif TC",serif; font-weight:900; font-size:2.1rem; line-height:1;
+  color:var(--accent); font-variant-numeric:tabular-nums; min-width:3.6em}
+.outbar .cap{font-size:.85rem; color:var(--muted)}
+.outbar .real{font-size:.85rem; color:var(--muted)}
+.outbar .real b{color:var(--danger); font-family:"IBM Plex Mono",monospace}
+
+/* 小抄的算式面板 */
+.detail{margin-top:12px; min-height:7.4em; border:1px dashed var(--line); border-radius:10px;
   padding:12px 15px}
 .detail .placeholder{color:var(--muted); font-size:.92rem}
 .detail h4{margin:0 0 8px; font-size:.98rem}
@@ -97,19 +111,33 @@ svg{display:block; width:100%; height:auto}
 .chain .res b{color:var(--danger)}
 .detail .note{margin:9px 0 0; font-size:.85rem; color:var(--muted)}
 
+.cheatrow{display:flex; align-items:center; gap:10px 16px; flex-wrap:wrap; margin-top:12px}
+.cheatrow input[type=text]{font:inherit; font-size:.9rem; padding:6px 10px; border:1px solid var(--line);
+  border-radius:8px; background:var(--surface); color:var(--ink); flex:1; min-width:160px}
+.cheatrow .amt{display:flex; align-items:center; gap:8px; font-size:.85rem; color:var(--muted); min-width:170px}
+.cheatrow .amt input[type=range]{width:120px}
+
 .status{margin-top:12px; min-height:4.4em; font-size:.98rem}
 .status .pill{display:inline-block; border-radius:8px; padding:4px 12px; background:var(--accent-soft)}
-.status.back .pill{background:var(--danger-soft); border:1.5px solid var(--danger); color:var(--danger)}
 .status.good .pill{border:1.5px solid var(--accent); color:var(--accent); font-weight:700}
 
-.scoreline{display:flex; gap:10px 26px; flex-wrap:wrap; margin-top:14px;
+.scoreline{display:flex; gap:10px 26px; flex-wrap:wrap; margin-top:14px; align-items:center;
   padding-top:12px; border-top:1px dashed var(--line)}
 .scoreline div{font-size:.85rem; color:var(--muted); min-width:6em}
 .scoreline .v{display:block; font-size:1.3rem; color:var(--ink);
-  font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
-.scoreline .v.bad{color:var(--danger)}
-.scoreline .v.ok{color:var(--accent)}
-#errSpark{max-width:300px; flex:1; min-width:180px; align-self:center}
+  font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; transition:color .05s}
+.scoreline .v.flash{color:var(--ball)}
+#errSpark{max-width:280px; flex:1; min-width:170px; align-self:center}
+
+/* 阿哲的訓練資料表 */
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse; width:100%; min-width:460px; font-size:.92rem}
+th,td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)}
+th{font-size:.76rem; letter-spacing:.06em; color:var(--muted); font-weight:500; white-space:nowrap}
+td.num{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap}
+td .gap{font-size:.85rem}
+.gap.big{color:var(--danger); font-weight:700}
+.gap.ok{color:var(--accent); font-weight:700}
 
 /* ============ 術語彈出視窗 ============ */
 .term{font:inherit; color:var(--accent); background:transparent; border:0; padding:0 2px;
@@ -148,32 +176,12 @@ h2{font-family:"Noto Serif TC","Songti TC",serif; font-weight:700; font-size:1.4
 .card p{margin:0; font-size:.92rem; color:var(--muted)}
 .card .mono{color:var(--ink)}
 
-.recap{background:var(--surface); border:1px solid var(--line); border-radius:12px;
-  padding:18px 20px; margin-block:16px}
-.recap ol{margin:0; padding-left:1.3em}
-.recap li{margin-block:7px}
-.recap li b{color:var(--accent)}
-
 .outro{max-width:42em}
 .outro p{margin-block:10px}
 footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
   display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
   color:var(--muted); font-size:.85rem}
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
-
-/* ============ 骨架專用：待開發標示（做完這一頁後刪掉） ============ */
-.scaffold{border:2px dashed var(--ball); border-radius:14px; padding:18px 20px; margin-block:8px 26px;
-  background:var(--surface)}
-.scaffold > .flag{display:inline-block; font-size:.72rem; letter-spacing:.1em; font-weight:700;
-  color:var(--on-accent); background:var(--ball); border-radius:6px; padding:2px 9px; margin-bottom:10px}
-.scaffold h3{margin:0 0 8px; font-size:1rem}
-.scaffold ul{margin:0 0 4px; padding-left:1.25em}
-.scaffold li{font-size:.92rem; color:var(--muted); margin-block:5px}
-.scaffold li b{color:var(--ink); font-weight:500}
-.brief{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px 22px;
-  margin:0 0 16px; padding-bottom:14px; border-bottom:1px dashed var(--line)}
-.brief div b{display:block; font-size:.74rem; letter-spacing:.08em; color:var(--muted); font-weight:500}
-.brief div span{font-size:.94rem}
 </style>
 </head>
 <body>
@@ -189,49 +197,144 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
 
 <div class="anchor">
   <h3>先想一件事：考試的時候，你會變聰明嗎？</h3>
-  <p>不會。考試時你只是<b>把已經會的拿出來用</b>，腦袋裡的東西一點都沒變 —— 讀書的時候才會變。AI 也一樣：訓練是讀書，推論是考試。而你每天在用的 AI，幾乎都在考試。</p>
+  <p>不會。考試時你只是<b>把已經會的拿出來用</b>，腦袋裡的東西一點都沒變 —— 讀書的時候才會變。AI 也一樣：<button class="term" data-t="train" aria-expanded="false">訓練</button>是讀書，<button class="term" data-t="infer" aria-expanded="false">推論</button>是考試。而你每天在用的 AI，幾乎都在考試。</p>
 </div>
 
-<p class="intro">（待寫：承接上面的比喻，把它對應到這一頁要示範的機制，並在關鍵字上掛 <code>&lt;button class="term" data-t="…"&gt;</code>。術語辭典已經先備好在頁尾的 script 裡。）</p>
-<p class="hint">（待寫：一句話說明這一頁要怎麼操作。）（有底線的詞都可以點開，會給你一個比方）</p>
+<p class="intro">下面是同一個小模型，你可以在兩種模式之間切換。它身上有 <b>11 個數字</b>（跟中級頁那個抽卡鑑定網路一樣）—— 這 11 個數字加起來的總和，我們叫它<b>權重指紋</b>。整頁的任務只有一個：<b>自己去找出這個指紋什麼時候會變、什麼時候不會</b>。</p>
+<p class="hint">先留在推論模式，拉滑桿、按幾次「送去推論」、甚至打開小抄亂加分 —— 看看權重指紋會不會被你影響。再切去訓練模式按下去，比較看看。（有底線的詞都可以點開，會給你一個比方）</p>
 
-<section class="scaffold" aria-label="這一頁的開發規格">
-  <span class="flag">骨架・尚未實作</span>
-  <div class="brief">
-    <div><b>要拆掉的誤解</b><span>「我每次跟 AI 聊天，它就學到一點東西」</span></div>
-    <div><b>要產生的理解</b><span>為什麼 ChatGPT 不記得你昨天說過什麼</span></div>
+<section class="lab" aria-label="訓練與推論互動實驗">
+  <div class="modes" role="group" aria-label="切換模式">
+    <button class="mode" id="modeInferBtn" aria-pressed="true">推論模式<small>你平常跟 AI 聊天時發生的事</small></button>
+    <button class="mode" id="modeTrainBtn" aria-pressed="false">訓練模式<small>模型「打底」時發生的事</small></button>
   </div>
-  <h3>預定的互動設計</h3>
-  <ul>
-    <li>一個明顯的模式切換開關：訓練模式 / 推論模式</li>
-    <li>訓練模式：餵資料 → 看模型內部的數字（權重）真的在變</li>
-    <li>推論模式：餵資料 → 模型輸出答案，但權重<b>紋風不動</b>（這是整頁的關鍵畫面）</li>
-    <li>可以直接沿用中級的 3→2→1 網路與手搖飲情境，讓讀過中級的人有連貫感</li>
-    <li>收尾：那為什麼 AI 好像記得我剛剛說的話？→ 帶出「上下文」不等於「學習」</li>
-    <li>待討論：要不要順帶講微調 (fine-tuning)，或留給高級</li>
-  </ul>
+
+  <div class="steps" aria-hidden="true">
+    <div class="step" id="step1"><span class="n">01</span>收集資料</div>
+    <div class="step" id="step2"><span class="n">02</span>訓練（調整權重）</div>
+    <div class="step" id="step3"><span class="n">03</span>凍結（存成檔案）</div>
+    <div class="step" id="step4"><span class="n">04</span>推論（現在你在用的階段）</div>
+  </div>
+
+  <div class="net-wrap">
+    <svg id="net" viewBox="0 0 820 400" role="img" aria-label="三個輸入、兩個隱藏神經元、一個輸出的小模型，跟中級頁同一個抽卡網路">
+      <text x="140" y="22" text-anchor="middle" font-size="12" fill="var(--muted)" letter-spacing="1.5">輸入層</text>
+      <text x="430" y="22" text-anchor="middle" font-size="12" fill="var(--muted)" letter-spacing="1.5">隱藏層</text>
+      <text x="690" y="22" text-anchor="middle" font-size="12" fill="var(--muted)" letter-spacing="1.5">輸出層</text>
+      <g id="edgeLayer"></g>
+      <g id="flowLayer"></g>
+      <g id="nodeLayer"></g>
+      <g id="hitLayer"></g>
+    </svg>
+  </div>
+  <div class="legend">
+    <span><i style="background:var(--accent)"></i>線越粗，權重越大（加分）</span>
+    <span><i style="background:var(--danger)"></i>紅色代表權重是負的（扣分）</span>
+  </div>
+
+  <div class="scoreline">
+    <div><span>推論次數</span><span class="v mono" id="inferCountVal">0</span></div>
+    <div style="flex:1 1 220px"><span>權重指紋</span><span class="v mono" id="fingerVal">0.00</span></div>
+  </div>
+  <p class="hint" id="fingerCap" style="margin-block:2px 0"></p>
+
+  <!-- ============ 推論模式 ============ -->
+  <div id="inferPanel">
+    <div class="order" style="margin-top:16px">
+      <div>
+        <div class="f"><b>稀有度</b><span class="val" id="lblSweet">傳說</span></div>
+        <input type="range" id="inSweet" min="0" max="10" step="1" value="10">
+      </div>
+      <div>
+        <div class="f"><b>數值</b><span class="val" id="lblIce">中等</span></div>
+        <input type="range" id="inIce" min="0" max="10" step="1" value="3">
+      </div>
+      <div>
+        <div class="f"><b>立繪</b><span class="val" id="lblPearl">華麗</span></div>
+        <input type="range" id="inPearl" min="0" max="10" step="1" value="10">
+      </div>
+    </div>
+
+    <div class="outbar">
+      <div>
+        <span class="cap">你看到的分數</span>
+        <div class="big"><span id="outVal">—</span><span style="font-size:.5em">分</span></div>
+        <div class="real" id="outReal" style="display:none">模型真正算出來的是 <b id="outRealVal">—</b> 分</div>
+      </div>
+      <div class="btns" style="margin-left:auto">
+        <button class="btn" id="randCardBtn">抽新卡</button>
+        <button class="btn primary" id="flowBtn">送去推論</button>
+      </div>
+    </div>
+
+    <div class="cheatrow">
+      <input type="text" id="cheatText" placeholder="在這裡打一句小抄，例如「記得我喜歡華麗立繪」…">
+      <span class="amt">加/減<input type="range" id="cheatRange" min="-20" max="30" step="5" value="15"><b class="mono" id="cheatAmtVal">+15</b> 分</span>
+      <button class="btn" id="cheatToggleBtn" aria-pressed="false">套用小抄</button>
+    </div>
+    <div class="detail" id="cheatDetail"></div>
+
+    <div class="status" id="inferStatus"><span class="pill" id="inferText">現在是推論模式：不管你怎麼玩，下面的權重指紋應該動都不會動。</span></div>
+  </div>
+
+  <!-- ============ 訓練模式 ============ -->
+  <div id="trainPanel" style="display:none">
+    <p class="lede" style="color:var(--muted); font-size:.92rem; margin-top:16px">阿哲抽過五張卡，也給了評分。按下「開始訓練」，盯著上面的權重指紋 —— 它幾乎每一刻都在跳。</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>阿哲抽過的</th><th class="num">他給幾分</th><th class="num">網路猜幾分</th><th class="num">差多少</th></tr>
+        </thead>
+        <tbody id="dataBody"></tbody>
+      </table>
+    </div>
+
+    <div class="scoreline">
+      <div><span>誤差</span><span class="v mono" id="errVal">—</span></div>
+      <svg id="errSpark" viewBox="0 0 280 56" aria-label="訓練過程中誤差的變化">
+        <line x1="4" y1="50" x2="276" y2="50" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 4"/>
+        <path id="errPath" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text id="errEmpty" x="140" y="30" text-anchor="middle" font-size="12" fill="var(--muted)">訓練時這裡會畫出誤差變化</text>
+      </svg>
+      <div class="btns" style="margin-left:auto">
+        <button class="btn" id="resetModelBtn">打亂權重重新開始</button>
+        <button class="btn primary" id="trainBtn">開始訓練</button>
+      </div>
+    </div>
+
+    <div class="status" id="trainStatus"><span class="pill" id="trainText">訓練 = 反覆微調每一條線的權重，直到網路的猜測貼近阿哲的評分。</span></div>
+  </div>
 </section>
 
 <h2>三個實驗，三個發現</h2>
 <div class="cards">
-  <div class="card"><span class="tag">實驗 1</span><h3>（待寫）</h3>
-    <p>每張卡都要是<b>可複現的操作指令</b>，不是說明文字 —— 例如「把學習率調到 0.10 以下，數數看要幾步」。</p></div>
-  <div class="card"><span class="tag">實驗 2</span><h3>（待寫）</h3>
-    <p>第二張通常是「破壞它」：讓學生動手把東西弄壞，從壞掉的樣子反推機制。</p></div>
-  <div class="card"><span class="tag">實驗 3</span><h3>（待寫）</h3>
-    <p>第三張拉回現實：讓學生用自己的情況試一次，體會這個機制在真實世界的後果。</p></div>
+  <div class="card">
+    <span class="tag">實驗 1・它真的不會動</span>
+    <h3>在推論模式下，想辦法讓權重指紋變</h3>
+    <p>換十張不同的卡、連按十次「送去推論」、把小抄加到 +30 再送出去 —— 不管怎麼組合，指紋小數點後兩位都不會動一下。這就是為什麼問 AI 一百次同樣的問題，它的「能力」不會因此變強一點。</p>
+  </div>
+  <div class="card">
+    <span class="tag">實驗 2・親眼看著它在跳</span>
+    <h3>切到訓練模式，按下「開始訓練」</h3>
+    <p>盯著權重指紋，不要看別的 —— 它幾乎每 100 毫秒就跳一次，那是<button class="term" data-t="train" aria-expanded="false">訓練</button>在背後一條一條調整權重。訓練完切回推論模式，再送同一張卡一次：分數應該變了，因為模型真的不一樣了。</p>
+  </div>
+  <div class="card">
+    <span class="tag">實驗 3・你的小抄去了哪裡</span>
+    <h3>想想你自己用 AI 的經驗</h3>
+    <p>你跟它聊了一整個下午，它好像「記住」了你說的話 —— 但開一個新對話，它完全不認得你。對照剛剛的小抄實驗：那些對話內容從來沒有寫進權重，只是暫時擺在桌上的小抄，視窗一關就收走了。</p>
+  </div>
 </div>
 
 <h2>這跟 AI 有什麼關係？</h2>
 <div class="outro">
-  <p>（待寫：從這一頁的小規模示範，接到真實模型的量級。）</p>
-  <p>（待寫：這個機制帶來什麼能力、又有什麼代價或限制。）</p>
-  <p>（待寫：留一個問題，導向下一頁。）</p>
+  <p>你剛剛動的是 11 個數字。真正的大型模型裡，「權重指紋」會是幾千億個數字加起來的總和 —— 但規則完全一樣：<b>訓練</b>時，這些數字被一條一條調整；<b>推論</b>時，不管輸入長什麼樣子，它們連一個小數點都不會動。模型越大，這條界線反而越重要，因為重新訓練一次的成本太高，沒有人想在你每次對話時意外動到它。</p>
+  <p>那<button class="term" data-t="context" aria-expanded="false">上下文</button>到底是什麼？就是對話視窗裡那些文字 —— 模型在<button class="term" data-t="infer" aria-expanded="false">推論</button>的當下會參考它們來決定怎麼回答，但就像桌上的小抄，它只存在這一次對話裡，從來沒有被寫進任何一個<button class="term" data-t="frozen" aria-expanded="false">權重</button>。換一個新對話，那張小抄就不見了，模型也完全不會記得。</p>
+  <p>但如果權重在推論時真的動都不動，那 AI 偶爾講錯話、編出不存在的東西，到底是哪裡出了錯？是權重本身學錯了，還是別的原因？這就是下一頁要拆開看的事。</p>
 </div>
 
 <footer class="site">
   <span>AI Concept Visualizer</span>
-  <span>上一頁：從規則到學習（規劃中） ・ 下一頁：AI 為什麼會錯（規劃中）</span>
+  <span>上一頁：<a href="rule_to_learning.html" style="color:inherit">從規則到學習</a> ・ 下一頁：AI 為什麼會錯（規劃中）</span>
 </footer>
 
 </div>
@@ -240,8 +343,9 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/* ============ 術語辭典（已先備好，文案可再調） ============ */
+/* ============ 術語辭典 ============ */
 const TERMS = {
   train:{en:"training", zh:"訓練 training",
     what:"餵大量範例、反覆調整模型內部的參數。這個階段模型會改變，而且很貴很慢。",
@@ -257,8 +361,7 @@ const TERMS = {
     life:"考試時桌上那張自己抄的小抄。你看得到、會參考，但它不等於你腦袋裡的知識，交卷就收走了。"}
 };
 
-/* ============ 彈出視窗（全站共用，不必改） ============ */
-
+/* ============ 彈出視窗 ============ */
 const pop = $("pop");
 let openBtn = null;
 function closePop(){
@@ -267,9 +370,9 @@ function closePop(){
 }
 function positionPop(btn){
   const r = btn.getBoundingClientRect(), w = pop.offsetWidth;
-  pop.style.left = Math.max(14, Math.min(r.left + scrollX + r.width/2 - w/2,
-    document.documentElement.clientWidth - w - 14)) + "px";
-  pop.style.top = (r.bottom + scrollY + 10) + "px";
+  const maxL = document.documentElement.clientWidth - w - 14;
+  pop.style.left = Math.max(14, Math.min(r.left + scrollX + r.width/2 - w/2, maxL)) + "px";
+  pop.style.top  = (r.bottom + scrollY + 10) + "px";
 }
 function openPop(btn){
   const t = TERMS[btn.dataset.t];
@@ -292,6 +395,347 @@ document.addEventListener("click", ev=>{
 });
 addEventListener("keydown", ev=>{ if(ev.key === "Escape") closePop(); });
 addEventListener("resize", ()=>{ if(openBtn) positionPop(openBtn); });
+
+/* ============ 網路本體：3 → 2 → 1（沿用中級頁的抽卡網路） ============ */
+const IN_NAMES = ["稀有度","數值","立繪"];
+const HID_NAMES = ["鑑定師 A","鑑定師 B"];
+let W;
+function randW(){
+  const r = () => (Math.random()*2-1)*1.2;
+  return { w1:[[r(),r(),r()],[r(),r(),r()]], b1:[r(),r()], w2:[r(),r()], b2:r() };
+}
+function forward(x){
+  const h = [];
+  for(let j=0;j<2;j++){
+    let z = W.b1[j];
+    for(let k=0;k<3;k++) z += W.w1[j][k]*x[k];
+    h.push(Math.tanh(z));
+  }
+  let z2 = W.b2;
+  for(let j=0;j<2;j++) z2 += W.w2[j]*h[j];
+  return { h, y: 1/(1+Math.exp(-z2)) };
+}
+function fingerprint(){
+  let s = 0;
+  for(const row of W.w1) for(const v of row) s += Math.abs(v);
+  for(const v of W.b1) s += Math.abs(v);
+  for(const v of W.w2) s += Math.abs(v);
+  s += Math.abs(W.b2);
+  return s;
+}
+
+/* 阿哲的品味（訓練資料，跟中級頁同一份） */
+const DATA = [
+  {s:10, i:3,  p:10, t:0.94},
+  {s:0,  i:10, p:0,  t:0.03},
+  {s:5,  i:7,  p:10, t:0.71},
+  {s:10, i:10, p:0,  t:0.23},
+  {s:3,  i:0,  p:10, t:0.87}
+];
+const norm = d => [d.s/10, d.i/10, d.p/10];
+
+/* 抽卡用語 */
+const rarityLbl = v => v>=9?"傳說":v>=7?"史詩":v>=4?"精良":v>=1?"普通":"基礎";
+const powerLbl  = v => v>=9?"爆表":v>=6?"強力":v>=3?"中等":v>=1?"偏弱":"貧弱";
+const artLbl    = v => v>=8?"華麗":v>=4?"精緻":v>=1?"簡樸":"陽春";
+const cardText  = d => `${rarityLbl(d.s)}、${powerLbl(d.i)}、立繪${artLbl(d.p)}`;
+
+/* 版面座標 */
+const POS = {
+  in:  [{x:140,y:120},{x:140,y:235},{x:140,y:350}],
+  hid: [{x:430,y:175},{x:430,y:300}],
+  out: {x:690,y:235}
+};
+const R_IN = 30, R_HID = 27, R_OUT = 36;
+const EDGES = [];
+for(let j=0;j<2;j++) for(let k=0;k<3;k++) EDGES.push({a:POS.in[k], b:POS.hid[j], ra:R_IN, rb:R_HID, path:"w1", j, k});
+for(let j=0;j<2;j++) EDGES.push({a:POS.hid[j], b:POS.out, ra:R_HID, rb:R_OUT, path:"w2", j});
+const wOf = e => e.path === "w1" ? W.w1[e.j][e.k] : W.w2[e.j];
+const edgeName = e => e.path === "w1" ? `${IN_NAMES[e.k]} → ${HID_NAMES[e.j]}` : `${HID_NAMES[e.j]} → 歐氣值`;
+
+function trim(e){
+  const dx = e.b.x-e.a.x, dy = e.b.y-e.a.y, L = Math.hypot(dx,dy);
+  return { x1:e.a.x+dx/L*e.ra, y1:e.a.y+dy/L*e.ra, x2:e.b.x-dx/L*e.rb, y2:e.b.y-dy/L*e.rb };
+}
+
+/* ============ 畫圖 ============ */
+function drawEdges(){
+  const el = $("edgeLayer"), hl = $("hitLayer");
+  el.innerHTML = ""; hl.innerHTML = "";
+  EDGES.forEach(e=>{
+    const t = trim(e), w = wOf(e);
+    const width = Math.min(0.8 + Math.abs(w)*2.6, 9);
+    const color = Math.abs(w) < 0.06 ? "var(--line)" : (w > 0 ? "var(--accent)" : "var(--danger)");
+    el.insertAdjacentHTML("beforeend",
+      `<line x1="${t.x1}" y1="${t.y1}" x2="${t.x2}" y2="${t.y2}" stroke="${color}" ` +
+      `stroke-width="${width.toFixed(2)}" stroke-linecap="round" opacity=".85"/>`);
+    hl.insertAdjacentHTML("beforeend",
+      `<line class="edge-hit" x1="${t.x1}" y1="${t.y1}" x2="${t.x2}" y2="${t.y2}"><title>${edgeName(e)}　權重 ${w.toFixed(2)}</title></line>`);
+  });
+}
+function node(x,y,r,fill,stroke,label,value){
+  return `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>` +
+    `<text x="${x}" y="${y-r-11}" text-anchor="middle" font-size="13" fill="var(--muted)">${label}</text>` +
+    `<text class="node-val" x="${x}" y="${y+5}" text-anchor="middle" font-size="${r>32?16:14}" ` +
+    `font-weight="700" fill="${stroke}">${value}</text>`;
+}
+function liveX(){ return [+$("inSweet").value/10, +$("inIce").value/10, +$("inPearl").value/10]; }
+function drawNodes(){
+  const x = liveX();
+  const {h, y} = forward(x);
+  let s = "";
+  POS.in.forEach((p,k)=>{ s += node(p.x,p.y,R_IN,"var(--accent-soft)","var(--accent)",IN_NAMES[k],(x[k]*10).toFixed(0)); });
+  POS.hid.forEach((p,j)=>{ s += node(p.x,p.y,R_HID,"var(--surface)","var(--ball)",HID_NAMES[j],h[j].toFixed(2)); });
+  s += node(POS.out.x,POS.out.y,R_OUT,"var(--accent)","var(--on-accent)","歐氣值",Math.round(y*100));
+  $("nodeLayer").innerHTML = s;
+  updateScoreDisplay(y);
+}
+
+/* ============ 小抄：只改顯示，不碰權重 ============ */
+let cheatOn = false;
+function updateScoreDisplay(yReal){
+  const real = Math.round(yReal*100);
+  const bonus = cheatOn ? parseInt($("cheatRange").value,10) : 0;
+  const shown = Math.max(0, Math.min(100, real+bonus));
+  $("outVal").textContent = shown;
+  $("outReal").style.display = cheatOn ? "" : "none";
+  $("outRealVal").textContent = real;
+  updateCheatChain(real, bonus, shown);
+}
+function updateCheatChain(real, bonus, shown){
+  const panel = $("cheatDetail");
+  if(!cheatOn){
+    panel.innerHTML = `<span class="placeholder">小抄目前沒有套用。打開它，看看「你看到的分數」會不會跟模型真正算出來的不一樣 —— 而權重指紋會不會跟著動。</span>`;
+    return;
+  }
+  panel.innerHTML =
+    `<h4>你看到的分數是怎麼來的</h4>` +
+    `<div class="chain">` +
+      `<div class="f"><b>${real}</b><span>模型真正算出來的</span></div>` +
+      `<span class="op">+</span>` +
+      `<div class="f"><b>${bonus>=0?"+":""}${bonus}</b><span>小抄加的分數</span></div>` +
+      `<span class="op">=</span>` +
+      `<div class="f res"><b>${shown}</b><span>你看到的分數</span></div>` +
+    `</div>` +
+    `<p class="note">小抄只改了最後顯示的這個數字。權重指紋還是 <b class="mono">${fingerprint().toFixed(2)}</b> —— 跟沒套小抄之前一模一樣。</p>`;
+}
+
+/* ============ 權重指紋顯示 ============ */
+function updateFingerprint(flash){
+  $("fingerVal").textContent = fingerprint().toFixed(2);
+  if(flash){
+    $("fingerVal").classList.add("flash");
+    setTimeout(()=>$("fingerVal").classList.remove("flash"), 180);
+  }
+}
+
+/* ============ 四階段管線 ============ */
+function updatePipeline(){
+  const steps = [$("step1"),$("step2"),$("step3"),$("step4")];
+  steps.forEach(s=>{ delete s.dataset.on; delete s.dataset.done; s.classList.remove("back"); });
+  if(mode === "infer"){
+    $("step1").dataset.done = "true";
+    $("step2").dataset.done = "true";
+    $("step3").dataset.done = "true";
+    $("step4").dataset.on = "true";
+  } else {
+    $("step1").dataset.done = "true";
+    $("step2").dataset.on = "true";
+    $("step2").classList.add("back");
+  }
+}
+
+/* ============ 模式切換 ============ */
+let mode = "infer";
+function setMode(m){
+  mode = m;
+  $("modeInferBtn").setAttribute("aria-pressed", String(m === "infer"));
+  $("modeTrainBtn").setAttribute("aria-pressed", String(m === "train"));
+  $("inferPanel").style.display = m === "infer" ? "" : "none";
+  $("trainPanel").style.display = m === "train" ? "" : "none";
+  $("fingerCap").textContent = m === "infer"
+    ? "不管你怎麼操作 —— 換卡、送去推論、套小抄 —— 這個數字理論上永遠不會動。"
+    : "訓練時盯著這個數字：它應該幾乎每一刻都在跳，因為每一下都在調整權重。";
+  updatePipeline();
+}
+
+/* ============ 訓練資料表 ============ */
+function drawTable(){
+  let rows = "";
+  DATA.forEach(d=>{
+    const guess = forward(norm(d)).y;
+    const gap = Math.abs(guess - d.t)*100;
+    const cls = gap > 18 ? "big" : (gap < 8 ? "ok" : "");
+    rows += `<tr><td>${cardText(d)}</td><td class="num">${Math.round(d.t*100)}</td>` +
+      `<td class="num">${Math.round(guess*100)}</td>` +
+      `<td class="num"><span class="gap ${cls}">${gap.toFixed(0)}</span></td></tr>`;
+  });
+  $("dataBody").innerHTML = rows;
+  $("errVal").textContent = totalErr().toFixed(1);
+}
+function totalErr(){
+  let e = 0;
+  for(const d of DATA){ const g = forward(norm(d)).y; e += (g-d.t)**2; }
+  return Math.sqrt(e/DATA.length)*100;
+}
+
+/* ============ 前向傳遞動畫（送去推論） ============ */
+let flowing = false;
+function playFlow(){
+  if(flowing) return;
+  flowing = true;
+  $("flowBtn").disabled = true;
+  const layer = $("flowLayer");
+  const D = reduceMotion ? 1 : 650;
+  const dots = EDGES.map(e=>{
+    const t = trim(e);
+    layer.insertAdjacentHTML("beforeend",
+      `<circle r="5.5" fill="var(--ball)" stroke="var(--surface)" stroke-width="1.5" cx="${t.x1}" cy="${t.y1}"/>`);
+    return {el:layer.lastElementChild, t};
+  });
+  const t0 = performance.now();
+  (function anim(now){
+    const p = Math.min((now-t0)/D, 1), e = p<.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
+    dots.forEach(d=>{
+      d.el.setAttribute("cx", d.t.x1+(d.t.x2-d.t.x1)*e);
+      d.el.setAttribute("cy", d.t.y1+(d.t.y2-d.t.y1)*e);
+    });
+    if(p<1) requestAnimationFrame(anim);
+    else {
+      dots.forEach(d=>d.el.remove());
+      flowing = false; $("flowBtn").disabled = false;
+      onFlowDone();
+    }
+  })(t0);
+}
+function onFlowDone(){
+  const before = fingerprint().toFixed(2);
+  const count = parseInt($("inferCountVal").textContent,10) + 1;
+  $("inferCountVal").textContent = count;
+  const after = fingerprint().toFixed(2);
+  $("inferStatus").className = "status good";
+  $("inferText").innerHTML = `第 <b class="mono">${count}</b> 次推論完成。權重指紋：推論前 <b class="mono">${before}</b> → 推論後 <b class="mono">${after}</b> —— 一模一樣。`;
+}
+
+/* ============ 自動訓練 ============ */
+let training = false, errHist = [];
+function trainEpoch(lr){
+  const g = { w1:[[0,0,0],[0,0,0]], b1:[0,0], w2:[0,0], b2:0 };
+  for(const d of DATA){
+    const x = norm(d), {h, y} = forward(x);
+    const dz2 = (y-d.t)*y*(1-y);
+    g.b2 += dz2;
+    for(let j=0;j<2;j++){
+      g.w2[j] += dz2*h[j];
+      const dz1 = dz2*W.w2[j]*(1-h[j]*h[j]);
+      g.b1[j] += dz1;
+      for(let k=0;k<3;k++) g.w1[j][k] += dz1*x[k];
+    }
+  }
+  const n = DATA.length;
+  W.b2 -= lr*g.b2/n;
+  for(let j=0;j<2;j++){
+    W.w2[j] -= lr*g.w2[j]/n;
+    W.b1[j] -= lr*g.b1[j]/n;
+    for(let k=0;k<3;k++) W.w1[j][k] -= lr*g.w1[j][k]/n;
+  }
+}
+function drawErrSpark(){
+  if(errHist.length < 2) return;
+  $("errEmpty").setAttribute("display","none");
+  const W_=280, H_=56, pl=6, pr=8, pt=8, pb=8;
+  const mx = Math.max(...errHist, 1e-6);
+  const sx = i => pl + i/(errHist.length-1)*(W_-pl-pr);
+  const sy = v => H_-pb - (v/mx)*(H_-pt-pb);
+  let d = "";
+  errHist.forEach((v,i)=>{ d += (i?"L":"M")+sx(i).toFixed(1)+" "+sy(v).toFixed(1)+" "; });
+  $("errPath").setAttribute("d", d);
+}
+function silentPretrain(n){
+  for(let i=0;i<n;i++) trainEpoch(3.0);
+}
+function train(){
+  if(training) return;
+  training = true;
+  $("trainBtn").disabled = true;
+  $("trainBtn").textContent = "訓練中…";
+  errHist = [totalErr()];
+  const startErr = errHist[0];
+  let tick = 0;
+  const timer = setInterval(()=>{
+    for(let i=0;i<8;i++) trainEpoch(3.0);
+    tick++;
+    errHist.push(totalErr());
+    drawEdges(); drawNodes(); drawTable(); drawErrSpark(); updateFingerprint(true);
+    $("trainText").innerHTML = `第 <b class="mono">${tick*8}</b> 輪 —— 誤差從 <b class="mono">${startErr.toFixed(1)}</b> 降到 <b class="mono">${totalErr().toFixed(1)}</b>。權重指紋剛剛跳到 <b class="mono">${fingerprint().toFixed(2)}</b>。`;
+    if(tick >= 150 || totalErr() < 2){
+      clearInterval(timer);
+      training = false;
+      $("trainBtn").disabled = false;
+      $("trainBtn").textContent = "再訓練一次";
+      $("trainStatus").className = "status good";
+      $("trainText").innerHTML = `✅ 訓練完成。這整段時間，權重指紋一路在跳 —— 現在停在 <b class="mono">${fingerprint().toFixed(2)}</b>。切回推論模式送一次同一張卡，分數應該跟訓練前不一樣了，因為模型真的變了。`;
+    }
+  }, 100);
+}
+
+/* ============ 整體重繪 ============ */
+function renderLabels(){
+  $("lblSweet").textContent = rarityLbl(+$("inSweet").value);
+  $("lblIce").textContent   = powerLbl(+$("inIce").value);
+  $("lblPearl").textContent = artLbl(+$("inPearl").value);
+}
+function renderAll(){
+  renderLabels(); drawEdges(); drawNodes(); drawTable(); updateFingerprint(false);
+}
+
+/* ============ 事件 ============ */
+$("modeInferBtn").addEventListener("click", ()=>setMode("infer"));
+$("modeTrainBtn").addEventListener("click", ()=>setMode("train"));
+
+["inSweet","inIce","inPearl"].forEach(id=>{
+  $(id).addEventListener("input", ()=>{ renderLabels(); drawNodes(); });
+});
+$("randCardBtn").addEventListener("click", ()=>{
+  $("inSweet").value = Math.floor(Math.random()*11);
+  $("inIce").value   = Math.floor(Math.random()*11);
+  $("inPearl").value = Math.floor(Math.random()*11);
+  renderLabels(); drawNodes();
+  $("inferStatus").className = "status";
+  $("inferText").textContent = "抽了一張新卡。數字從左邊重新流一次 —— 但這跟權重完全無關，權重連動都沒動。";
+});
+$("flowBtn").addEventListener("click", playFlow);
+
+$("cheatToggleBtn").addEventListener("click", ()=>{
+  cheatOn = !cheatOn;
+  $("cheatToggleBtn").setAttribute("aria-pressed", String(cheatOn));
+  drawNodes();
+});
+$("cheatRange").addEventListener("input", ()=>{
+  const v = parseInt($("cheatRange").value,10);
+  $("cheatAmtVal").textContent = (v>=0?"+":"") + v;
+  if(cheatOn) drawNodes();
+});
+
+$("trainBtn").addEventListener("click", train);
+$("resetModelBtn").addEventListener("click", ()=>{
+  W = randW(); errHist = [];
+  $("errPath").setAttribute("d",""); $("errEmpty").setAttribute("display","");
+  $("trainStatus").className = "status";
+  $("trainText").textContent = "權重被打亂了 —— 網路回到「什麼都不懂」的狀態。再訓練一次看看。";
+  drawEdges(); drawNodes(); drawTable(); updateFingerprint(true);
+});
+
+/* ============ 啟動 ============ */
+function init(){
+  W = randW();
+  silentPretrain(60);          // 先在背後安靜訓練一下，推論模式一開始才不會亂猜
+  $("inSweet").value = 10; $("inIce").value = 3; $("inPearl").value = 10;
+  $("cheatAmtVal").textContent = "+15";
+  setMode("infer");
+  renderAll();
+}
+init();
 </script>
 </body>
 </html>
