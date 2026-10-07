@@ -52,64 +52,79 @@ h1{font-family:"Noto Serif TC","Songti TC",serif; font-weight:900;
   border:1px solid var(--line); background:var(--surface); color:var(--ink)}
 .btn.primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent); font-weight:700}
 .btn:disabled{opacity:.45; cursor:not-allowed}
-.btn:focus-visible,.cup:focus-visible{outline:2px solid var(--ball); outline-offset:2px}
+.btn:focus-visible,.cup:focus-visible,input:focus-visible{outline:2px solid var(--ball); outline-offset:2px}
+input[type=range]{accent-color:var(--accent); width:100%}
 
-/* 選一杯 */
+/* 選資料集 */
 .cups{display:flex; gap:8px; flex-wrap:wrap; padding-bottom:14px;
   border-bottom:1px dashed var(--line); margin-bottom:14px}
 .cup{font:inherit; font-size:.88rem; border:1px solid var(--line); background:var(--surface);
-  color:var(--ink); border-radius:9px; padding:6px 12px; cursor:pointer; text-align:left}
+  color:var(--ink); border-radius:9px; padding:6px 14px; cursor:pointer; text-align:left}
 .cup[aria-pressed="true"]{background:var(--accent-soft); border-color:var(--accent); color:var(--accent); font-weight:700}
 .cup small{display:block; color:var(--muted); font-size:.76rem; font-weight:400}
 .cup[aria-pressed="true"] small{color:var(--accent)}
 
-/* 四個階段 */
-.steps{display:flex; gap:0; margin-bottom:14px; flex-wrap:wrap}
-.step{flex:1; min-width:132px; padding:9px 12px; border-top:3px solid var(--line);
-  color:var(--muted); font-size:.88rem; transition:color .15s, border-color .15s}
-.step .n{font-family:"IBM Plex Mono",monospace; font-size:.76rem; letter-spacing:.1em; display:block}
-.step[data-on="true"]{border-top-color:var(--accent); color:var(--ink); font-weight:700}
-.step[data-on="true"] .n{color:var(--accent)}
-.step[data-done="true"]{border-top-color:var(--accent); color:var(--muted); font-weight:400}
-.step[data-on="true"].back{border-top-color:var(--danger)}
-.step[data-on="true"].back .n{color:var(--danger)}
-
 .net-wrap{border:1px solid var(--line); border-radius:10px; background:var(--surface); overflow:hidden}
 svg{display:block; width:100%; height:auto}
-.edge-hit{stroke:transparent; stroke-width:11; cursor:pointer; fill:none}
+.edge-hit{stroke:transparent; stroke-width:14; cursor:default; fill:none}
 .node-val{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
 
-/* 圖例：會隨階段改變意義 */
 .legend{display:flex; gap:8px 18px; flex-wrap:wrap; margin-top:10px; font-size:.84rem; color:var(--muted)}
 .legend i{display:inline-block; width:22px; height:3px; border-radius:2px; vertical-align:.2em; margin-right:6px}
 
-/* 單條線的算式面板（高度固定） */
-.detail{margin-top:12px; min-height:7.2em; border:1px dashed var(--line); border-radius:10px;
-  padding:12px 15px}
-.detail .placeholder{color:var(--muted); font-size:.92rem}
-.detail h4{margin:0 0 8px; font-size:.98rem}
-.chain{display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:.88rem}
-.chain .f{background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:4px 10px; text-align:center}
-.chain .f b{display:block; font-family:"IBM Plex Mono",monospace; font-size:1rem; color:var(--ink)}
-.chain .f span{font-size:.72rem; color:var(--muted)}
-.chain .op{color:var(--muted); font-weight:700}
-.chain .res{background:var(--danger-soft); border-color:var(--danger)}
-.chain .res b{color:var(--danger)}
-.detail .note{margin:9px 0 0; font-size:.85rem; color:var(--muted)}
+/* 卡片輸入（滑桿，給下面「它還是會回答」用） */
+.order{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px 20px;
+  padding-bottom:14px; margin-bottom:14px; border-bottom:1px dashed var(--line)}
+.order .f{display:flex; justify-content:space-between; align-items:baseline; gap:8px}
+.order .f b{font-size:.92rem; font-weight:500}
+.order .f .val{font-size:.9rem; color:var(--accent); font-weight:700}
+
+.outbar{margin-top:14px; display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+.outbar .big{font-family:"Noto Serif TC",serif; font-weight:900; font-size:2.1rem; line-height:1;
+  color:var(--accent); font-variant-numeric:tabular-nums; min-width:3.6em}
+.outbar .cap{font-size:.85rem; color:var(--muted)}
 
 .status{margin-top:12px; min-height:4.4em; font-size:.98rem}
 .status .pill{display:inline-block; border-radius:8px; padding:4px 12px; background:var(--accent-soft)}
-.status.back .pill{background:var(--danger-soft); border:1.5px solid var(--danger); color:var(--danger)}
 .status.good .pill{border:1.5px solid var(--accent); color:var(--accent); font-weight:700}
+.status.back .pill{background:var(--danger-soft); border:1.5px solid var(--danger); color:var(--danger)}
 
-.scoreline{display:flex; gap:10px 26px; flex-wrap:wrap; margin-top:14px;
+.scoreline{display:flex; gap:10px 26px; flex-wrap:wrap; margin-top:14px; align-items:center;
   padding-top:12px; border-top:1px dashed var(--line)}
-.scoreline div{font-size:.85rem; color:var(--muted); min-width:6em}
+.scoreline div{font-size:.85rem; color:var(--muted); min-width:7em}
 .scoreline .v{display:block; font-size:1.3rem; color:var(--ink);
   font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
-.scoreline .v.bad{color:var(--danger)}
-.scoreline .v.ok{color:var(--accent)}
-#errSpark{max-width:300px; flex:1; min-width:180px; align-self:center}
+#errSpark{max-width:280px; flex:1; min-width:170px; align-self:center}
+
+/* 表格（訓練資料預覽、測試結果） */
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse; width:100%; min-width:420px; font-size:.92rem}
+th,td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)}
+th{font-size:.76rem; letter-spacing:.06em; color:var(--muted); font-weight:500; white-space:nowrap}
+td.num{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap}
+td .gap{font-size:.85rem}
+.gap.big{color:var(--danger); font-weight:700}
+.gap.ok{color:var(--accent); font-weight:700}
+.tbl-cap{font-size:.78rem; letter-spacing:.06em; color:var(--muted); margin:0 0 8px}
+
+/* 訓練紀錄 */
+.recap{background:var(--bg); border:1px solid var(--line); border-radius:10px;
+  padding:14px 16px; margin-top:14px}
+.recap .cap{font-size:.78rem; letter-spacing:.06em; color:var(--muted); margin-bottom:6px; display:block}
+.recap ol{margin:0; padding-left:1.3em}
+.recap li{margin-block:6px; font-size:.92rem}
+.recap li b{color:var(--accent)}
+.recap li.bias b{color:var(--danger)}
+.recap .empty{color:var(--muted); font-size:.9rem}
+
+/* 幻覺對照卡 */
+.halluc{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; margin-top:4px}
+.hcard{border-radius:12px; padding:15px 17px; font-size:.92rem}
+.hcard.ask{background:var(--bg); border:1px solid var(--line)}
+.hcard.fab{background:var(--danger-soft); border:1px solid var(--danger)}
+.hcard .who{font-size:.74rem; letter-spacing:.08em; color:var(--muted); display:block; margin-bottom:6px}
+.hcard.fab .who{color:var(--danger)}
+.hcard p{margin:0}
 
 /* ============ 術語彈出視窗 ============ */
 .term{font:inherit; color:var(--accent); background:transparent; border:0; padding:0 2px;
@@ -148,32 +163,13 @@ h2{font-family:"Noto Serif TC","Songti TC",serif; font-weight:700; font-size:1.4
 .card p{margin:0; font-size:.92rem; color:var(--muted)}
 .card .mono{color:var(--ink)}
 
-.recap{background:var(--surface); border:1px solid var(--line); border-radius:12px;
-  padding:18px 20px; margin-block:16px}
-.recap ol{margin:0; padding-left:1.3em}
-.recap li{margin-block:7px}
-.recap li b{color:var(--accent)}
-
 .outro{max-width:42em}
 .outro p{margin-block:10px}
 footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
   display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
   color:var(--muted); font-size:.85rem}
+footer a{color:inherit}
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
-
-/* ============ 骨架專用：待開發標示（做完這一頁後刪掉） ============ */
-.scaffold{border:2px dashed var(--ball); border-radius:14px; padding:18px 20px; margin-block:8px 26px;
-  background:var(--surface)}
-.scaffold > .flag{display:inline-block; font-size:.72rem; letter-spacing:.1em; font-weight:700;
-  color:var(--on-accent); background:var(--ball); border-radius:6px; padding:2px 9px; margin-bottom:10px}
-.scaffold h3{margin:0 0 8px; font-size:1rem}
-.scaffold ul{margin:0 0 4px; padding-left:1.25em}
-.scaffold li{font-size:.92rem; color:var(--muted); margin-block:5px}
-.scaffold li b{color:var(--ink); font-weight:500}
-.brief{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px 22px;
-  margin:0 0 16px; padding-bottom:14px; border-bottom:1px dashed var(--line)}
-.brief div b{display:block; font-size:.74rem; letter-spacing:.08em; color:var(--muted); font-weight:500}
-.brief div span{font-size:.94rem}
 </style>
 </head>
 <body>
@@ -189,49 +185,138 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
 
 <div class="anchor">
   <h3>先想一件事：只看過黃金獵犬的人，第一次看到吉娃娃</h3>
-  <p>他大概不會覺得那是狗。這不是他笨，是他的<b>資料裡沒有</b>。AI 犯的錯幾乎都是這一類 —— 而且更麻煩的是，它會用非常有自信的語氣說出來。</p>
+  <p>他大概不會覺得那是狗。這不是他笨，是他的資料裡<b>沒有</b>。AI 犯的錯幾乎都是這一類 —— 而且更麻煩的是，它會用非常有自信的語氣說出來。</p>
 </div>
 
-<p class="intro">（待寫：承接上面的比喻，把它對應到這一頁要示範的機制，並在關鍵字上掛 <code>&lt;button class="term" data-t="…"&gt;</code>。術語辭典已經先備好在頁尾的 script 裡。）</p>
-<p class="hint">（待寫：一句話說明這一頁要怎麼操作。）（有底線的詞都可以點開，會給你一個比方）</p>
+<p class="intro">下面還是同一個小模型，但這次你不碰權重，只做一件事：<b>選它用什麼資料練</b>。有一份資料故意只給它看「某一種」卡，另一份資料五花八門都有。兩份資料的「正確答案」都來自同一條<button class="term" data-t="bias" aria-expanded="false">沒有被告訴它的規則</button>——差別只在於哪一份資料讓它有機會看到完整的規則。</p>
+<p class="hint">先用「偏誤資料」訓練一次，看測試題錯在哪；再切「平衡資料」重練一次，比較兩次結果。（有底線的詞都可以點開，會給你一個比方）</p>
 
-<section class="scaffold" aria-label="這一頁的開發規格">
-  <span class="flag">骨架・尚未實作</span>
-  <div class="brief">
-    <div><b>要拆掉的誤解</b><span>「AI 錯是因為它還不夠聰明，以後會更好」</span></div>
-    <div><b>要產生的理解</b><span>資料裡沒有的東西它學不到，資料裡有的偏見它會忠實地學起來</span></div>
+<section class="lab" aria-label="偏誤資料與平衡資料對照實驗">
+  <div class="cups" role="group" aria-label="選訓練資料">
+    <button class="cup" id="setBiasBtn" aria-pressed="false">偏誤資料<small>5 張卡，立繪全部是「華麗」</small></button>
+    <button class="cup" id="setBalBtn" aria-pressed="true">平衡資料<small>5 張卡，立繪從陽春到華麗都有</small></button>
   </div>
-  <h3>預定的互動設計</h3>
-  <ul>
-    <li>核心互動：讓學生<b>自己挑訓練資料</b>（一份有偏的、一份平衡的），訓練同一個模型</li>
-    <li>然後丟同一批測試題，比較兩個模型錯在哪 —— 錯誤是可預測的，不是隨機的</li>
-    <li>可以沿用中級的手搖飲網路：例如訓練資料只有「加珍珠」的杯子，模型就學不會判斷不加珍珠的</li>
-    <li>第二段：幻覺 —— 模型永遠會給答案，即使它沒有依據。示範「沒有資料時它照樣講得很順」</li>
-    <li>收尾接到素養層次：所以使用 AI 時該問的不是『它聰不聰明』，而是『它是用什麼資料學的』</li>
-    <li>待討論：幻覺要不要做成可互動的，還是用預錄的對比例子就夠</li>
-  </ul>
+
+  <p class="tbl-cap">現在用來訓練的 5 張卡（<span id="setLabelSpan" class="mono">平衡資料</span>）</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>卡片</th><th class="num">正確分數</th></tr></thead>
+      <tbody id="trainBody"></tbody>
+    </table>
+  </div>
+
+  <div class="net-wrap" style="margin-top:14px">
+    <svg id="net" viewBox="0 0 820 400" role="img" aria-label="三個輸入、兩個隱藏神經元、一個輸出的小模型">
+      <text x="140" y="22" text-anchor="middle" font-size="12" fill="var(--muted)" letter-spacing="1.5">輸入層</text>
+      <text x="430" y="22" text-anchor="middle" font-size="12" fill="var(--muted)" letter-spacing="1.5">隱藏層</text>
+      <text x="690" y="22" text-anchor="middle" font-size="12" fill="var(--muted)" letter-spacing="1.5">輸出層</text>
+      <g id="edgeLayer"></g>
+      <g id="nodeLayer"></g>
+      <g id="hitLayer"></g>
+    </svg>
+  </div>
+  <div class="legend">
+    <span><i style="background:var(--accent)"></i>線越粗，權重越大（加分）</span>
+    <span><i style="background:var(--danger)"></i>紅色代表權重是負的（扣分）</span>
+  </div>
+
+  <div class="scoreline">
+    <div><span>測試誤差</span><span class="v mono" id="rmseVal">—</span></div>
+    <svg id="errSpark" viewBox="0 0 280 56" aria-label="訓練過程中誤差的變化">
+      <line x1="4" y1="50" x2="276" y2="50" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 4"/>
+      <path id="errPath" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <text id="errEmpty" x="140" y="30" text-anchor="middle" font-size="12" fill="var(--muted)">按「開始訓練」才會畫出變化</text>
+    </svg>
+    <div class="btns" style="margin-left:auto">
+      <button class="btn primary" id="trainBtn">用這份資料訓練</button>
+    </div>
+  </div>
+
+  <p class="tbl-cap" style="margin-top:16px">測試題（5 張沒給它練過的卡）</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>測試卡</th><th class="num">真實分數</th><th class="num">模型猜</th><th class="num">差多少</th></tr></thead>
+      <tbody id="testBody"></tbody>
+    </table>
+  </div>
+
+  <div class="status" id="trainStatus"><span class="pill" id="trainText">權重是隨機的，還沒訓練過，先選一份資料再按「開始訓練」。</span></div>
+
+  <div class="recap">
+    <span class="cap">訓練紀錄（可以切資料重練，比較看看）</span>
+    <ol id="logList"><li class="empty" style="list-style:none">還沒有紀錄。</li></ol>
+  </div>
 </section>
+
+<h2>那它連「不知道」都不會說？</h2>
+<p class="intro">用上面剛剛訓練好的那個模型，隨便設一組它從來沒看過的組合 —— 看輸出還是會給你一個清清楚楚的數字。它沒有「我不知道」這個選項，只會把三個數字乘一乘、加一加，吐出一個看起來很像答案的分數。這就是<button class="term" data-t="halluc" aria-expanded="false">幻覺</button>的縮小版：模型的目標從來不是「說實話」，是「說出最像答案的話」。</p>
+
+<section class="lab" aria-label="問一個它沒看過的組合">
+  <div class="order">
+    <div>
+      <div class="f"><b>稀有度</b><span class="val" id="qLblSweet">—</span></div>
+      <input type="range" id="qSweet" min="0" max="10" step="1" value="5">
+    </div>
+    <div>
+      <div class="f"><b>數值</b><span class="val" id="qLblIce">—</span></div>
+      <input type="range" id="qIce" min="0" max="10" step="1" value="5">
+    </div>
+    <div>
+      <div class="f"><b>立繪</b><span class="val" id="qLblPearl">—</span></div>
+      <input type="range" id="qPearl" min="0" max="10" step="1" value="5">
+    </div>
+  </div>
+  <div class="outbar">
+    <div>
+      <span class="cap">模型給的分數（不管你怎麼設，它都會給一個）</span>
+      <div class="big"><span id="qOut">—</span><span style="font-size:.5em">分</span></div>
+    </div>
+  </div>
+</section>
+
+<p class="hint" style="margin-bottom:16px">真正的語言模型也一樣，只是舞台換成文字：</p>
+
+<div class="halluc">
+  <div class="hcard ask">
+    <span class="who">使用者問</span>
+    <p>「《新手村標準教科書》第幾頁提到反向傳播？請直接引用那一段。」</p>
+  </div>
+  <div class="hcard fab">
+    <span class="who">模型可能這樣回答（而且語氣很穩）</span>
+    <p>「在第 <b class="mono">214</b> 頁，書上寫道：『反向傳播是誤差訊號沿網路反向流動並更新權重的過程。』」</p>
+  </div>
+</div>
+<p class="hint" style="margin-top:12px">問題是：<b>這本書根本不存在</b>。頁碼和引文都是模型編出來的 —— 但它編得很順，順到你如果不知道這本書不存在，很可能就信了。它不是在說謊（它沒有「知道真相卻故意騙你」的意圖），它只是在做跟上面那個小模型一樣的事：收到輸入，一定要給一個聽起來像答案的輸出。</p>
 
 <h2>三個實驗，三個發現</h2>
 <div class="cards">
-  <div class="card"><span class="tag">實驗 1</span><h3>（待寫）</h3>
-    <p>每張卡都要是<b>可複現的操作指令</b>，不是說明文字 —— 例如「把學習率調到 0.10 以下，數數看要幾步」。</p></div>
-  <div class="card"><span class="tag">實驗 2</span><h3>（待寫）</h3>
-    <p>第二張通常是「破壞它」：讓學生動手把東西弄壞，從壞掉的樣子反推機制。</p></div>
-  <div class="card"><span class="tag">實驗 3</span><h3>（待寫）</h3>
-    <p>第三張拉回現實：讓學生用自己的情況試一次，體會這個機制在真實世界的後果。</p></div>
+  <div class="card">
+    <span class="tag">實驗 1・錯是可預測的</span>
+    <h3>用偏誤資料訓練，找出錯最大的測試卡</h3>
+    <p>應該會是立繪偏低的那幾張。不是隨機亂錯，而是「資料裡沒教過的區域」穩定地錯 —— 這就是<button class="term" data-t="bias" aria-expanded="false">資料偏差</button>的樣子。</p>
+  </div>
+  <div class="card">
+    <span class="tag">實驗 2・換資料，不換模型</span>
+    <h3>切到平衡資料，重練一次同一批測試卡</h3>
+    <p>測試誤差應該明顯下降。模型的學習能力沒變，純粹是因為它終於看過那塊資料 —— 把這兩次的「訓練紀錄」擺在一起比最清楚。</p>
+  </div>
+  <div class="card">
+    <span class="tag">實驗 3・回到真實世界</span>
+    <h3>想一個你知道的「AI 在某個群體上一直表現差」的例子</h3>
+    <p>人臉辨識對某些膚色錯更多、語音辨識對某些口音聽不懂 —— 對照剛剛的實驗，猜猜看問題更可能出在模型「不夠聰明」，還是訓練資料「沒有那一塊」？</p>
+  </div>
 </div>
 
 <h2>這跟 AI 有什麼關係？</h2>
 <div class="outro">
-  <p>（待寫：從這一頁的小規模示範，接到真實模型的量級。）</p>
-  <p>（待寫：這個機制帶來什麼能力、又有什麼代價或限制。）</p>
-  <p>（待寫：留一個問題，導向下一頁。）</p>
+  <p>你剛剛玩的是 5 張卡的<button class="term" data-t="bias" aria-expanded="false">資料偏差</button>。真正的大型模型，訓練資料是幾十億筆網路文字 —— 偏差不會消失，只會變得更難發現：沒有人能把幾十億筆資料一筆一筆檢查過去，確認每個群體、每種情境都被公平地包含。模型在資料多的地方像天才，在資料少的地方就變成那個沒見過吉娃娃的人。</p>
+  <p><button class="term" data-t="halluc" aria-expanded="false">幻覺</button>則是另一個代價：模型被訓練成「永遠產生一個答案」，而不是「不確定時說不確定」。這不是哪一次沒調好，是這類模型天生的性質 —— 所以答案聽起來順不順，從來不能當作它對不對的證據。</p>
+  <p>所以下次看到 AI 的輸出，比較有用的問題不是「它聰不聰明」，而是「它是用什麼資料學的、這個問題資料裡有沒有」。那回到最開始的問題：這些權重、這些資料，到底是怎麼變成一個會自己修正的函數的？下一頁從頭拆給你看。</p>
 </div>
 
 <footer class="site">
   <span>AI Concept Visualizer</span>
-  <span>上一頁：訓練與推論（規劃中） ・ 下一頁：中級：神經網路</span>
+  <span>上一頁：<a href="training_vs_inference.html">訓練與推論</a> ・ 下一頁：<a href="neural_network.html">中級：神經網路</a></span>
 </footer>
 
 </div>
@@ -240,8 +325,9 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/* ============ 術語辭典（已先備好，文案可再調） ============ */
+/* ============ 術語辭典 ============ */
 const TERMS = {
   bias:{en:"data bias", zh:"資料偏差 data bias",
     what:"訓練資料如果只涵蓋世界的一小塊，模型就只認得那一小塊 —— 而且它不會知道自己不知道。",
@@ -257,8 +343,7 @@ const TERMS = {
     life:"真的學會了，換個題型也做得出來。"}
 };
 
-/* ============ 彈出視窗（全站共用，不必改） ============ */
-
+/* ============ 彈出視窗 ============ */
 const pop = $("pop");
 let openBtn = null;
 function closePop(){
@@ -267,9 +352,9 @@ function closePop(){
 }
 function positionPop(btn){
   const r = btn.getBoundingClientRect(), w = pop.offsetWidth;
-  pop.style.left = Math.max(14, Math.min(r.left + scrollX + r.width/2 - w/2,
-    document.documentElement.clientWidth - w - 14)) + "px";
-  pop.style.top = (r.bottom + scrollY + 10) + "px";
+  const maxL = document.documentElement.clientWidth - w - 14;
+  pop.style.left = Math.max(14, Math.min(r.left + scrollX + r.width/2 - w/2, maxL)) + "px";
+  pop.style.top  = (r.bottom + scrollY + 10) + "px";
 }
 function openPop(btn){
   const t = TERMS[btn.dataset.t];
@@ -292,6 +377,257 @@ document.addEventListener("click", ev=>{
 });
 addEventListener("keydown", ev=>{ if(ev.key === "Escape") closePop(); });
 addEventListener("resize", ()=>{ if(openBtn) positionPop(openBtn); });
+
+/* ============ 網路本體：3 → 2 → 1（同一個抽卡網路架構） ============ */
+const IN_NAMES = ["稀有度","數值","立繪"];
+const HID_NAMES = ["鑑定師 A","鑑定師 B"];
+let W;
+function randW(){
+  const r = () => (Math.random()*2-1)*1.2;
+  return { w1:[[r(),r(),r()],[r(),r(),r()]], b1:[r(),r()], w2:[r(),r()], b2:r() };
+}
+function forward(x){
+  const h = [];
+  for(let j=0;j<2;j++){
+    let z = W.b1[j];
+    for(let k=0;k<3;k++) z += W.w1[j][k]*x[k];
+    h.push(Math.tanh(z));
+  }
+  let z2 = W.b2;
+  for(let j=0;j<2;j++) z2 += W.w2[j]*h[j];
+  return { h, y: 1/(1+Math.exp(-z2)) };
+}
+
+/* 抽卡用語 */
+const rarityLbl = v => v>=9?"傳說":v>=7?"史詩":v>=4?"精良":v>=1?"普通":"基礎";
+const powerLbl  = v => v>=9?"爆表":v>=6?"強力":v>=3?"中等":v>=1?"偏弱":"貧弱";
+const artLbl    = v => v>=8?"華麗":v>=4?"精緻":v>=1?"簡樸":"陽春";
+const cardText  = d => `${rarityLbl(d.s)}、${powerLbl(d.i)}、立繪${artLbl(d.p)}`;
+const norm = d => [d.s/10, d.i/10, d.p/10];
+
+/* ============ 隱藏的「真實規則」：立繪佔比最高，但偏誤資料從來不讓模型看到立繪會變 ============ */
+function trueScore(d){
+  const sN=d.s/10, iN=d.i/10, pN=d.p/10;
+  return Math.max(0, Math.min(1, 0.20*sN + 0.15*iN + 0.65*pN));
+}
+
+/* 兩份訓練資料（正確答案都來自 trueScore，差別只在立繪是否固定） */
+const DATA_BIASED = [
+  {s:10, i:3, p:10}, {s:0, i:10, p:10}, {s:5, i:5, p:10}, {s:8, i:8, p:10}, {s:2, i:6, p:10}
+].map(d => ({...d, t: trueScore(d)}));
+const DATA_BALANCED = [
+  {s:10, i:3, p:10}, {s:0, i:10, p:0}, {s:5, i:7, p:5}, {s:10, i:10, p:2}, {s:3, i:0, p:8}
+].map(d => ({...d, t: trueScore(d)}));
+const TEST = [
+  {s:10, i:3, p:10}, {s:0, i:10, p:0}, {s:5, i:5, p:2}, {s:8, i:2, p:0}, {s:3, i:8, p:6}
+].map(d => ({...d, t: trueScore(d)}));
+
+/* ============ 版面座標 ============ */
+const POS = {
+  in:  [{x:140,y:120},{x:140,y:235},{x:140,y:350}],
+  hid: [{x:430,y:175},{x:430,y:300}],
+  out: {x:690,y:235}
+};
+const R_IN = 30, R_HID = 27, R_OUT = 36;
+const EDGES = [];
+for(let j=0;j<2;j++) for(let k=0;k<3;k++) EDGES.push({a:POS.in[k], b:POS.hid[j], ra:R_IN, rb:R_HID, path:"w1", j, k});
+for(let j=0;j<2;j++) EDGES.push({a:POS.hid[j], b:POS.out, ra:R_HID, rb:R_OUT, path:"w2", j});
+const wOf = e => e.path === "w1" ? W.w1[e.j][e.k] : W.w2[e.j];
+const edgeName = e => e.path === "w1" ? `${IN_NAMES[e.k]} → ${HID_NAMES[e.j]}` : `${HID_NAMES[e.j]} → 分數`;
+
+function trim(e){
+  const dx = e.b.x-e.a.x, dy = e.b.y-e.a.y, L = Math.hypot(dx,dy);
+  return { x1:e.a.x+dx/L*e.ra, y1:e.a.y+dy/L*e.ra, x2:e.b.x-dx/L*e.rb, y2:e.b.y-dy/L*e.rb };
+}
+
+/* ============ 畫圖 ============ */
+function drawEdges(){
+  const el = $("edgeLayer"), hl = $("hitLayer");
+  el.innerHTML = ""; hl.innerHTML = "";
+  EDGES.forEach(e=>{
+    const t = trim(e), w = wOf(e);
+    const width = Math.min(0.8 + Math.abs(w)*2.6, 9);
+    const color = Math.abs(w) < 0.06 ? "var(--line)" : (w > 0 ? "var(--accent)" : "var(--danger)");
+    el.insertAdjacentHTML("beforeend",
+      `<line x1="${t.x1}" y1="${t.y1}" x2="${t.x2}" y2="${t.y2}" stroke="${color}" ` +
+      `stroke-width="${width.toFixed(2)}" stroke-linecap="round" opacity=".85"/>`);
+    hl.insertAdjacentHTML("beforeend",
+      `<line class="edge-hit" x1="${t.x1}" y1="${t.y1}" x2="${t.x2}" y2="${t.y2}"><title>${edgeName(e)}　權重 ${w.toFixed(2)}</title></line>`);
+  });
+}
+function node(x,y,r,fill,stroke,label,value){
+  return `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>` +
+    `<text x="${x}" y="${y-r-11}" text-anchor="middle" font-size="13" fill="var(--muted)">${label}</text>` +
+    `<text class="node-val" x="${x}" y="${y+5}" text-anchor="middle" font-size="${r>32?16:14}" ` +
+    `font-weight="700" fill="${stroke}">${value}</text>`;
+}
+function drawNodes(x){
+  const {h, y} = forward(x);
+  let s = "";
+  POS.in.forEach((p,k)=>{ s += node(p.x,p.y,R_IN,"var(--accent-soft)","var(--accent)",IN_NAMES[k],(x[k]*10).toFixed(0)); });
+  POS.hid.forEach((p,j)=>{ s += node(p.x,p.y,R_HID,"var(--surface)","var(--ball)",HID_NAMES[j],h[j].toFixed(2)); });
+  s += node(POS.out.x,POS.out.y,R_OUT,"var(--accent)","var(--on-accent)","分數（示意）",Math.round(y*100));
+  $("nodeLayer").innerHTML = s;
+  return y;
+}
+
+/* ============ 資料集切換 ============ */
+let activeSet = "balanced";
+function currentData(){ return activeSet === "biased" ? DATA_BIASED : DATA_BALANCED; }
+function drawTrainTable(){
+  const rows = currentData().map(d => `<tr><td>${cardText(d)}</td><td class="num">${Math.round(d.t*100)}</td></tr>`).join("");
+  $("trainBody").innerHTML = rows;
+  $("setLabelSpan").textContent = activeSet === "biased" ? "偏誤資料" : "平衡資料";
+}
+function drawTestTable(){
+  let rows = "";
+  TEST.forEach(d=>{
+    const guess = forward(norm(d)).y;
+    const gap = Math.abs(guess - d.t)*100;
+    const cls = gap > 18 ? "big" : (gap < 8 ? "ok" : "");
+    rows += `<tr><td>${cardText(d)}</td><td class="num">${Math.round(d.t*100)}</td>` +
+      `<td class="num">${Math.round(guess*100)}</td>` +
+      `<td class="num"><span class="gap ${cls}">${gap.toFixed(0)}</span></td></tr>`;
+  });
+  $("testBody").innerHTML = rows;
+}
+function testRMSE(){
+  let e = 0;
+  for(const d of TEST){ const g = forward(norm(d)).y; e += (g-d.t)**2; }
+  return Math.sqrt(e/TEST.length)*100;
+}
+function worstTestCard(){
+  let worst = null, worstGap = -1;
+  for(const d of TEST){
+    const g = forward(norm(d)).y, gap = Math.abs(g-d.t)*100;
+    if(gap > worstGap){ worstGap = gap; worst = d; }
+  }
+  return { card: worst, gap: worstGap };
+}
+function drawAll(){
+  drawEdges();
+  drawNodes([0.5,0.5,0.5]); // 權重面板用的網路圖只示意結構，具體輸出看下面測試表
+  drawTrainTable();
+  drawTestTable();
+  $("rmseVal").textContent = testRMSE().toFixed(1);
+}
+function setActiveSet(name){
+  activeSet = name;
+  $("setBiasBtn").setAttribute("aria-pressed", String(name === "biased"));
+  $("setBalBtn").setAttribute("aria-pressed", String(name === "balanced"));
+  W = randW();                 // 換資料就重新洗牌權重，確保每次比較都是公平的新起點
+  errHist = [];
+  $("errPath").setAttribute("d",""); $("errEmpty").setAttribute("display","");
+  $("trainStatus").className = "status";
+  $("trainText").textContent = "權重重設成隨機 —— 按「開始訓練」，用剛剛選的這份資料練一次。";
+  drawAll();
+}
+
+/* ============ 自動訓練 ============ */
+let training = false, errHist = [];
+function trainEpoch(data, lr){
+  const g = { w1:[[0,0,0],[0,0,0]], b1:[0,0], w2:[0,0], b2:0 };
+  for(const d of data){
+    const x = norm(d), {h, y} = forward(x);
+    const dz2 = (y-d.t)*y*(1-y);
+    g.b2 += dz2;
+    for(let j=0;j<2;j++){
+      g.w2[j] += dz2*h[j];
+      const dz1 = dz2*W.w2[j]*(1-h[j]*h[j]);
+      g.b1[j] += dz1;
+      for(let k=0;k<3;k++) g.w1[j][k] += dz1*x[k];
+    }
+  }
+  const n = data.length;
+  W.b2 -= lr*g.b2/n;
+  for(let j=0;j<2;j++){
+    W.w2[j] -= lr*g.w2[j]/n;
+    W.b1[j] -= lr*g.b1[j]/n;
+    for(let k=0;k<3;k++) W.w1[j][k] -= lr*g.w1[j][k]/n;
+  }
+}
+function trainSetErr(data){
+  let e = 0;
+  for(const d of data){ const g = forward(norm(d)).y; e += (g-d.t)**2; }
+  return Math.sqrt(e/data.length)*100;
+}
+function drawErrSpark(){
+  if(errHist.length < 2) return;
+  $("errEmpty").setAttribute("display","none");
+  const W_=280, H_=56, pl=6, pr=8, pt=8, pb=8;
+  const mx = Math.max(...errHist, 1e-6);
+  const sx = i => pl + i/(errHist.length-1)*(W_-pl-pr);
+  const sy = v => H_-pb - (v/mx)*(H_-pt-pb);
+  let d = "";
+  errHist.forEach((v,i)=>{ d += (i?"L":"M")+sx(i).toFixed(1)+" "+sy(v).toFixed(1)+" "; });
+  $("errPath").setAttribute("d", d);
+}
+function logRun(){
+  const list = $("logList");
+  if(list.querySelector(".empty")) list.innerHTML = "";
+  const rmse = testRMSE();
+  const { card, gap } = worstTestCard();
+  const label = activeSet === "biased" ? "偏誤資料" : "平衡資料";
+  const li = document.createElement("li");
+  if(activeSet === "biased") li.className = "bias";
+  li.innerHTML = `${label}訓練完成：測試誤差 <b class="mono">${rmse.toFixed(1)}</b> 分，最差一題是「${cardText(card)}」，差了 <b class="mono">${gap.toFixed(0)}</b> 分`;
+  list.appendChild(li);
+}
+function train(){
+  if(training) return;
+  training = true;
+  $("trainBtn").disabled = true;
+  $("trainBtn").textContent = "訓練中…";
+  const data = currentData();
+  errHist = [trainSetErr(data)];
+  let tick = 0;
+  const timer = setInterval(()=>{
+    for(let i=0;i<8;i++) trainEpoch(data, 3.0);
+    tick++;
+    errHist.push(trainSetErr(data));
+    drawEdges(); drawTestTable(); drawErrSpark();
+    $("rmseVal").textContent = testRMSE().toFixed(1);
+    $("trainText").innerHTML = `第 <b class="mono">${tick*8}</b> 輪 —— 測試誤差現在是 <b class="mono">${testRMSE().toFixed(1)}</b> 分。`;
+    if(tick >= 150 || trainSetErr(data) < 2){
+      clearInterval(timer);
+      training = false;
+      $("trainBtn").disabled = false;
+      $("trainBtn").textContent = "再訓練一次";
+      logRun();
+      const rmse = testRMSE();
+      $("trainStatus").className = rmse > 15 ? "status back" : "status good";
+      $("trainText").innerHTML = rmse > 15
+        ? `✅ 訓練完成，但測試誤差還是 <b class="mono">${rmse.toFixed(1)}</b> 分 —— 看下面測試表，錯最大的幾張是不是立繪偏低的？這不是運氣不好，是這份資料從來沒讓它看過立繪變化。`
+        : `✅ 訓練完成，測試誤差只有 <b class="mono">${rmse.toFixed(1)}</b> 分。切去另一份資料重練一次，比較「訓練紀錄」裡的兩次結果。`;
+    }
+  }, 100);
+}
+
+/* ============ 「它還是會回答」小示範 ============ */
+function liveX(){ return [+$("qSweet").value/10, +$("qIce").value/10, +$("qPearl").value/10]; }
+function renderQuery(){
+  $("qLblSweet").textContent = rarityLbl(+$("qSweet").value);
+  $("qLblIce").textContent   = powerLbl(+$("qIce").value);
+  $("qLblPearl").textContent = artLbl(+$("qPearl").value);
+  const y = forward(liveX()).y;
+  $("qOut").textContent = Math.round(y*100);
+}
+
+/* ============ 事件 ============ */
+$("setBiasBtn").addEventListener("click", ()=>setActiveSet("biased"));
+$("setBalBtn").addEventListener("click", ()=>setActiveSet("balanced"));
+$("trainBtn").addEventListener("click", train);
+["qSweet","qIce","qPearl"].forEach(id=>{
+  $(id) && $(id).addEventListener("input", renderQuery);
+});
+
+/* ============ 啟動 ============ */
+function init(){
+  W = randW();
+  setActiveSet("balanced");
+  renderQuery();
+}
+init();
 </script>
 </body>
 </html>
