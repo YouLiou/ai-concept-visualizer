@@ -33,7 +33,8 @@ body{margin:0; background:var(--bg); color:var(--ink);
 
 header.site{display:flex; justify-content:space-between; align-items:baseline;
   padding-block:20px 0; gap:12px; flex-wrap:wrap}
-.brand{font-size:.8rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:700}
+.brand{font-size:.8rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:700; text-decoration:none}
+a.brand:hover,a.brand:focus-visible{color:var(--accent); outline:2px solid var(--ball); outline-offset:3px; border-radius:4px}
 .level{font-size:.75rem; color:var(--accent); border:1px solid var(--accent);
   border-radius:999px; padding:1px 10px; white-space:nowrap}
 h1{font-family:"Noto Serif TC","Songti TC",serif; font-weight:900;
@@ -188,7 +189,7 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
 <div class="wrap">
 
 <header class="site">
-  <span class="brand">AI Concept Visualizer</span>
+  <a class="brand" href="../index.html">AI Concept Visualizer</a>
   <span class="level">初級・AI 到底是什麼 2/3</span>
 </header>
 
