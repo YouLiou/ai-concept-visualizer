@@ -106,6 +106,12 @@ footer a{color:var(--muted)}
   .rail .dot{top:8px}
   .rail .name,.rail .en{padding-left:30px}
 }
+.cta-start{display:inline-flex; align-items:center; gap:7px; margin-top:16px;
+  background:var(--accent); color:var(--on-accent); text-decoration:none;
+  font-weight:700; font-size:.95rem; padding:10px 22px; border-radius:999px;
+  transition:transform .14s, box-shadow .14s}
+.cta-start:hover,.cta-start:focus-visible{transform:translateY(-1px); box-shadow:0 10px 24px -12px rgba(0,0,0,.35)}
+.cta-start:focus-visible{outline:2px solid var(--ball); outline-offset:2px}
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
 </style>
 </head>
@@ -117,6 +123,7 @@ footer a{color:var(--muted)}
   <h1>AI 概念視覺化</h1>
   <p class="thesis">一條從<b>完全不懂</b>到<b>真的理解 AI 在做什麼</b>的互動學習路徑。每一頁都不只是把概念畫出來 —— 而是先讓你動手做一次，做到卡住，再告訴你那個卡住的地方叫什麼名字。</p>
   <p class="meta">給高中生與 AI 初學者・全部是單檔 HTML，打開就能用，不需要安裝任何東西</p>
+  <a class="cta-start" href="pages/rule_to_learning.html">開始學習路線 →</a>
 </header>
 
 <main class="map">

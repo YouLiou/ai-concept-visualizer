@@ -738,5 +738,149 @@ function init(){
 }
 init();
 </script>
+<!-- ============ 學習路線導覽列 Reading Path Navigator ============ -->
+<style>
+#rpbar{position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:60;
+  background:var(--surface); border:1px solid var(--line); border-radius:14px;
+  box-shadow:0 6px 24px rgba(0,0,0,.14); padding:10px 16px 8px;
+  display:flex; flex-direction:column; gap:4px; max-width:min(92vw,560px);
+  font-size:.85rem; color:var(--ink)}
+#rpbar.rpbar-hidden{display:none}
+.rpbar-main{display:flex; align-items:center; gap:10px}
+.rpbar-nav{display:flex; align-items:center; gap:4px; color:var(--ink); text-decoration:none;
+  padding:6px 9px; border-radius:8px; white-space:nowrap; flex-shrink:0}
+.rpbar-nav:hover,.rpbar-nav:focus-visible{background:var(--accent-soft); color:var(--accent)}
+.rpbar-nav:focus-visible{outline:2px solid var(--ball); outline-offset:1px}
+.rpbar-nav.is-disabled{visibility:hidden}
+.rpbar-next{margin-left:auto}
+.rpbar-progress{display:flex; flex-direction:column; align-items:center; gap:4px; flex:1; min-width:0}
+.rpbar-step{font-size:.7rem; color:var(--muted); font-family:"IBM Plex Mono",monospace}
+.rpbar-dots{display:flex; gap:5px}
+.rpbar-dot{width:6px; height:6px; border-radius:50%; background:var(--line); flex-shrink:0; display:inline-block}
+.rpbar-dot.done{background:var(--accent)}
+.rpbar-dot.current{background:var(--ball); transform:scale(1.4)}
+.rpbar-close{position:absolute; top:-9px; right:-9px; width:22px; height:22px; border-radius:50%;
+  background:var(--surface); border:1px solid var(--line); color:var(--muted); font-size:.7rem;
+  line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0}
+.rpbar-close:hover{color:var(--accent); border-color:var(--accent)}
+.rpbar-callout{display:none; text-align:center; font-size:.76rem; color:var(--accent); font-weight:700}
+#rpbar.rpbar-attention .rpbar-next{animation:rpbar-pulse 1.6s ease-in-out infinite; border-radius:8px}
+#rpbar.rpbar-attention .rpbar-next .rpbar-arrow{display:inline-block; animation:rpbar-bounce 1.2s ease-in-out infinite}
+#rpbar.rpbar-attention .rpbar-callout{display:block; animation:rpbar-callout-in .4s ease-out}
+@keyframes rpbar-pulse{
+  0%,100%{box-shadow:0 0 0 0 transparent}
+  50%{box-shadow:0 0 0 6px var(--accent-soft)}
+}
+@keyframes rpbar-bounce{
+  0%,100%{transform:translateX(0)}
+  50%{transform:translateX(4px)}
+}
+@keyframes rpbar-callout-in{
+  from{opacity:0; transform:translateY(4px)}
+  to{opacity:1; transform:translateY(0)}
+}
+@media (prefers-reduced-motion: reduce){
+  #rpbar.rpbar-attention .rpbar-next,
+  #rpbar.rpbar-attention .rpbar-next .rpbar-arrow,
+  #rpbar.rpbar-attention .rpbar-callout{animation:none}
+}
+@media (max-width:640px){
+  #rpbar{bottom:10px; padding:8px 12px 7px; font-size:.78rem}
+  .rpbar-label{display:none}
+  .rpbar-step{font-size:.66rem}
+}
+</style>
+<nav id="rpbar" aria-label="學習路線導覽">
+  <button class="rpbar-close" id="rpbarClose" type="button" aria-label="關閉學習路線列">✕</button>
+  <div class="rpbar-main">
+    <a class="rpbar-nav rpbar-prev" id="rpbarPrev" href="#">
+      <span class="rpbar-arrow">←</span><span class="rpbar-label">上一篇</span>
+    </a>
+    <div class="rpbar-progress">
+      <span class="rpbar-step" id="rpbarStep"></span>
+      <div class="rpbar-dots" id="rpbarDots"></div>
+    </div>
+    <a class="rpbar-nav rpbar-next" id="rpbarNext" href="#">
+      <span class="rpbar-label">下一篇</span><span class="rpbar-arrow">→</span>
+    </a>
+  </div>
+  <div class="rpbar-callout" id="rpbarCallout">看完這頁了？繼續下一篇 →</div>
+</nav>
+<script>
+(function(){
+  "use strict";
+  var PATH = [
+    {file:"rule_to_learning.html", title:"從規則到學習"},
+    {file:"training_vs_inference.html", title:"訓練與推論"},
+    {file:"why_ai_fails.html", title:"AI 為什麼會錯"},
+    {file:"neural_network.html", title:"神經網路"},
+    {file:"gradient_descent.html", title:"梯度下降"},
+    {file:"backpropagation.html", title:"反向傳播"},
+    {file:"attention.html", title:"注意力機制"},
+    {file:"diffusion.html", title:"擴散模型"},
+    {file:"beyond_neural_nets.html", title:"不只有神經網路"}
+  ];
+  var cur = location.pathname.split("/").pop();
+  var idx = -1;
+  for(var i=0;i<PATH.length;i++){ if(PATH[i].file === cur){ idx = i; break; } }
+  var bar = document.getElementById("rpbar");
+  if(idx === -1){ bar.style.display = "none"; return; }
+
+  try{
+    if(sessionStorage.getItem("acv-rp-dismissed") === "1"){
+      bar.style.display = "none";
+      return;
+    }
+  }catch(e){}
+
+  var prev = document.getElementById("rpbarPrev");
+  var next = document.getElementById("rpbarNext");
+  var step = document.getElementById("rpbarStep");
+  var dotsWrap = document.getElementById("rpbarDots");
+  var closeBtn = document.getElementById("rpbarClose");
+
+  if(idx > 0){
+    prev.href = PATH[idx-1].file;
+    prev.title = "上一篇：" + PATH[idx-1].title;
+  } else {
+    prev.classList.add("is-disabled");
+  }
+  if(idx < PATH.length - 1){
+    next.href = PATH[idx+1].file;
+    next.title = "下一篇：" + PATH[idx+1].title;
+  } else {
+    next.classList.add("is-disabled");
+  }
+
+  step.textContent = (idx+1) + " / " + PATH.length;
+  PATH.forEach(function(p, i){
+    var d = document.createElement("span");
+    d.className = "rpbar-dot" + (i < idx ? " done" : (i === idx ? " current" : ""));
+    d.title = p.title;
+    dotsWrap.appendChild(d);
+  });
+
+  closeBtn.addEventListener("click", function(){
+    bar.classList.add("rpbar-hidden");
+    try{ sessionStorage.setItem("acv-rp-dismissed","1"); }catch(e){}
+  });
+
+  if(idx < PATH.length - 1){
+    var triggered = false;
+    function checkScroll(){
+      if(triggered) return;
+      var doc = document.documentElement;
+      var scrolled = (window.scrollY + window.innerHeight) / doc.scrollHeight;
+      if(scrolled > 0.8){
+        triggered = true;
+        bar.classList.add("rpbar-attention");
+        window.removeEventListener("scroll", checkScroll);
+      }
+    }
+    window.addEventListener("scroll", checkScroll, {passive:true});
+    checkScroll();
+  }
+})();
+</script>
 </body>
 </html>
