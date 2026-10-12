@@ -73,7 +73,7 @@ svg{display:block; width:100%; height:auto}
 .legend{display:flex; gap:8px 18px; flex-wrap:wrap; margin-top:10px; font-size:.84rem; color:var(--muted)}
 .legend i{display:inline-block; width:22px; height:3px; border-radius:2px; vertical-align:.2em; margin-right:6px}
 
-/* 卡片輸入（滑桿，給下面「它還是會回答」用） */
+/* 信件特徵輸入（滑桿，給下面「它還是會回答」用） */
 .order{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px 20px;
   padding-bottom:14px; margin-bottom:14px; border-bottom:1px dashed var(--line)}
 .order .f{display:flex; justify-content:space-between; align-items:baseline; gap:8px}
@@ -189,19 +189,19 @@ footer a{color:inherit}
   <p>他大概不會覺得那是狗。這不是他笨，是他的資料裡<b>沒有</b>。AI 犯的錯幾乎都是這一類 —— 而且更麻煩的是，它會用非常有自信的語氣說出來。</p>
 </div>
 
-<p class="intro">下面還是同一個小模型，但這次你不碰權重，只做一件事：<b>選它用什麼資料練</b>。有一份資料故意只給它看「某一種」卡，另一份資料五花八門都有。兩份資料的「正確答案」都來自同一條<button class="term" data-t="bias" aria-expanded="false">沒有被告訴它的規則</button>——差別只在於哪一份資料讓它有機會看到完整的規則。</p>
+<p class="intro">下面還是同一個小模型，但這次你不碰權重，只做一件事：<b>選它用什麼資料練</b>。有一份資料故意只給它看「某一種」信，另一份資料五花八門都有。兩份資料的「正確答案」都來自同一條<button class="term" data-t="bias" aria-expanded="false">沒有被告訴它的規則</button>——差別只在於哪一份資料讓它有機會看到完整的規則。</p>
 <p class="hint">先用「偏誤資料」訓練一次，看測試題錯在哪；再切「平衡資料」重練一次，比較兩次結果。（有底線的詞都可以點開，會給你一個比方）</p>
 
 <section class="lab" aria-label="偏誤資料與平衡資料對照實驗">
   <div class="cups" role="group" aria-label="選訓練資料">
-    <button class="cup" id="setBiasBtn" aria-pressed="false">偏誤資料<small>5 張卡，立繪全部是「華麗」</small></button>
-    <button class="cup" id="setBalBtn" aria-pressed="true">平衡資料<small>5 張卡，立繪從陽春到華麗都有</small></button>
+    <button class="cup" id="setBiasBtn" aria-pressed="false">偏誤資料<small>5 封信，寄件人全部是「完全不認識」</small></button>
+    <button class="cup" id="setBalBtn" aria-pressed="true">平衡資料<small>5 封信，寄件人從很熟到完全不認識都有</small></button>
   </div>
 
-  <p class="tbl-cap">現在用來訓練的 5 張卡（<span id="setLabelSpan" class="mono">平衡資料</span>）</p>
+  <p class="tbl-cap">現在用來訓練的 5 封信（<span id="setLabelSpan" class="mono">平衡資料</span>）</p>
   <div class="tbl-wrap">
     <table>
-      <thead><tr><th>卡片</th><th class="num">正確分數</th></tr></thead>
+      <thead><tr><th>信件</th><th class="num">正確分數</th></tr></thead>
       <tbody id="trainBody"></tbody>
     </table>
   </div>
@@ -233,10 +233,10 @@ footer a{color:inherit}
     </div>
   </div>
 
-  <p class="tbl-cap" style="margin-top:16px">測試題（5 張沒給它練過的卡）</p>
+  <p class="tbl-cap" style="margin-top:16px">測試題（5 封沒給它練過的信）</p>
   <div class="tbl-wrap">
     <table>
-      <thead><tr><th>測試卡</th><th class="num">真實分數</th><th class="num">模型猜</th><th class="num">差多少</th></tr></thead>
+      <thead><tr><th>測試信</th><th class="num">真實分數</th><th class="num">模型猜</th><th class="num">差多少</th></tr></thead>
       <tbody id="testBody"></tbody>
     </table>
   </div>
@@ -255,15 +255,15 @@ footer a{color:inherit}
 <section class="lab" aria-label="問一個它沒看過的組合">
   <div class="order">
     <div>
-      <div class="f"><b>稀有度</b><span class="val" id="qLblSweet">—</span></div>
+      <div class="f"><b>連結數</b><span class="val" id="qLblSweet">—</span></div>
       <input type="range" id="qSweet" min="0" max="10" step="1" value="5">
     </div>
     <div>
-      <div class="f"><b>數值</b><span class="val" id="qLblIce">—</span></div>
+      <div class="f"><b>緊急語氣</b><span class="val" id="qLblIce">—</span></div>
       <input type="range" id="qIce" min="0" max="10" step="1" value="5">
     </div>
     <div>
-      <div class="f"><b>立繪</b><span class="val" id="qLblPearl">—</span></div>
+      <div class="f"><b>寄件人</b><span class="val" id="qLblPearl">—</span></div>
       <input type="range" id="qPearl" min="0" max="10" step="1" value="5">
     </div>
   </div>
@@ -293,12 +293,12 @@ footer a{color:inherit}
 <div class="cards">
   <div class="card">
     <span class="tag">實驗 1・錯是可預測的</span>
-    <h3>用偏誤資料訓練，找出錯最大的測試卡</h3>
-    <p>應該會是立繪偏低的那幾張。不是隨機亂錯，而是「資料裡沒教過的區域」穩定地錯 —— 這就是<button class="term" data-t="bias" aria-expanded="false">資料偏差</button>的樣子。</p>
+    <h3>用偏誤資料訓練，找出錯最大的測試信</h3>
+    <p>應該會是寄件人沒那麼陌生（比較熟）的那幾封。不是隨機亂錯，而是「資料裡沒教過的區域」穩定地錯 —— 這就是<button class="term" data-t="bias" aria-expanded="false">資料偏差</button>的樣子。</p>
   </div>
   <div class="card">
     <span class="tag">實驗 2・換資料，不換模型</span>
-    <h3>切到平衡資料，重練一次同一批測試卡</h3>
+    <h3>切到平衡資料，重練一次同一批測試信</h3>
     <p>測試誤差應該明顯下降。模型的學習能力沒變，純粹是因為它終於看過那塊資料 —— 把這兩次的「訓練紀錄」擺在一起比最清楚。</p>
   </div>
   <div class="card">
@@ -310,7 +310,7 @@ footer a{color:inherit}
 
 <h2>這跟 AI 有什麼關係？</h2>
 <div class="outro">
-  <p>你剛剛玩的是 5 張卡的<button class="term" data-t="bias" aria-expanded="false">資料偏差</button>。真正的大型模型，訓練資料是幾十億筆網路文字 —— 偏差不會消失，只會變得更難發現：沒有人能把幾十億筆資料一筆一筆檢查過去，確認每個群體、每種情境都被公平地包含。模型在資料多的地方像天才，在資料少的地方就變成那個沒見過吉娃娃的人。</p>
+  <p>你剛剛玩的是 5 封信的<button class="term" data-t="bias" aria-expanded="false">資料偏差</button>。真正的大型模型，訓練資料是幾十億筆網路文字 —— 偏差不會消失，只會變得更難發現：沒有人能把幾十億筆資料一筆一筆檢查過去，確認每個群體、每種情境都被公平地包含。模型在資料多的地方像天才，在資料少的地方就變成那個沒見過吉娃娃的人。</p>
   <p><button class="term" data-t="halluc" aria-expanded="false">幻覺</button>則是另一個代價：模型被訓練成「永遠產生一個答案」，而不是「不確定時說不確定」。這不是哪一次沒調好，是這類模型天生的性質 —— 所以答案聽起來順不順，從來不能當作它對不對的證據。</p>
   <p>所以下次看到 AI 的輸出，比較有用的問題不是「它聰不聰明」，而是「它是用什麼資料學的、這個問題資料裡有沒有」。那回到最開始的問題：這些權重、這些資料，到底是怎麼變成一個會自己修正的函數的？下一頁從頭拆給你看。</p>
 </div>
@@ -379,9 +379,9 @@ document.addEventListener("click", ev=>{
 addEventListener("keydown", ev=>{ if(ev.key === "Escape") closePop(); });
 addEventListener("resize", ()=>{ if(openBtn) positionPop(openBtn); });
 
-/* ============ 網路本體：3 → 2 → 1（同一個抽卡網路架構） ============ */
-const IN_NAMES = ["稀有度","數值","立繪"];
-const HID_NAMES = ["鑑定師 A","鑑定師 B"];
+/* ============ 網路本體：3 → 2 → 1（同一個垂圾信過濾網路架構） ============ */
+const IN_NAMES = ["連結數","緊急語氣","寄件人"];
+const HID_NAMES = ["審核員 A","審核員 B"];
 let W;
 function randW(){
   const r = () => (Math.random()*2-1)*1.2;
@@ -399,20 +399,20 @@ function forward(x){
   return { h, y: 1/(1+Math.exp(-z2)) };
 }
 
-/* 抽卡用語 */
-const rarityLbl = v => v>=9?"傳說":v>=7?"史詩":v>=4?"精良":v>=1?"普通":"基礎";
-const powerLbl  = v => v>=9?"爆表":v>=6?"強力":v>=3?"中等":v>=1?"偏弱":"貧弱";
-const artLbl    = v => v>=8?"華麗":v>=4?"精緻":v>=1?"簡樸":"陽春";
-const cardText  = d => `${rarityLbl(d.s)}、${powerLbl(d.i)}、立繪${artLbl(d.p)}`;
+/* 垂圾信用語 */
+const linkLbl = v => v>=9?"滿滿都是":v>=7?"偏多":v>=4?"幾個":v>=1?"一兩個":"完全沒有";
+const urgencyLbl  = v => v>=9?"轟炸式":v>=6?"強烈":v>=3?"普通":v>=1?"偏弱":"幾乎沒有";
+const senderLbl    = v => v>=8?"完全不認識":v>=4?"有點印象":v>=1?"算熟":"很熟";
+const mailText  = d => `${linkLbl(d.s)}連結、語氣${urgencyLbl(d.i)}、${senderLbl(d.p)}的寄件人`;
 const norm = d => [d.s/10, d.i/10, d.p/10];
 
-/* ============ 隱藏的「真實規則」：立繪佔比最高，但偏誤資料從來不讓模型看到立繪會變 ============ */
+/* ============ 隱藏的「真實規則」：寄件人熟悉度佔比最高，但偏誤資料從來不讓模型看到寄件人熟悉度會變 ============ */
 function trueScore(d){
   const sN=d.s/10, iN=d.i/10, pN=d.p/10;
   return Math.max(0, Math.min(1, 0.20*sN + 0.15*iN + 0.65*pN));
 }
 
-/* 兩份訓練資料（正確答案都來自 trueScore，差別只在立繪是否固定） */
+/* 兩份訓練資料（正確答案都來自 trueScore，差別只在寄件人熟悉度是否固定） */
 const DATA_BIASED = [
   {s:10, i:3, p:10}, {s:0, i:10, p:10}, {s:5, i:5, p:10}, {s:8, i:8, p:10}, {s:2, i:6, p:10}
 ].map(d => ({...d, t: trueScore(d)}));
@@ -476,7 +476,7 @@ function drawNodes(x){
 let activeSet = "balanced";
 function currentData(){ return activeSet === "biased" ? DATA_BIASED : DATA_BALANCED; }
 function drawTrainTable(){
-  const rows = currentData().map(d => `<tr><td>${cardText(d)}</td><td class="num">${Math.round(d.t*100)}</td></tr>`).join("");
+  const rows = currentData().map(d => `<tr><td>${mailText(d)}</td><td class="num">${Math.round(d.t*100)}</td></tr>`).join("");
   $("trainBody").innerHTML = rows;
   $("setLabelSpan").textContent = activeSet === "biased" ? "偏誤資料" : "平衡資料";
 }
@@ -486,7 +486,7 @@ function drawTestTable(){
     const guess = forward(norm(d)).y;
     const gap = Math.abs(guess - d.t)*100;
     const cls = gap > 18 ? "big" : (gap < 8 ? "ok" : "");
-    rows += `<tr><td>${cardText(d)}</td><td class="num">${Math.round(d.t*100)}</td>` +
+    rows += `<tr><td>${mailText(d)}</td><td class="num">${Math.round(d.t*100)}</td>` +
       `<td class="num">${Math.round(guess*100)}</td>` +
       `<td class="num"><span class="gap ${cls}">${gap.toFixed(0)}</span></td></tr>`;
   });
@@ -571,7 +571,7 @@ function logRun(){
   const label = activeSet === "biased" ? "偏誤資料" : "平衡資料";
   const li = document.createElement("li");
   if(activeSet === "biased") li.className = "bias";
-  li.innerHTML = `${label}訓練完成：測試誤差 <b class="mono">${rmse.toFixed(1)}</b> 分，最差一題是「${cardText(card)}」，差了 <b class="mono">${gap.toFixed(0)}</b> 分`;
+  li.innerHTML = `${label}訓練完成：測試誤差 <b class="mono">${rmse.toFixed(1)}</b> 分，最差一題是「${mailText(card)}」，差了 <b class="mono">${gap.toFixed(0)}</b> 分`;
   list.appendChild(li);
 }
 function train(){
@@ -598,7 +598,7 @@ function train(){
       const rmse = testRMSE();
       $("trainStatus").className = rmse > 15 ? "status back" : "status good";
       $("trainText").innerHTML = rmse > 15
-        ? `✅ 訓練完成，但測試誤差還是 <b class="mono">${rmse.toFixed(1)}</b> 分 —— 看下面測試表，錯最大的幾張是不是立繪偏低的？這不是運氣不好，是這份資料從來沒讓它看過立繪變化。`
+        ? `✅ 訓練完成，但測試誤差還是 <b class="mono">${rmse.toFixed(1)}</b> 分 —— 看下面測試表，錯最大的幾封是不是寄件人沒那麼陌生的？這不是運氣不好，是這份資料從來沒讓它看過寄件人熟悉度的變化。`
         : `✅ 訓練完成，測試誤差只有 <b class="mono">${rmse.toFixed(1)}</b> 分。切去另一份資料重練一次，比較「訓練紀錄」裡的兩次結果。`;
     }
   }, 100);
@@ -607,9 +607,9 @@ function train(){
 /* ============ 「它還是會回答」小示範 ============ */
 function liveX(){ return [+$("qSweet").value/10, +$("qIce").value/10, +$("qPearl").value/10]; }
 function renderQuery(){
-  $("qLblSweet").textContent = rarityLbl(+$("qSweet").value);
-  $("qLblIce").textContent   = powerLbl(+$("qIce").value);
-  $("qLblPearl").textContent = artLbl(+$("qPearl").value);
+  $("qLblSweet").textContent = linkLbl(+$("qSweet").value);
+  $("qLblIce").textContent   = urgencyLbl(+$("qIce").value);
+  $("qLblPearl").textContent = senderLbl(+$("qPearl").value);
   const y = forward(liveX()).y;
   $("qOut").textContent = Math.round(y*100);
 }

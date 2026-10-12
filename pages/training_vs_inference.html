@@ -84,7 +84,7 @@ svg{display:block; width:100%; height:auto}
 .legend{display:flex; gap:8px 18px; flex-wrap:wrap; margin-top:10px; font-size:.84rem; color:var(--muted)}
 .legend i{display:inline-block; width:22px; height:3px; border-radius:2px; vertical-align:.2em; margin-right:6px}
 
-/* 卡片輸入（三個滑桿） */
+/* 信件特徵輸入（三個滑桿） */
 .order{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px 20px;
   padding-bottom:14px; margin-bottom:14px; border-bottom:1px dashed var(--line)}
 .order .f{display:flex; justify-content:space-between; align-items:baseline; gap:8px}
@@ -201,7 +201,7 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
   <p>不會。考試時你只是<b>把已經會的拿出來用</b>，腦袋裡的東西一點都沒變 —— 讀書的時候才會變。AI 也一樣：<button class="term" data-t="train" aria-expanded="false">訓練</button>是讀書，<button class="term" data-t="infer" aria-expanded="false">推論</button>是考試。而你每天在用的 AI，幾乎都在考試。</p>
 </div>
 
-<p class="intro">下面是同一個小模型，你可以在兩種模式之間切換。它身上有 <b>11 個數字</b>（跟中級頁那個抽卡鑑定網路一樣）—— 這 11 個數字加起來的總和，我們叫它<b>權重指紋</b>。整頁的任務只有一個：<b>自己去找出這個指紋什麼時候會變、什麼時候不會</b>。</p>
+<p class="intro">下面是同一個小模型，你可以在兩種模式之間切換。它身上有 <b>11 個數字</b>（跟中級頁那個垂圾信過濾網路一樣）—— 這 11 個數字加起來的總和，我們叫它<b>權重指紋</b>。整頁的任務只有一個：<b>自己去找出這個指紋什麼時候會變、什麼時候不會</b>。</p>
 <p class="hint">先留在推論模式，拉滑桿、按幾次「送去推論」、甚至打開小抄亂加分 —— 看看權重指紋會不會被你影響。再切去訓練模式按下去，比較看看。（有底線的詞都可以點開，會給你一個比方）</p>
 
 <section class="lab" aria-label="訓練與推論互動實驗">
@@ -218,7 +218,7 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
   </div>
 
   <div class="net-wrap">
-    <svg id="net" viewBox="0 0 820 400" role="img" aria-label="三個輸入、兩個隱藏神經元、一個輸出的小模型，跟中級頁同一個抽卡網路">
+    <svg id="net" viewBox="0 0 820 400" role="img" aria-label="三個輸入、兩個隱藏神經元、一個輸出的小模型，跟中級頁同一個垂圾信過濾網路">
       <text x="140" y="22" text-anchor="middle" font-size="12" fill="var(--muted)" letter-spacing="1.5">輸入層</text>
       <text x="430" y="22" text-anchor="middle" font-size="12" fill="var(--muted)" letter-spacing="1.5">隱藏層</text>
       <text x="690" y="22" text-anchor="middle" font-size="12" fill="var(--muted)" letter-spacing="1.5">輸出層</text>
@@ -243,15 +243,15 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
   <div id="inferPanel">
     <div class="order" style="margin-top:16px">
       <div>
-        <div class="f"><b>稀有度</b><span class="val" id="lblSweet">傳說</span></div>
+        <div class="f"><b>連結數</b><span class="val" id="lblSweet">滿滿都是</span></div>
         <input type="range" id="inSweet" min="0" max="10" step="1" value="10">
       </div>
       <div>
-        <div class="f"><b>數值</b><span class="val" id="lblIce">中等</span></div>
+        <div class="f"><b>緊急語氣</b><span class="val" id="lblIce">普通</span></div>
         <input type="range" id="inIce" min="0" max="10" step="1" value="3">
       </div>
       <div>
-        <div class="f"><b>立繪</b><span class="val" id="lblPearl">華麗</span></div>
+        <div class="f"><b>寄件人</b><span class="val" id="lblPearl">完全不認識</span></div>
         <input type="range" id="inPearl" min="0" max="10" step="1" value="10">
       </div>
     </div>
@@ -263,13 +263,13 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
         <div class="real" id="outReal" style="display:none">模型真正算出來的是 <b id="outRealVal">—</b> 分</div>
       </div>
       <div class="btns" style="margin-left:auto">
-        <button class="btn" id="randCardBtn">抽新卡</button>
+        <button class="btn" id="randCardBtn">換新信</button>
         <button class="btn primary" id="flowBtn">送去推論</button>
       </div>
     </div>
 
     <div class="cheatrow">
-      <input type="text" id="cheatText" placeholder="在這裡打一句小抄，例如「記得我喜歡華麗立繪」…">
+      <input type="text" id="cheatText" placeholder="在這裡打一句小抄，例如「記得這個寄件人我其實認識」…">
       <span class="amt">加/減<input type="range" id="cheatRange" min="-20" max="30" step="5" value="15"><b class="mono" id="cheatAmtVal">+15</b> 分</span>
       <button class="btn" id="cheatToggleBtn" aria-pressed="false">套用小抄</button>
     </div>
@@ -280,11 +280,11 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
 
   <!-- ============ 訓練模式 ============ -->
   <div id="trainPanel" style="display:none">
-    <p class="lede" style="color:var(--muted); font-size:.92rem; margin-top:16px">阿哲抽過五張卡，也給了評分。按下「開始訓練」，盯著上面的權重指紋 —— 它幾乎每一刻都在跳。</p>
+    <p class="lede" style="color:var(--muted); font-size:.92rem; margin-top:16px">阿哲的信箱裡已經有五封信，他標好了是不是垂圾信。按下「開始訓練」，盯著上面的權重指紋 —— 它幾乎每一刻都在跳。</p>
     <div class="tbl-wrap">
       <table>
         <thead>
-          <tr><th>阿哲抽過的</th><th class="num">他給幾分</th><th class="num">網路猜幾分</th><th class="num">差多少</th></tr>
+          <tr><th>阿哲收到的信</th><th class="num">他標幾分</th><th class="num">網路猜幾分</th><th class="num">差多少</th></tr>
         </thead>
         <tbody id="dataBody"></tbody>
       </table>
@@ -312,12 +312,12 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
   <div class="card">
     <span class="tag">實驗 1・它真的不會動</span>
     <h3>在推論模式下，想辦法讓權重指紋變</h3>
-    <p>換十張不同的卡、連按十次「送去推論」、把小抄加到 +30 再送出去 —— 不管怎麼組合，指紋小數點後兩位都不會動一下。這就是為什麼問 AI 一百次同樣的問題，它的「能力」不會因此變強一點。</p>
+    <p>換十封不同的信、連按十次「送去推論」、把小抄加到 +30 再送出去 —— 不管怎麼組合，指紋小數點後兩位都不會動一下。這就是為什麼問 AI 一百次同樣的問題，它的「能力」不會因此變強一點。</p>
   </div>
   <div class="card">
     <span class="tag">實驗 2・親眼看著它在跳</span>
     <h3>切到訓練模式，按下「開始訓練」</h3>
-    <p>盯著權重指紋，不要看別的 —— 它幾乎每 100 毫秒就跳一次，那是<button class="term" data-t="train" aria-expanded="false">訓練</button>在背後一條一條調整權重。訓練完切回推論模式，再送同一張卡一次：分數應該變了，因為模型真的不一樣了。</p>
+    <p>盯著權重指紋，不要看別的 —— 它幾乎每 100 毫秒就跳一次，那是<button class="term" data-t="train" aria-expanded="false">訓練</button>在背後一條一條調整權重。訓練完切回推論模式，再送同一封信一次：分數應該變了，因為模型真的不一樣了。</p>
   </div>
   <div class="card">
     <span class="tag">實驗 3・你的小抄去了哪裡</span>
@@ -397,9 +397,9 @@ document.addEventListener("click", ev=>{
 addEventListener("keydown", ev=>{ if(ev.key === "Escape") closePop(); });
 addEventListener("resize", ()=>{ if(openBtn) positionPop(openBtn); });
 
-/* ============ 網路本體：3 → 2 → 1（沿用中級頁的抽卡網路） ============ */
-const IN_NAMES = ["稀有度","數值","立繪"];
-const HID_NAMES = ["鑑定師 A","鑑定師 B"];
+/* ============ 網路本體：3 → 2 → 1（沿用中級頁的垂圾信過濾網路） ============ */
+const IN_NAMES = ["連結數","緊急語氣","寄件人"];
+const HID_NAMES = ["審核員 A","審核員 B"];
 let W;
 function randW(){
   const r = () => (Math.random()*2-1)*1.2;
@@ -425,7 +425,7 @@ function fingerprint(){
   return s;
 }
 
-/* 阿哲的品味（訓練資料，跟中級頁同一份） */
+/* 阿哲的分類習慣（訓練資料，跟中級頁同一份） */
 const DATA = [
   {s:10, i:3,  p:10, t:0.94},
   {s:0,  i:10, p:0,  t:0.03},
@@ -435,11 +435,11 @@ const DATA = [
 ];
 const norm = d => [d.s/10, d.i/10, d.p/10];
 
-/* 抽卡用語 */
-const rarityLbl = v => v>=9?"傳說":v>=7?"史詩":v>=4?"精良":v>=1?"普通":"基礎";
-const powerLbl  = v => v>=9?"爆表":v>=6?"強力":v>=3?"中等":v>=1?"偏弱":"貧弱";
-const artLbl    = v => v>=8?"華麗":v>=4?"精緻":v>=1?"簡樸":"陽春";
-const cardText  = d => `${rarityLbl(d.s)}、${powerLbl(d.i)}、立繪${artLbl(d.p)}`;
+/* 垂圾信用語 */
+const linkLbl = v => v>=9?"滿滿都是":v>=7?"偏多":v>=4?"幾個":v>=1?"一兩個":"完全沒有";
+const urgencyLbl  = v => v>=9?"轟炸式":v>=6?"強烈":v>=3?"普通":v>=1?"偏弱":"幾乎沒有";
+const senderLbl    = v => v>=8?"完全不認識":v>=4?"有點印象":v>=1?"算熟":"很熟";
+const mailText  = d => `${linkLbl(d.s)}連結、語氣${urgencyLbl(d.i)}、${senderLbl(d.p)}的寄件人`;
 
 /* 版面座標 */
 const POS = {
@@ -452,7 +452,7 @@ const EDGES = [];
 for(let j=0;j<2;j++) for(let k=0;k<3;k++) EDGES.push({a:POS.in[k], b:POS.hid[j], ra:R_IN, rb:R_HID, path:"w1", j, k});
 for(let j=0;j<2;j++) EDGES.push({a:POS.hid[j], b:POS.out, ra:R_HID, rb:R_OUT, path:"w2", j});
 const wOf = e => e.path === "w1" ? W.w1[e.j][e.k] : W.w2[e.j];
-const edgeName = e => e.path === "w1" ? `${IN_NAMES[e.k]} → ${HID_NAMES[e.j]}` : `${HID_NAMES[e.j]} → 歐氣值`;
+const edgeName = e => e.path === "w1" ? `${IN_NAMES[e.k]} → ${HID_NAMES[e.j]}` : `${HID_NAMES[e.j]} → 垂圾分數`;
 
 function trim(e){
   const dx = e.b.x-e.a.x, dy = e.b.y-e.a.y, L = Math.hypot(dx,dy);
@@ -487,7 +487,7 @@ function drawNodes(){
   let s = "";
   POS.in.forEach((p,k)=>{ s += node(p.x,p.y,R_IN,"var(--accent-soft)","var(--accent)",IN_NAMES[k],(x[k]*10).toFixed(0)); });
   POS.hid.forEach((p,j)=>{ s += node(p.x,p.y,R_HID,"var(--surface)","var(--ball)",HID_NAMES[j],h[j].toFixed(2)); });
-  s += node(POS.out.x,POS.out.y,R_OUT,"var(--accent)","var(--on-accent)","歐氣值",Math.round(y*100));
+  s += node(POS.out.x,POS.out.y,R_OUT,"var(--accent)","var(--on-accent)","垂圾分數",Math.round(y*100));
   $("nodeLayer").innerHTML = s;
   updateScoreDisplay(y);
 }
@@ -555,7 +555,7 @@ function setMode(m){
   $("inferPanel").style.display = m === "infer" ? "" : "none";
   $("trainPanel").style.display = m === "train" ? "" : "none";
   $("fingerCap").textContent = m === "infer"
-    ? "不管你怎麼操作 —— 換卡、送去推論、套小抄 —— 這個數字理論上永遠不會動。"
+    ? "不管你怎麼操作 —— 換信、送去推論、套小抄 —— 這個數字理論上永遠不會動。"
     : "訓練時盯著這個數字：它應該幾乎每一刻都在跳，因為每一下都在調整權重。";
   updatePipeline();
 }
@@ -567,7 +567,7 @@ function drawTable(){
     const guess = forward(norm(d)).y;
     const gap = Math.abs(guess - d.t)*100;
     const cls = gap > 18 ? "big" : (gap < 8 ? "ok" : "");
-    rows += `<tr><td>${cardText(d)}</td><td class="num">${Math.round(d.t*100)}</td>` +
+    rows += `<tr><td>${mailText(d)}</td><td class="num">${Math.round(d.t*100)}</td>` +
       `<td class="num">${Math.round(guess*100)}</td>` +
       `<td class="num"><span class="gap ${cls}">${gap.toFixed(0)}</span></td></tr>`;
   });
@@ -675,16 +675,16 @@ function train(){
       $("trainBtn").disabled = false;
       $("trainBtn").textContent = "再訓練一次";
       $("trainStatus").className = "status good";
-      $("trainText").innerHTML = `✅ 訓練完成。這整段時間，權重指紋一路在跳 —— 現在停在 <b class="mono">${fingerprint().toFixed(2)}</b>。切回推論模式送一次同一張卡，分數應該跟訓練前不一樣了，因為模型真的變了。`;
+      $("trainText").innerHTML = `✅ 訓練完成。這整段時間，權重指紋一路在跳 —— 現在停在 <b class="mono">${fingerprint().toFixed(2)}</b>。切回推論模式送一次同一封信，分數應該跟訓練前不一樣了，因為模型真的變了。`;
     }
   }, 100);
 }
 
 /* ============ 整體重繪 ============ */
 function renderLabels(){
-  $("lblSweet").textContent = rarityLbl(+$("inSweet").value);
-  $("lblIce").textContent   = powerLbl(+$("inIce").value);
-  $("lblPearl").textContent = artLbl(+$("inPearl").value);
+  $("lblSweet").textContent = linkLbl(+$("inSweet").value);
+  $("lblIce").textContent   = urgencyLbl(+$("inIce").value);
+  $("lblPearl").textContent = senderLbl(+$("inPearl").value);
 }
 function renderAll(){
   renderLabels(); drawEdges(); drawNodes(); drawTable(); updateFingerprint(false);
@@ -703,7 +703,7 @@ $("randCardBtn").addEventListener("click", ()=>{
   $("inPearl").value = Math.floor(Math.random()*11);
   renderLabels(); drawNodes();
   $("inferStatus").className = "status";
-  $("inferText").textContent = "抽了一張新卡。數字從左邊重新流一次 —— 但這跟權重完全無關，權重連動都沒動。";
+  $("inferText").textContent = "換了一封新信。數字從左邊重新流一次 —— 但這跟權重完全無關，權重連動都沒動。";
 });
 $("flowBtn").addEventListener("click", playFlow);
 
