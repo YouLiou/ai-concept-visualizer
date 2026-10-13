@@ -62,7 +62,7 @@
 | | 反向傳播 `pages/backpropagation.html` | ✅ 完成 |
 | 高級：現代 AI 的引擎室 | 注意力機制、擴散模型、不只有神經網路 | 規格骨架（明年規劃，暫不展開） |
 
-骨架頁面已包含設計系統、術語辭典與規格說明（要拆的誤解、要產生的理解、預定互動），可以直接接手開發。完整的設計紀錄見 [`docs/roadmap.md`](docs/roadmap.md)。
+骨架頁面已包含設計系統、術語辭典與規格說明（要拆的誤解、要產生的理解、預定互動），可以直接接手開發。完整的設計紀錄見 [`docs/roadmap.md`](docs/roadmap.md)，課堂怎麼帶（建議時間、操作順序、容易卡住的地方）見 [`docs/teaching-notes.md`](docs/teaching-notes.md)。
 
 ## 怎麼使用
 
