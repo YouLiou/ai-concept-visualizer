@@ -160,6 +160,8 @@ h2{font-family:"Noto Serif TC","Songti TC",serif; font-weight:700; font-size:1.6
 footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
   display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
   color:var(--muted); font-size:.85rem}
+footer.site a{color:inherit; text-underline-offset:3px}
+footer.site a:hover,footer.site a:focus-visible{color:var(--accent)}
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
 </style>
 </head>
@@ -271,7 +273,7 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
 
 <footer class="site">
   <span>AI Concept Visualizer</span>
-  <span>上一頁：梯度下降 ・ 中級完</span>
+  <span>上一頁：<a href="gradient_descent.html">梯度下降</a> ・ 下一頁：<a href="attention.html">注意力機制</a></span>
 </footer>
 
 </div>
@@ -723,6 +725,7 @@ init();
   display:flex; flex-direction:column; gap:4px; max-width:min(92vw,560px);
   font-size:.85rem; color:var(--ink)}
 #rpbar.rpbar-hidden{display:none}
+body{padding-bottom:140px}  /* 讓頁尾能捲到浮動列上方，不被蓋住 */
 .rpbar-main{display:flex; align-items:center; gap:10px}
 .rpbar-nav{display:flex; align-items:center; gap:4px; color:var(--ink); text-decoration:none;
   padding:6px 9px; border-radius:8px; white-space:nowrap; flex-shrink:0}

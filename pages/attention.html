@@ -160,6 +160,8 @@ h2{font-family:"Noto Serif TC","Songti TC",serif; font-weight:700; font-size:1.6
 footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
   display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
   color:var(--muted); font-size:.85rem}
+footer.site a{color:inherit; text-underline-offset:3px}
+footer.site a:hover,footer.site a:focus-visible{color:var(--accent)}
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
 
 /* ============ 骨架專用：待開發標示（做完這一頁後刪掉） ============ */
@@ -232,7 +234,7 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
 
 <footer class="site">
   <span>AI Concept Visualizer</span>
-  <span>上一頁：中級：反向傳播 ・ 下一頁：擴散模型（規劃中）</span>
+  <span>上一頁：<a href="backpropagation.html">反向傳播</a> ・ 下一頁：<a href="diffusion.html">擴散模型</a></span>
 </footer>
 
 </div>
@@ -302,6 +304,7 @@ addEventListener("resize", ()=>{ if(openBtn) positionPop(openBtn); });
   display:flex; flex-direction:column; gap:4px; max-width:min(92vw,560px);
   font-size:.85rem; color:var(--ink)}
 #rpbar.rpbar-hidden{display:none}
+body{padding-bottom:140px}  /* 讓頁尾能捲到浮動列上方，不被蓋住 */
 .rpbar-main{display:flex; align-items:center; gap:10px}
 .rpbar-nav{display:flex; align-items:center; gap:4px; color:var(--ink); text-decoration:none;
   padding:6px 9px; border-radius:8px; white-space:nowrap; flex-shrink:0}
