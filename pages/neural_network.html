@@ -162,11 +162,11 @@ footer.site a:hover,footer.site a:focus-visible{color:var(--accent)}
 <p class="subtitle">Neural Network — 拆開來看，它只是一排「各有偏好的評分員」。</p>
 
 <div class="anchor">
-  <h3>先想一件事：你怎麼判斷一封信是不是垂圾信</h3>
-  <p>連結數、緊急語氣、寄件人 —— 你心裡對每一項的<b>在乎程度</b>都不一樣。有人看到連結就直接判定垂圾，有人反而更在意語氣急不急迫。你沒有公式，但你有一套「權重」。神經網路做的事一模一樣，差別只在它的權重是<b>數字</b>，而且可以被調整。</p>
+  <h3>先想一件事：你怎麼判斷一封信是不是垃圾信</h3>
+  <p>連結數、緊急語氣、寄件人 —— 你心裡對每一項的<b>在乎程度</b>都不一樣。有人看到連結就直接判定垃圾，有人反而更在意語氣急不急迫。你沒有公式，但你有一套「權重」。神經網路做的事一模一樣，差別只在它的權重是<b>數字</b>，而且可以被調整。</p>
 </div>
 
-<p class="intro">下面這張圖就是一個真的<button class="term" data-t="nn" aria-expanded="false">神經網路</button>。左邊三個圓圈是這封信的三個特徵，中間兩個是<button class="term" data-t="hidden" aria-expanded="false">隱藏層</button>的<button class="term" data-t="neuron" aria-expanded="false">神經元</button>，右邊吐出一個「垂圾分數」。連接它們的每一條線都有一個<button class="term" data-t="weight" aria-expanded="false">權重</button> —— <b>線越粗代表越在乎，綠色是加分、紅色是扣分</b>。這些線，就是模型的全部。</p>
+<p class="intro">下面這張圖就是一個真的<button class="term" data-t="nn" aria-expanded="false">神經網路</button>。左邊三個圓圈是這封信的三個特徵，中間兩個是<button class="term" data-t="hidden" aria-expanded="false">隱藏層</button>的<button class="term" data-t="neuron" aria-expanded="false">神經元</button>，右邊吐出一個「垃圾分數」。連接它們的每一條線都有一個<button class="term" data-t="weight" aria-expanded="false">權重</button> —— <b>線越粗代表越在乎，綠色是加分、紅色是扣分</b>。這些線，就是模型的全部。</p>
 <p class="hint">拉上面的滑桿換一封信，或直接<b>點任何一條線</b>調整它的權重。（有底線的詞都可以點開，會給你一個比方）</p>
 
 <section class="lab" aria-label="神經網路互動實驗">
@@ -213,11 +213,11 @@ footer.site a:hover,footer.site a:focus-visible{color:var(--accent)}
     </div>
   </div>
 
-  <div class="status" id="statusBox"><span class="pill" id="statusText">現在的權重是隨機的，所以它的判斷毫無道理 —— 就像一個從沒看過垂圾信的人在亂猜。</span></div>
+  <div class="status" id="statusBox"><span class="pill" id="statusText">現在的權重是隨機的，所以它的判斷毫無道理 —— 就像一個從沒看過垃圾信的人在亂猜。</span></div>
 </section>
 
 <h2>讓它學會「阿哲的分類習慣」</h2>
-<p class="lede">阿哲的信箱裡已經有五封信，他標好了是不是垂圾信。網路現在猜得亂七八糟 —— 按下自動訓練，看它自己把每條線調到對的粗細。</p>
+<p class="lede">阿哲的信箱裡已經有五封信，他標好了是不是垃圾信。網路現在猜得亂七八糟 —— 按下自動訓練，看它自己把每條線調到對的粗細。</p>
 
 <section class="lab" aria-label="訓練">
   <div class="tbl-wrap">
@@ -261,8 +261,8 @@ footer.site a:hover,footer.site a:focus-visible{color:var(--accent)}
   </div>
   <div class="card">
     <span class="tag">實驗 3・它只認識阿哲</span>
-    <h3>挑一封「你」覺得明顯正常（或明顯垂圾）的信，看它怎麼判</h3>
-    <p>如果你的判斷標準跟阿哲不一樣，它大概會跟你的直覺不同。它學到的不是「客觀的垂圾信定義」，是<button class="term" data-t="data" aria-expanded="false">訓練資料</button>裡那個人的分類習慣。</p>
+    <h3>挑一封「你」覺得明顯正常（或明顯垃圾）的信，看它怎麼判</h3>
+    <p>如果你的判斷標準跟阿哲不一樣，它大概會跟你的直覺不同。它學到的不是「客觀的垃圾信定義」，是<button class="term" data-t="data" aria-expanded="false">訓練資料</button>裡那個人的分類習慣。</p>
   </div>
 </div>
 
@@ -290,7 +290,7 @@ const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const TERMS = {
   nn:{en:"neural network", zh:"神經網路 neural network",
     what:"一排「神經元」分層連在一起。資料從左邊進去，每經過一層就被重新組合一次，最後變成一個答案。",
-    life:"一個垂圾信過濾站：先讓兩位審核員各自給意見，再由站長綜合他們的意見打最後分數。"},
+    life:"一個垃圾信過濾站：先讓兩位審核員各自給意見，再由站長綜合他們的意見打最後分數。"},
   neuron:{en:"neuron", zh:"神經元 neuron",
     what:"網路裡最小的單位。它只做三件事：把收到的每個數字乘上自己的權重、全部加起來、再擠壓成一個輸出。",
     life:"一個小評分員。他不管別人怎麼想，只按自己在乎的東西打分 —— 而且只給一個數字，不寫評語。"},
@@ -311,7 +311,7 @@ const TERMS = {
     life:"你把信丟進過濾站：先傳給兩位審核員，他們各自給意見，再交給站長打出最後分數。丟進去到拿回分數的整趟，就是前向傳遞。"},
   data:{en:"training data", zh:"訓練資料 training data",
     what:"拿來教模型的範例，每一筆都附了正確答案。模型的能力上限，幾乎完全由這些資料決定。",
-    life:"這頁的訓練資料是「阿哲信箱裡的五封信和他的標記」。所以網路學到的是阿哲的分類習慣 —— 不是客觀的垂圾信定義。換一個人來標，答案就不一樣。"}
+    life:"這頁的訓練資料是「阿哲信箱裡的五封信和他的標記」。所以網路學到的是阿哲的分類習慣 —— 不是客觀的垃圾信定義。換一個人來標，答案就不一樣。"}
 };
 
 /* ============ 彈出視窗 ============ */
@@ -379,7 +379,7 @@ const DATA = [
 ];
 const norm = d => [d.s/10, d.i/10, d.p/10];
 
-/* ============ 垂圾信用語 ============ */
+/* ============ 垃圾信用語 ============ */
 const linkLbl = v => v>=9?"滿滿都是":v>=7?"偏多":v>=4?"幾個":v>=1?"一兩個":"完全沒有";
 const urgencyLbl  = v => v>=9?"轟炸式":v>=6?"強烈":v>=3?"普通":v>=1?"偏弱":"幾乎沒有";
 const senderLbl    = v => v>=8?"完全不認識":v>=4?"有點印象":v>=1?"算熟":"很熟";
@@ -400,7 +400,7 @@ const wOf = e => e.path === "w1" ? W.w1[e.j][e.k] : W.w2[e.j];
 const setW = (e,v) => { if(e.path === "w1") W.w1[e.j][e.k] = v; else W.w2[e.j] = v; };
 const edgeName = e => e.path === "w1"
   ? `${IN_NAMES[e.k]} → ${HID_NAMES[e.j]}`
-  : `${HID_NAMES[e.j]} → 垂圾分數`;
+  : `${HID_NAMES[e.j]} → 垃圾分數`;
 
 /* 線的端點：從圓的邊緣出發，不要插進圓裡 */
 function trim(e){
@@ -446,7 +446,7 @@ function drawNodes(){
   POS.hid.forEach((p,j)=>{
     s += node(p.x,p.y,R_HID,"var(--surface)","var(--ball)",HID_NAMES[j],h[j].toFixed(2));
   });
-  s += node(POS.out.x,POS.out.y,R_OUT,"var(--accent)","var(--on-accent)","垂圾分數",Math.round(y*100));
+  s += node(POS.out.x,POS.out.y,R_OUT,"var(--accent)","var(--on-accent)","垃圾分數",Math.round(y*100));
   $("nodeLayer").innerHTML = s;
   $("outVal").textContent = Math.round(y*100);
 }
@@ -642,7 +642,7 @@ $("randBtn").addEventListener("click", ()=>{
   $("trainText").textContent = "權重被打亂了 —— 網路回到「什麼都不懂」的狀態。再訓練一次看看。";
   render();
   if(!flowing) resetFlow();
-  setStatus("", "全部重來一次：現在它又是個從沒看過垂圾信的人了。");
+  setStatus("", "全部重來一次：現在它又是個從沒看過垃圾信的人了。");
 });
 $("resetBtn").addEventListener("click", ()=>{ init(); });
 $("trainBtn").addEventListener("click", train);
@@ -657,7 +657,7 @@ function init(){
   $("trainText").textContent = "訓練 = 反覆微調每一條線的權重，直到網路的猜測貼近阿哲的標記。";
   $("trainBtn").textContent = "自動訓練";
   render();
-  setStatus("", "現在的權重是隨機的，所以它的判斷毫無道理 —— 就像一個從沒看過垂圾信的人在亂猜。");
+  setStatus("", "現在的權重是隨機的，所以它的判斷毫無道理 —— 就像一個從沒看過垃圾信的人在亂猜。");
 }
 init();
 </script>

@@ -203,7 +203,7 @@ footer.site a:hover,footer.site a:focus-visible{color:var(--accent)}
   <p>不會。考試時你只是<b>把已經會的拿出來用</b>，腦袋裡的東西一點都沒變 —— 讀書的時候才會變。AI 也一樣：<button class="term" data-t="train" aria-expanded="false">訓練</button>是讀書，<button class="term" data-t="infer" aria-expanded="false">推論</button>是考試。而你每天在用的 AI，幾乎都在考試。</p>
 </div>
 
-<p class="intro">下面是同一個小模型，你可以在兩種模式之間切換。它身上有 <b>11 個數字</b>（跟中級頁那個垂圾信過濾網路一樣）—— 這 11 個數字加起來的總和，我們叫它<b>權重指紋</b>。整頁的任務只有一個：<b>自己去找出這個指紋什麼時候會變、什麼時候不會</b>。</p>
+<p class="intro">下面是同一個小模型，你可以在兩種模式之間切換。它身上有 <b>11 個數字</b>（跟中級頁那個垃圾信過濾網路一樣）—— 這 11 個數字加起來的總和，我們叫它<b>權重指紋</b>。整頁的任務只有一個：<b>自己去找出這個指紋什麼時候會變、什麼時候不會</b>。</p>
 <p class="hint">先留在推論模式，拉滑桿、按幾次「送去推論」、甚至打開小抄亂加分 —— 看看權重指紋會不會被你影響。再切去訓練模式按下去，比較看看。（有底線的詞都可以點開，會給你一個比方）</p>
 
 <section class="lab" aria-label="訓練與推論互動實驗">
@@ -220,7 +220,7 @@ footer.site a:hover,footer.site a:focus-visible{color:var(--accent)}
   </div>
 
   <div class="net-wrap">
-    <svg id="net" viewBox="0 0 820 400" role="img" aria-label="三個輸入、兩個隱藏神經元、一個輸出的小模型，跟中級頁同一個垂圾信過濾網路">
+    <svg id="net" viewBox="0 0 820 400" role="img" aria-label="三個輸入、兩個隱藏神經元、一個輸出的小模型，跟中級頁同一個垃圾信過濾網路">
       <text x="140" y="22" text-anchor="middle" font-size="12" fill="var(--muted)" letter-spacing="1.5">輸入層</text>
       <text x="430" y="22" text-anchor="middle" font-size="12" fill="var(--muted)" letter-spacing="1.5">隱藏層</text>
       <text x="690" y="22" text-anchor="middle" font-size="12" fill="var(--muted)" letter-spacing="1.5">輸出層</text>
@@ -282,7 +282,7 @@ footer.site a:hover,footer.site a:focus-visible{color:var(--accent)}
 
   <!-- ============ 訓練模式 ============ -->
   <div id="trainPanel" style="display:none">
-    <p class="lede" style="color:var(--muted); font-size:.92rem; margin-top:16px">阿哲的信箱裡已經有五封信，他標好了是不是垂圾信。按下「開始訓練」，盯著上面的權重指紋 —— 它幾乎每一刻都在跳。</p>
+    <p class="lede" style="color:var(--muted); font-size:.92rem; margin-top:16px">阿哲的信箱裡已經有五封信，他標好了是不是垃圾信。按下「開始訓練」，盯著上面的權重指紋 —— 它幾乎每一刻都在跳。</p>
     <div class="tbl-wrap">
       <table>
         <thead>
@@ -399,7 +399,7 @@ document.addEventListener("click", ev=>{
 addEventListener("keydown", ev=>{ if(ev.key === "Escape") closePop(); });
 addEventListener("resize", ()=>{ if(openBtn) positionPop(openBtn); });
 
-/* ============ 網路本體：3 → 2 → 1（沿用中級頁的垂圾信過濾網路） ============ */
+/* ============ 網路本體：3 → 2 → 1（沿用中級頁的垃圾信過濾網路） ============ */
 const IN_NAMES = ["連結數","緊急語氣","寄件人"];
 const HID_NAMES = ["審核員 A","審核員 B"];
 let W;
@@ -437,7 +437,7 @@ const DATA = [
 ];
 const norm = d => [d.s/10, d.i/10, d.p/10];
 
-/* 垂圾信用語 */
+/* 垃圾信用語 */
 const linkLbl = v => v>=9?"滿滿都是":v>=7?"偏多":v>=4?"幾個":v>=1?"一兩個":"完全沒有";
 const urgencyLbl  = v => v>=9?"轟炸式":v>=6?"強烈":v>=3?"普通":v>=1?"偏弱":"幾乎沒有";
 const senderLbl    = v => v>=8?"完全不認識":v>=4?"有點印象":v>=1?"算熟":"很熟";
@@ -454,7 +454,7 @@ const EDGES = [];
 for(let j=0;j<2;j++) for(let k=0;k<3;k++) EDGES.push({a:POS.in[k], b:POS.hid[j], ra:R_IN, rb:R_HID, path:"w1", j, k});
 for(let j=0;j<2;j++) EDGES.push({a:POS.hid[j], b:POS.out, ra:R_HID, rb:R_OUT, path:"w2", j});
 const wOf = e => e.path === "w1" ? W.w1[e.j][e.k] : W.w2[e.j];
-const edgeName = e => e.path === "w1" ? `${IN_NAMES[e.k]} → ${HID_NAMES[e.j]}` : `${HID_NAMES[e.j]} → 垂圾分數`;
+const edgeName = e => e.path === "w1" ? `${IN_NAMES[e.k]} → ${HID_NAMES[e.j]}` : `${HID_NAMES[e.j]} → 垃圾分數`;
 
 function trim(e){
   const dx = e.b.x-e.a.x, dy = e.b.y-e.a.y, L = Math.hypot(dx,dy);
@@ -489,7 +489,7 @@ function drawNodes(){
   let s = "";
   POS.in.forEach((p,k)=>{ s += node(p.x,p.y,R_IN,"var(--accent-soft)","var(--accent)",IN_NAMES[k],(x[k]*10).toFixed(0)); });
   POS.hid.forEach((p,j)=>{ s += node(p.x,p.y,R_HID,"var(--surface)","var(--ball)",HID_NAMES[j],h[j].toFixed(2)); });
-  s += node(POS.out.x,POS.out.y,R_OUT,"var(--accent)","var(--on-accent)","垂圾分數",Math.round(y*100));
+  s += node(POS.out.x,POS.out.y,R_OUT,"var(--accent)","var(--on-accent)","垃圾分數",Math.round(y*100));
   $("nodeLayer").innerHTML = s;
   updateScoreDisplay(y);
 }

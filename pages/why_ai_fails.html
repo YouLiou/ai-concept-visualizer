@@ -381,7 +381,7 @@ document.addEventListener("click", ev=>{
 addEventListener("keydown", ev=>{ if(ev.key === "Escape") closePop(); });
 addEventListener("resize", ()=>{ if(openBtn) positionPop(openBtn); });
 
-/* ============ 網路本體：3 → 2 → 1（同一個垂圾信過濾網路架構） ============ */
+/* ============ 網路本體：3 → 2 → 1（同一個垃圾信過濾網路架構） ============ */
 const IN_NAMES = ["連結數","緊急語氣","寄件人"];
 const HID_NAMES = ["審核員 A","審核員 B"];
 let W;
@@ -401,7 +401,7 @@ function forward(x){
   return { h, y: 1/(1+Math.exp(-z2)) };
 }
 
-/* 垂圾信用語 */
+/* 垃圾信用語 */
 const linkLbl = v => v>=9?"滿滿都是":v>=7?"偏多":v>=4?"幾個":v>=1?"一兩個":"完全沒有";
 const urgencyLbl  = v => v>=9?"轟炸式":v>=6?"強烈":v>=3?"普通":v>=1?"偏弱":"幾乎沒有";
 const senderLbl    = v => v>=8?"完全不認識":v>=4?"有點印象":v>=1?"算熟":"很熟";
