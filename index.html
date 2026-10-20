@@ -3,6 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 分享預覽（貼到 LINE / FB / 履歷連結時顯示） -->
+<meta name="description" content="一條從完全不懂到理解 AI 在做什麼的互動學習路徑：先動手做、做到卡住，再告訴你那個卡住的地方叫什麼名字。給高中生與 AI 初學者。">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AI 概念視覺化">
+<meta property="og:title" content="AI 概念視覺化">
+<meta property="og:description" content="一條從完全不懂到理解 AI 在做什麼的互動學習路徑：先動手做、做到卡住，再告訴你那個卡住的地方叫什麼名字。給高中生與 AI 初學者。">
+<meta property="og:url" content="https://youliou.github.io/ai-concept-visualizer/">
+<meta property="og:image" content="https://youliou.github.io/ai-concept-visualizer/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <title>AI 概念視覺化</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
@@ -112,6 +123,17 @@ footer a{color:var(--muted)}
   transition:transform .14s, box-shadow .14s}
 .cta-start:hover,.cta-start:focus-visible{transform:translateY(-1px); box-shadow:0 10px 24px -12px rgba(0,0,0,.35)}
 .cta-start:focus-visible{outline:2px solid var(--ball); outline-offset:2px}
+/* 卡片小圖示 */
+.card .ico{display:block; width:40px; height:40px; margin-bottom:8px}
+.ico .l{fill:none; stroke:var(--accent); stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+.ico .t{fill:none; stroke:var(--accent); stroke-width:1.2; opacity:.55}
+.ico .f{fill:var(--accent)}
+.ico .o{fill:var(--ball)}
+.ico .ol{fill:none; stroke:var(--ball); stroke-width:2; stroke-linecap:round; stroke-linejoin:round}
+.ico .m{fill:none; stroke:var(--muted); stroke-width:1.4}
+.ico .mf{fill:var(--muted)}
+.ico .d{stroke-dasharray:3 3}
+.card.soon .ico{opacity:.45; filter:grayscale(1)}
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
 </style>
 </head>
@@ -139,18 +161,21 @@ footer a{color:var(--muted)}
       <p class="tier-goal"><b>AI 到底是什麼</b> —— 完全不碰數學。要產生的理解是：「寫規則做不到的事，用『學』的居然可以。」</p>
       <div class="cards">
         <a class="card" href="pages/rule_to_learning.html">
+          <svg class="ico" viewBox="0 0 40 40" aria-hidden="true"><path class="l" d="M12 13 L19 20 L12 27 L5 20 Z"/><path class="l" d="M22 20 H28"/><path class="l" d="M25.5 17 L28.5 20 L25.5 23"/><circle class="f" cx="33" cy="13" r="2.5"/><circle class="f" cx="36" cy="21" r="2.5"/><circle class="o" cx="32" cy="28" r="2.5"/></svg>
           <span class="seq">01</span>
           <h3>從規則到學習</h3>
           <span class="en">rule-based → machine learning</span>
           <p class="aha">自己當一次「規則工程師」，再改用餵範例的方式做同一件事，體感兩者的差距。</p>
         </a>
         <a class="card" href="pages/training_vs_inference.html">
+          <svg class="ico" viewBox="0 0 40 40" aria-hidden="true"><path class="l" d="M3 27 L8 18 L12 23 L18 11"/><rect class="l" x="23" y="19" width="14" height="11" rx="2"/><path class="l" d="M26 19 V15.5 a4 4 0 0 1 8 0 V19"/></svg>
           <span class="seq">02</span>
           <h3>訓練與推論</h3>
           <span class="en">training vs. inference</span>
           <p class="aha">模型「上課」和「考試」是兩件不同的事 —— 這解釋了為什麼 AI 不會記得你昨天說過什麼。</p>
         </a>
         <a class="card" href="pages/why_ai_fails.html">
+          <svg class="ico" viewBox="0 0 40 40" aria-hidden="true"><ellipse class="m d" cx="15" cy="20" rx="11" ry="9"/><circle class="f" cx="10" cy="17" r="2"/><circle class="f" cx="16" cy="14.5" r="2"/><circle class="f" cx="20" cy="21" r="2"/><circle class="f" cx="13" cy="24" r="2"/><circle class="f" cx="8" cy="22" r="2"/><circle class="o" cx="33" cy="28" r="3"/></svg>
           <span class="seq">03</span>
           <h3>AI 為什麼會錯</h3>
           <span class="en">bias &amp; hallucination</span>
@@ -171,6 +196,7 @@ footer a{color:var(--muted)}
       <p class="tier-goal"><b>機器是怎麼「學」的</b> —— 三頁串成一個完整的訓練循環。要產生的理解是：「機器學習就是一個會自我修正的函數。」</p>
       <div class="cards">
         <a class="card" href="pages/neural_network.html">
+          <svg class="ico" viewBox="0 0 40 40" aria-hidden="true"><path class="t" d="M7 9 L20 14 M7 20 L20 14 M7 31 L20 14 M7 9 L20 26 M7 20 L20 26 M7 31 L20 26 M20 14 L33 20 M20 26 L33 20"/><circle class="f" cx="7" cy="9" r="3"/><circle class="f" cx="7" cy="20" r="3"/><circle class="f" cx="7" cy="31" r="3"/><circle class="o" cx="20" cy="14" r="3"/><circle class="o" cx="20" cy="26" r="3"/><circle class="f" cx="33" cy="20" r="3.5"/></svg>
           <span class="seq">01</span>
           <h3>神經網路</h3>
           <span class="en">neural network</span>
@@ -178,6 +204,7 @@ footer a{color:var(--muted)}
           <p class="via">用<b>垃圾信過濾站</b>來理解</p>
         </a>
         <a class="card" href="pages/gradient_descent.html">
+          <svg class="ico" viewBox="0 0 40 40" aria-hidden="true"><path class="l" d="M4 10 Q20 44 36 10"/><path class="ol d" d="M13.5 17 Q18 9 21 22"/><circle class="o" cx="12" cy="20" r="3"/></svg>
           <span class="seq">02</span>
           <h3>梯度下降</h3>
           <span class="en">gradient descent</span>
@@ -185,6 +212,7 @@ footer a{color:var(--muted)}
           <p class="via">用<b>洗澡調水溫</b>來理解</p>
         </a>
         <a class="card" href="pages/backpropagation.html">
+          <svg class="ico" viewBox="0 0 40 40" aria-hidden="true"><path class="l" d="M8 27 H32"/><circle class="f" cx="8" cy="27" r="3"/><circle class="f" cx="20" cy="27" r="3"/><circle class="f" cx="32" cy="27" r="3"/><path class="ol" d="M31 14 H10"/><path class="ol" d="M14 10 L10 14 L14 18"/></svg>
           <span class="seq">03</span>
           <h3>反向傳播</h3>
           <span class="en">backpropagation</span>
@@ -207,6 +235,7 @@ footer a{color:var(--muted)}
       <div class="cards">
         <div class="card soon">
           <span class="badge">規劃中</span>
+          <svg class="ico" viewBox="0 0 40 40" aria-hidden="true"><path class="ol" d="M25 27 Q15 7 5 27"/><path class="t" d="M25 27 Q20 17 15 27"/><path class="t" d="M25 27 Q30 18 35 27"/><rect class="l" x="2" y="27" width="6" height="6" rx="1"/><rect class="l" x="12" y="27" width="6" height="6" rx="1"/><rect class="l" x="22" y="27" width="6" height="6" rx="1"/><rect class="l" x="32" y="27" width="6" height="6" rx="1"/></svg>
           <span class="seq">01</span>
           <h3>注意力機制</h3>
           <span class="en">transformer / attention</span>
@@ -214,6 +243,7 @@ footer a{color:var(--muted)}
         </div>
         <div class="card soon">
           <span class="badge">規劃中</span>
+          <svg class="ico" viewBox="0 0 40 40" aria-hidden="true"><circle class="mf" cx="5" cy="11" r="1.5"/><circle class="mf" cx="12" cy="9" r="1.5"/><circle class="mf" cx="8" cy="18" r="1.5"/><circle class="mf" cx="14" cy="24" r="1.5"/><circle class="mf" cx="4" cy="27" r="1.5"/><circle class="mf" cx="11" cy="31" r="1.5"/><path class="l" d="M18 20 H23"/><path class="l" d="M21 17 L24 20 L21 23"/><circle class="l" cx="31" cy="20" r="6.5"/><circle class="o" cx="31" cy="20" r="2.5"/></svg>
           <span class="seq">02</span>
           <h3>擴散模型</h3>
           <span class="en">diffusion</span>
@@ -221,6 +251,7 @@ footer a{color:var(--muted)}
         </div>
         <div class="card soon">
           <span class="badge">規劃中</span>
+          <svg class="ico" viewBox="0 0 40 40" aria-hidden="true"><path class="t" d="M20 9 L10 20 M20 9 L30 20 M10 20 L5 31 M10 20 L15 31 M30 20 L30 31"/><rect class="f" x="17" y="6" width="6" height="6" rx="1"/><rect class="f" x="7" y="17" width="6" height="6" rx="1"/><rect class="f" x="27" y="17" width="6" height="6" rx="1"/><circle class="o" cx="5" cy="31" r="2.5"/><circle class="o" cx="15" cy="31" r="2.5"/><circle class="o" cx="30" cy="31" r="2.5"/></svg>
           <span class="seq">03</span>
           <h3>不只有神經網路</h3>
           <span class="en">decision tree / k-means</span>

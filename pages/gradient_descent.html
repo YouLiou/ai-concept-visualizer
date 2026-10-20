@@ -3,6 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 分享預覽（貼到 LINE / FB / 履歷連結時顯示） -->
+<meta name="description" content="機器修正錯誤的方法，其實是一顆球在找谷底。">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AI 概念視覺化">
+<meta property="og:title" content="梯度下降實驗室">
+<meta property="og:description" content="機器修正錯誤的方法，其實是一顆球在找谷底。">
+<meta property="og:url" content="https://youliou.github.io/ai-concept-visualizer/pages/gradient_descent.html">
+<meta property="og:image" content="https://youliou.github.io/ai-concept-visualizer/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <title>梯度下降實驗室</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
@@ -154,6 +165,14 @@ footer.site{margin-top:40px; padding-top:16px; border-top:1px solid var(--line);
   color:var(--muted); font-size:.85rem}
 footer.site a{color:inherit; text-underline-offset:3px}
 footer.site a:hover,footer.site a:focus-visible{color:var(--accent)}
+html{scroll-behavior:smooth}
+#try{scroll-margin-top:16px}
+.jump{margin:4px 0 16px}
+.jump-lab{display:inline-flex; align-items:center; gap:6px; font-size:.88rem; font-weight:700; color:var(--accent);
+  text-decoration:none; border:1px solid var(--accent); border-radius:999px; padding:4px 14px; background:var(--surface)}
+.jump-lab:hover,.jump-lab:focus-visible{background:var(--accent-soft)}
+.jump-lab:focus-visible{outline:2px solid var(--ball); outline-offset:2px}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
 </style>
 </head>
@@ -167,6 +186,7 @@ footer.site a:hover,footer.site a:focus-visible{color:var(--accent)}
 
 <h1>梯度下降實驗室</h1>
 <p class="subtitle">Gradient Descent — 機器修正錯誤的方法，其實是一顆球在找谷底。</p>
+<p class="jump"><a class="jump-lab" href="#try">跳過說明，直接動手 ↓</a></p>
 
 <div class="anchor">
   <h3>先想一件事：洗澡時調水溫</h3>
@@ -176,7 +196,7 @@ footer.site a:hover,footer.site a:focus-visible{color:var(--accent)}
 <p class="intro">曲線代表<button class="term" data-t="loss" aria-expanded="false">誤差</button>：橫軸是模型的某個<button class="term" data-t="param" aria-expanded="false">參數</button>（水龍頭轉到的角度），縱軸是「用這個值會錯得多嚴重」（水溫差幾度）。球是模型現在的位置。機器學習的核心動作只有一件事：看<button class="term" data-t="grad" aria-expanded="false">坡度</button>，往誤差變小的方向<b>跳一步</b>。每一步跳多遠，由你手上的 <button class="term" data-t="lr" aria-expanded="false">learning rate</button> 決定。</p>
 <p class="hint">注意：球不是「滾」下去的 — 它是<button class="term" data-t="step" aria-expanded="false">一步</button>一步<b>跳</b>的。每按一下「走一步」，它就依照當下的坡度跳一次。<span style="opacity:.85">（有底線的詞都可以點開，會給你一個比方）</span></p>
 
-<section class="lab" aria-label="梯度下降互動實驗">
+<section class="lab" id="try" aria-label="梯度下降互動實驗">
   <div class="controls">
     <div>
       <span class="ctrl-label">地形</span>
@@ -636,6 +656,8 @@ reset();
   display:flex; flex-direction:column; gap:4px; max-width:min(92vw,560px);
   font-size:.85rem; color:var(--ink)}
 #rpbar.rpbar-hidden{display:none}
+#rpbar{transition:transform .25s ease, opacity .25s ease}
+#rpbar.rpbar-tucked{transform:translate(-50%, calc(100% + 30px)); opacity:0; pointer-events:none}  /* 互動區在畫面下方時先收起來 */
 body{padding-bottom:140px}  /* 讓頁尾能捲到浮動列上方，不被蓋住 */
 .rpbar-main{display:flex; align-items:center; gap:10px}
 .rpbar-nav{display:flex; align-items:center; gap:4px; color:var(--ink); text-decoration:none;
@@ -750,6 +772,17 @@ body{padding-bottom:140px}  /* 讓頁尾能捲到浮動列上方，不被蓋住 
     d.title = p.title;
     dotsWrap.appendChild(d);
   });
+
+  // 互動區（section.lab）佔到畫面下方時，先把導覽列收起來，避免蓋住實驗
+  var labs = document.querySelectorAll("section.lab");
+  if(labs.length && "IntersectionObserver" in window){
+    var over = new Set();
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if(en.isIntersecting) over.add(en.target); else over.delete(en.target); });
+      bar.classList.toggle("rpbar-tucked", over.size > 0);
+    }, {rootMargin:"-75% 0px 0px 0px"});
+    labs.forEach(function(l){ io.observe(l); });
+  }
 
   closeBtn.addEventListener("click", function(){
     bar.classList.add("rpbar-hidden");
